@@ -1,7 +1,12 @@
 # Hostorio Custom Client Theme Configuration File
-# Forked from WHMCS "Twenty-One" (internal name "Six") — see ../twenty-one for the pristine original.
+# Forked from the WHMCS "Twenty-One" theme (internal name "Six").
+#
+# Do NOT change `name`. WHMCS resolves theme asset paths (assetPath /
+# assetExists, used for all.min.css, custom.css and scripts.min.js)
+# through this value, so renaming it 404s every theme stylesheet and
+# script while leaving core assets such as Font Awesome working.
 
-name: "ho-whmcs-theme"
+name: "Six"
 description: "Hostorio custom client area theme, based on WHMCS Twenty-One"
 author: "Hostorio"
 properties:

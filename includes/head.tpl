@@ -15,8 +15,10 @@
 <link href="{$__assetPath__}" rel="stylesheet">
 {/assetExists}
 <!-- Hostorio layout: header, navigation, footer. Loads last so it
-     can override both the stock bundle and the token base layer. -->
-<link href="{assetPath file='hostorio-layout.css'}?v={$versionHash}" rel="stylesheet">
+     can override both the stock bundle and the token base layer.
+     Built from $WEB_ROOT + $template rather than assetPath so it
+     resolves from the active theme directory directly. -->
+<link href="{$WEB_ROOT}/templates/{$template}/css/hostorio-layout.css?v={$versionHash}" rel="stylesheet">
 
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
