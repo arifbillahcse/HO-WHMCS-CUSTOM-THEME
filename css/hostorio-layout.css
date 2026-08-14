@@ -1,0 +1,600 @@
+/* *****************************************************
+
+    ** Hostorio Layout — Header, Navigation, Footer **
+
+    Loads after all.min.css and custom.css, so plain
+    selectors here override the stock rules without
+    !important as long as specificity matches.
+
+    All values come from the tokens in custom.css.
+
+***************************************************** */
+
+
+/* ===========================================================
+   1. HEADER — navy brand bar
+   Stock: white background, rounded top corners.
+   New:   navy gradient band carrying the logo + utility nav.
+   =========================================================== */
+
+section#header {
+    padding: var(--space-3) 0;
+    background: var(--ho-gradient-navy-blue);
+    border-radius: 0;
+}
+
+/* Logo ---------------------------------------------------- */
+
+section#header .logo-text {
+    font-family: var(--font-family-heading);
+    font-weight: var(--font-weight-bold);
+    font-size: 2.1em;
+    color: var(--text-inverted);
+    letter-spacing: -0.5px;
+}
+
+section#header .logo-text:hover,
+section#header .logo-text:focus {
+    color: var(--text-inverted);
+    text-decoration: none;
+}
+
+/* Orange full stop after the wordmark — small brand signature
+   that also appears in the footer. Only applied to the text
+   logo; an uploaded logo image is left untouched. */
+section#header .logo-text::after {
+    content: ".";
+    color: var(--ho-orange);
+}
+
+section#header .logo img {
+    max-height: 46px;
+}
+
+/* Utility nav (language, notifications, logout / cart) ----- */
+
+ul.top-nav {
+    margin-top: 14px;
+}
+
+ul.top-nav > li > a {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.92em;
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--rounding-sm);
+    transition: color var(--transition-fast),
+                background-color var(--transition-fast);
+}
+
+ul.top-nav > li:active > a,
+ul.top-nav > li:focus > a,
+ul.top-nav > li:hover > a,
+ul.top-nav > li > a:focus {
+    color: var(--text-inverted);
+    background: rgba(255, 255, 255, 0.10);
+}
+
+ul.top-nav > li.primary-action {
+    border-left: solid 1px rgba(255, 255, 255, 0.18);
+}
+
+/* Primary action is a CTA, so it follows the orange button rule */
+ul.top-nav > li.primary-action > a.btn {
+    padding: 7px 20px;
+    background-color: var(--secondary);
+    color: var(--text-inverted);
+    border-radius: var(--rounding-md);
+    font-weight: var(--font-weight-medium);
+    box-shadow: 0 2px 8px rgba(255, 120, 0, 0.32);
+    transition: background-color var(--transition-fast),
+                transform var(--transition-fast),
+                box-shadow var(--transition-fast);
+}
+
+ul.top-nav > li.primary-action > a.btn:hover,
+ul.top-nav > li.primary-action > a.btn:focus {
+    background-color: var(--secondary-lifted);
+    color: var(--text-inverted);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 120, 0, 0.42);
+}
+
+/* Notification pill */
+ul.top-nav .label-info {
+    background-color: var(--secondary);
+    border-radius: 10px;
+    padding: 3px 7px;
+    font-weight: var(--font-weight-bold);
+}
+
+/* Admin "return to admin area" button */
+ul.top-nav > li > a.btn-logged-in-admin {
+    color: rgba(255, 255, 255, 0.82);
+}
+
+ul.top-nav > li > a.btn-logged-in-admin:hover {
+    color: var(--text-inverted);
+}
+
+/* Language / notification popovers */
+.popover-user-notifications {
+    border: 0;
+    border-radius: var(--rounding-md);
+    box-shadow: var(--shadow-lg);
+}
+
+
+/* ===========================================================
+   2. MAIN NAVIGATION — sticky, orange active indicator
+   Stock: flat #0e5077 bar, solid block highlight on hover.
+   New:   navy bar that sticks to the top on scroll, with an
+          animated orange underline instead of a block fill.
+   =========================================================== */
+
+section#main-menu {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+.navbar-main {
+    min-height: 48px;
+    background-color: var(--ho-navy);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: var(--shadow-md);
+    font-family: var(--font-family-heading);
+    font-size: 15px;
+}
+
+/* The stock sheet gives the account item its own darker fill;
+   the underline indicator replaces that treatment. */
+.navbar-main li.account {
+    background-color: transparent;
+}
+
+.navbar-main .navbar-nav > li > a {
+    position: relative;
+    padding: 13px 16px;
+    color: rgba(255, 255, 255, 0.86);
+    font-weight: var(--font-weight-medium);
+    transition: color var(--transition-fast);
+}
+
+/* Underline indicator, hidden until hover / active */
+.navbar-main .navbar-nav > li > a::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 7px;
+    height: 2px;
+    border-radius: 2px;
+    background-color: var(--secondary);
+    transform: scaleX(0);
+    transition: transform var(--transition-base);
+}
+
+.navbar-main .navbar-nav > li > a:hover,
+.navbar-main .navbar-nav > li > a:focus,
+.navbar-main .navbar-nav > .active > a,
+.navbar-main .navbar-nav > .active > a:hover,
+.navbar-main .navbar-nav > .active > a:focus,
+.navbar-main .navbar-nav > .open > a,
+.navbar-main .navbar-nav > .open > a:hover,
+.navbar-main .navbar-nav > .open > a:focus {
+    color: var(--text-inverted);
+    background-color: transparent;
+}
+
+.navbar-main .navbar-nav > li > a:hover::after,
+.navbar-main .navbar-nav > li > a:focus::after,
+.navbar-main .navbar-nav > .active > a::after,
+.navbar-main .navbar-nav > .open > a::after {
+    transform: scaleX(1);
+}
+
+/* Badge counters sitting in nav items */
+.navbar-main .navbar-nav > li > a .badge {
+    background-color: var(--secondary);
+    font-weight: var(--font-weight-bold);
+}
+
+/* Dropdowns ------------------------------------------------ */
+
+.navbar-main .dropdown-menu {
+    margin-top: 2px;
+    padding: var(--space-2) 0;
+    min-width: 215px;
+    border: 0;
+    border-radius: var(--rounding-md);
+    box-shadow: var(--shadow-lg);
+}
+
+.navbar-main .dropdown-menu > li > a {
+    padding: 9px 18px;
+    color: var(--text);
+    font-weight: var(--font-weight-normal);
+    transition: background-color var(--transition-fast),
+                color var(--transition-fast),
+                padding-left var(--transition-fast);
+}
+
+.navbar-main .navbar-nav .dropdown-menu > li > a:hover,
+.navbar-main .navbar-nav .dropdown-menu > li > a:focus,
+.navbar-main .navbar-nav .dropdown-menu > .active > a,
+.navbar-main .navbar-nav .dropdown-menu > .active > a:hover,
+.navbar-main .navbar-nav .dropdown-menu > .active > a:focus,
+.navbar-main .navbar-nav .dropdown-menu > .open > a,
+.navbar-main .navbar-nav .dropdown-menu > .open > a:hover,
+.navbar-main .navbar-nav .dropdown-menu > .open > a:focus,
+.navbar-main .dropdown-menu > li > a:hover,
+.navbar-main .dropdown-menu > li > a:focus {
+    padding-left: 22px;
+    background-color: var(--primary-50);
+    color: var(--ho-navy);
+}
+
+.navbar-main .dropdown-menu .divider {
+    background-color: var(--border-muted);
+}
+
+/* Mobile toggle -------------------------------------------- */
+
+.navbar-main .navbar-toggle {
+    margin-top: 7px;
+    margin-bottom: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: var(--rounding-sm);
+}
+
+.navbar-main .navbar-toggle .icon-bar {
+    background-color: var(--text-inverted);
+}
+
+.navbar-main .navbar-toggle:focus,
+.navbar-main .navbar-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.navbar-main .navbar-toggle:focus .icon-bar,
+.navbar-main .navbar-toggle:hover .icon-bar {
+    background-color: var(--text-inverted);
+}
+
+
+/* ===========================================================
+   3. FOOTER — navy, four columns
+   Stock: single light-gray strip with a copyright line.
+   =========================================================== */
+
+section#footer {
+    margin: 0;
+    padding: var(--space-6) 0 0;
+    background-color: var(--ho-navy);
+    border-top: 3px solid var(--secondary);
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 0.92em;
+    line-height: 1.7;
+}
+
+section#footer p {
+    margin: 0;
+}
+
+/* Brand column -------------------------------------------- */
+
+.footer-brand-name {
+    display: inline-block;
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-family-heading);
+    font-size: 1.6rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-inverted);
+    letter-spacing: -0.5px;
+}
+
+.footer-brand-name::after {
+    content: ".";
+    color: var(--ho-orange);
+}
+
+.footer-about {
+    margin-bottom: var(--space-3);
+    max-width: 34ch;
+}
+
+/* Column headings ----------------------------------------- */
+
+.footer-col-title {
+    position: relative;
+    margin: 0 0 var(--space-3);
+    padding-bottom: var(--space-2);
+    font-family: var(--font-family-heading);
+    font-size: 1rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-inverted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.footer-col-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 30px;
+    height: 2px;
+    border-radius: 2px;
+    background-color: var(--secondary);
+}
+
+/* Link lists ---------------------------------------------- */
+
+.footer-links {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.footer-links > li {
+    margin-bottom: var(--space-2);
+}
+
+.footer-links > li > a {
+    color: rgba(255, 255, 255, 0.68);
+    transition: color var(--transition-fast),
+                padding-left var(--transition-fast);
+}
+
+.footer-links > li > a:hover,
+.footer-links > li > a:focus {
+    padding-left: 5px;
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+/* Contact list -------------------------------------------- */
+
+.footer-contact {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.footer-contact > li {
+    position: relative;
+    margin-bottom: var(--space-3);
+    padding-left: 28px;
+}
+
+.footer-contact > li > i {
+    position: absolute;
+    left: 0;
+    top: 4px;
+    color: var(--secondary);
+}
+
+.footer-contact a {
+    color: rgba(255, 255, 255, 0.68);
+}
+
+.footer-contact a:hover {
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+/* Social icons -------------------------------------------- */
+
+.footer-social {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.footer-social > li {
+    display: inline-block;
+    margin: 0 var(--space-1) var(--space-1) 0;
+}
+
+.footer-social > li > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.09);
+    color: rgba(255, 255, 255, 0.85);
+    transition: background-color var(--transition-fast),
+                transform var(--transition-fast),
+                color var(--transition-fast);
+}
+
+.footer-social > li > a:hover,
+.footer-social > li > a:focus {
+    background-color: var(--secondary);
+    color: var(--text-inverted);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+/* Bottom bar ---------------------------------------------- */
+
+.footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    margin-top: var(--space-5);
+    padding: var(--space-3) 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    font-size: 0.95em;
+}
+
+.footer-legal {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.footer-legal > li {
+    display: inline-block;
+    margin-left: var(--space-3);
+}
+
+.footer-legal > li > a {
+    color: rgba(255, 255, 255, 0.68);
+}
+
+.footer-legal > li > a:hover,
+.footer-legal > li > a:focus {
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+/* Back to top --------------------------------------------- */
+/* Stock floats this inside the footer. It becomes a floating
+   button instead; the .back-to-top class and href="#" are kept
+   so the existing scroll handler in scripts.js still binds. */
+
+section#footer .back-to-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 1020;
+    float: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: var(--secondary);
+    color: var(--text-inverted);
+    box-shadow: 0 4px 14px rgba(1, 37, 125, 0.28);
+    transition: background-color var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+section#footer .back-to-top:hover,
+section#footer .back-to-top:focus {
+    background-color: var(--secondary-lifted);
+    color: var(--text-inverted);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+section#footer .back-to-top i {
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    color: inherit;
+    opacity: 1;
+}
+
+
+/* ===========================================================
+   4. RESPONSIVE
+   =========================================================== */
+
+@media (max-width: 991px) {
+    section#header .logo-text {
+        font-size: 1.7em;
+    }
+
+    ul.top-nav > li.primary-action > a.btn {
+        padding: 6px 15px;
+    }
+}
+
+@media (max-width: 767px) {
+    section#header {
+        padding: var(--space-3) 0 var(--space-2);
+        text-align: center;
+    }
+
+    /* Stack the utility nav under the logo on small screens */
+    section#header .logo,
+    section#header .logo-text {
+        display: block;
+        margin-bottom: var(--space-2);
+    }
+
+    ul.top-nav {
+        float: none;
+        margin-top: 0;
+        white-space: normal;
+    }
+
+    ul.top-nav > li.primary-action {
+        padding-left: 10px;
+        margin-left: 0;
+    }
+
+    /* Keep a long collapsed menu scrollable instead of pushing
+       the sticky bar past the viewport */
+    .navbar-main .navbar-collapse {
+        max-height: calc(100vh - 60px);
+        overflow-y: auto;
+    }
+
+    /* Underline indicator does not read well in the stacked
+       mobile menu, so fall back to a filled row */
+    .navbar-main .navbar-nav > li > a::after {
+        display: none;
+    }
+
+    .navbar-main .navbar-nav > li > a:hover,
+    .navbar-main .navbar-nav > li > a:focus,
+    .navbar-main .navbar-nav > .active > a,
+    .navbar-main .navbar-nav > .open > a {
+        background-color: rgba(255, 255, 255, 0.09);
+        border-left: 3px solid var(--secondary);
+    }
+
+    section#footer {
+        padding-top: var(--space-5);
+        text-align: center;
+    }
+
+    .footer-col {
+        margin-bottom: var(--space-4);
+    }
+
+    .footer-about {
+        max-width: none;
+    }
+
+    .footer-col-title::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .footer-contact > li {
+        padding-left: 0;
+    }
+
+    .footer-contact > li > i {
+        position: static;
+        margin-right: var(--space-1);
+    }
+
+    .footer-links > li > a:hover {
+        padding-left: 0;
+    }
+
+    .footer-bottom {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .footer-legal > li {
+        margin: 0 var(--space-2);
+    }
+
+    section#footer .back-to-top {
+        right: 14px;
+        bottom: 14px;
+    }
+}
