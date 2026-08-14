@@ -614,6 +614,37 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
 
 
 /* ===========================================================
+   3c. STICKY SECONDARY SIDEBAR (IDEA 5)
+
+   Store page Categories/Actions sidebar converted to horizontal
+   sticky bar at the top of the page. Stays visible while user
+   scrolls through product grid; content scrolls behind it.
+   =========================================================== */
+
+.ho-secondary-sidebar-container {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    /* Create gap between this and main content */
+    margin-bottom: var(--space-3);
+}
+
+.ho-secondary-sidebar-container .ho-filterbar {
+    margin: 0;
+    border-bottom: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.ho-secondary-sidebar-container .ho-filterbar + .ho-filterbar {
+    margin-top: 0;
+    border-top: 1px solid var(--border-muted);
+}
+
+
+/* ===========================================================
    4. FOOTER — navy, four columns
    Stock: single light-gray strip with a copyright line.
    =========================================================== */

@@ -317,7 +317,7 @@
             no core/PHP changes; see includes/sidebar-horizontal.tpl.
         *}
         <!-- Container for main page display content -->
-        <div class="{if !$inShoppingCart && $secondarySidebar->hasChildren()}col-md-9 pull-md-right{else}col-xs-12{/if} main-content">
+        <div class="col-xs-12 main-content">
             {if !$showingLoginPage && !$inShoppingCart && $templatefile != 'homepage' && !$skipMainBodyContainer}
                 {include file="$template/includes/pageheader.tpl" title=$displayTitle desc=$tagline showbreadcrumb=true}
             {/if}

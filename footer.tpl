@@ -1,10 +1,14 @@
-
+            {*
+                Secondary sidebar (Categories/Actions on store pages, etc.)
+                now renders as a horizontal sticky bar at the top instead of
+                a left column. The main-content is now full width.
+            *}
+            {if !$inShoppingCart && $secondarySidebar->hasChildren()}
+                <div class="ho-secondary-sidebar-container">
+                    {include file="$template/includes/sidebar-horizontal-secondary.tpl" sidebar=$secondarySidebar}
+                </div>
+            {/if}
                 </div><!-- /.main-content -->
-                {if !$inShoppingCart && $secondarySidebar->hasChildren()}
-                    <div class="col-md-3 pull-md-left sidebar sidebar-secondary">
-                        {include file="$template/includes/sidebar.tpl" sidebar=$secondarySidebar}
-                    </div>
-                {/if}
             <div class="clearfix"></div>
         </div>
     </div>
