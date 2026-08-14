@@ -1,0 +1,12 @@
+# Hostorio Custom Client Theme Configuration File
+# Forked from WHMCS "Twenty-One" (internal name "Six") — see ../twenty-one for the pristine original.
+
+name: "ho-whmcs-theme"
+description: "Hostorio custom client area theme, based on WHMCS Twenty-One"
+author: "Hostorio"
+properties:
+  serverSidePagination: false # Defines client side will handle pagination
+provides:
+  bootstrap: 3.4.1
+  jquery: 1.12.4
+  fontawesome: 5.10.1
