@@ -1,6 +1,9 @@
 <!-- Styling -->
-{\WHMCS\View\Asset::fontCssInclude('open-sans-family.css')}
-{\WHMCS\View\Asset::fontCssInclude('raleway-family.css')}
+<!-- Hostorio brand fonts: Roboto (body) + Rosario (headings).
+     Replaces the stock Open Sans / Raleway includes. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Rosario:wght@400;500;700&display=swap" rel="stylesheet">
 <link href="{assetPath file='all.min.css'}?v={$versionHash}" rel="stylesheet">
 <link href="{$WEB_ROOT}/assets/fonts/css/fontawesome.min.css" rel="stylesheet">
 <link href="{$WEB_ROOT}/assets/fonts/css/fontawesome-solid.min.css" rel="stylesheet">

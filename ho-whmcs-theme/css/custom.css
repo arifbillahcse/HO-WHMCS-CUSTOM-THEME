@@ -1,94 +1,131 @@
 /* *****************************************************
 
-    ** Custom Stylesheet **
+    ** Hostorio Custom Stylesheet **
 
-    Any custom styling you want to apply should be
-    defined here.
+    Design tokens + base layer for the Hostorio client area.
+    Based on Hostorio Color Palette v1.0.2.
+
+    This file loads AFTER all.min.css (Bootstrap) and
+    styles.css, so declarations here win without !important
+    as long as selector specificity matches.
+
+    Everything below should reference var(--...) tokens.
+    To re-skin the theme, change the raw brand values in the
+    "Brand palette" block only.
 
 ***************************************************** */
-
-/* Custom CSS for Nexus Cart
- *
- * This block allows you to customize theme colors and styles for the entire Nexus Cart template.
- *
- * To customize colors:
- * - Replace the var() references with your own hex colors or other CSS values.
- * - For example, instead of --primary: #4b5563; use --primary: #your-color;
- * - You can also override any CSS properties here.
- */
 
 html {
     font-size: 14px;
 }
 
 :root {
-    --white: #fff;
+    /* =========================================================
+       Brand palette — single source of truth
+       (Hostorio Color Palette v1.0.2)
+       ========================================================= */
+
+    /* Primary — navy blue family */
+    --ho-navy: #01257D;          /* Logo, header, nav, headings */
+    --ho-blue-dark: #0C379A;     /* Dark accents, navy hover */
+    --ho-blue: #0170B9;          /* Links, secondary accents */
+    --ho-blue-light: #1368E7;    /* Highlights, info badges */
+
+    /* Secondary — orange accent (all CTAs / buttons) */
+    --ho-orange: #FF7800;        /* Buttons, CTAs, "Save" badges */
+    --ho-orange-bright: #FF8C00; /* Button hover */
+    --ho-orange-light: #FF9000;  /* Light accents */
+
+    /* Status */
+    --ho-red: #FF0000;           /* Errors, overdue, suspended */
+    --ho-green: #28CA42;         /* Success, active, paid */
+
+    /* Neutrals */
+    --ho-white: #FFFFFF;
+    --ho-off-white: #FAFAFA;     /* Alternative light backgrounds */
+    --ho-gray-light: #F5F5F5;    /* Section backgrounds, disabled */
+    --ho-gray-text: #4B4F58;     /* Body text */
+    --ho-gray-dark: #3A3A3A;     /* Headings, strong emphasis */
+
+    /* Gradients */
+    --ho-gradient-navy-blue: linear-gradient(135deg, #01257D 0%, #0170B9 100%);
+    --ho-gradient-orange-red: linear-gradient(135deg, #FF7800 0%, #FF0000 100%);
+    --ho-gradient-blue-purple: linear-gradient(135deg, #6478E4 0%, #7C4DB0 100%);
+    --ho-gradient-teal-green: linear-gradient(135deg, #5BD1A0 0%, #28CA42 100%);
+
+    /* =========================================================
+       Semantic tokens
+       Names below are WHMCS's own (already consumed by the
+       Dynamic Store pages in store/dynamic/assets/). Keeping
+       them means the newer WHMCS pages and our custom styling
+       stay on one shared vocabulary.
+       ========================================================= */
+
+    --white: var(--ho-white);
 
     /* Neutral shades */
-    --neutral-50: #fbf9fa;
-    --neutral-100: #f4f5f7;
-    --neutral-200: #e4e4e7;
-    --neutral-300: #d0d5dd;
-    --neutral-400: #9ca3af;
-    --neutral-500: #6b7280;
-    --neutral-600: #4b5563;
-    --neutral-700: #374151;
-    --neutral-800: #1f2937;
+    --neutral-50: #FAFAFA;
+    --neutral-100: #F5F5F5;
+    --neutral-200: #E4E4E7;
+    --neutral-300: #D0D5DD;
+    --neutral-400: #9CA3AF;
+    --neutral-500: #6B7280;
+    --neutral-600: #4B4F58;
+    --neutral-700: #3A3A3A;
+    --neutral-800: #1F2937;
     --neutral-900: #111827;
     --neutral-950: #030712;
 
-    /* Neutral shades */
-    /* define own pallet with brand colors */
-    --primary-50: var(--neutral-50);
-    --primary-100: var(--neutral-100);
-    --primary-200: var(--neutral-200);
-    --primary-300: var(--neutral-300);
-    --primary-400: var(--neutral-400);
-    --primary-500: var(--neutral-500);
-    --primary-600: var(--neutral-600);
-    --primary-700: var(--neutral-700);
-    --primary-800: var(--neutral-800);
-    --primary-900: var(--neutral-900);
-    --primary-950: var(--neutral-900);
+    /* Navy ramp, derived from the brand navy family */
+    --primary-50: #EEF3FB;
+    --primary-100: #D6E2F5;
+    --primary-200: #ADC4EB;
+    --primary-300: #7D9FDD;
+    --primary-400: #1368E7;
+    --primary-500: #0170B9;
+    --primary-600: #0C379A;
+    --primary-700: #01257D;
+    --primary-800: #011C5E;
+    --primary-900: #011240;
+    --primary-950: #000C2B;
 
-    /* Primary colors */
-    /* Use shades from comments if `primary` colors use other colors, then neutral */
-    --primary: var(--neutral-900);          /* var(--primary-600) */
-    --primary-lifted: var(--neutral-800);   /* var(--primary-700) */
-    --primary-accented: var(--neutral-700); /* var(--primary-800) */
+    /* Primary colors — navy (chrome, headings, nav) */
+    --primary: var(--ho-navy);
+    --primary-lifted: var(--ho-blue-dark);
+    --primary-accented: var(--ho-blue);
 
-    /* Secondary colors */
-    --secondary: var(--neutral-500);
-    --secondary-lifted: var(--neutral-600);
-    --secondary-accented: var(--neutral-700);
+    /* Secondary colors — orange (buttons, CTAs) */
+    --secondary: var(--ho-orange);
+    --secondary-lifted: var(--ho-orange-bright);
+    --secondary-accented: var(--ho-orange-light);
 
     /* Success colors */
-    --success: #00a63e;
-    --success-lifted: #008236;
-    --success-accented: #016630;
+    --success: var(--ho-green);
+    --success-lifted: #22B23A;
+    --success-accented: #1B9A30;
 
     /* Info colors */
-    --info: #155dfc;
-    --info-lifted: #1447e6;
-    --info-accented: #193cb8;
+    --info: var(--ho-blue-light);
+    --info-lifted: var(--ho-blue);
+    --info-accented: var(--ho-blue-dark);
 
     /* Notice colors */
-    --notice: #7f22fe;
-    --notice-lifted: #7008e7;
-    --notice-accented: #5d0ec0;
+    --notice: #7F22FE;
+    --notice-lifted: #7008E7;
+    --notice-accented: #5D0EC0;
 
     /* Warning colors */
-    --warning: #f54a00;
-    --warning-lifted: #ca3500;
-    --warning-accented: #9f2d00;
+    --warning: var(--ho-orange);
+    --warning-lifted: #CA3500;
+    --warning-accented: #9F2D00;
 
     /* Error colors */
-    --error: #e7000b;
-    --error-lifted: #c10007;
-    --error-accented: #9f0712;
+    --error: var(--ho-red);
+    --error-lifted: #D40000;
+    --error-accented: #A80000;
 
     /* Grayscale colors */
-    --grayscale: var(--neutral-900);
+    --grayscale: var(--ho-gray-dark);
     --grayscale-lifted: var(--neutral-800);
     --grayscale-accented: var(--neutral-700);
 
@@ -98,11 +135,14 @@ html {
     --neutral-accented: var(--neutral-700);
 
     /* Text neutral colors */
-    --text-inverted: var(--white);
+    --text-inverted: var(--ho-white);
     --text-muted: var(--neutral-400);
     --text-lifted: var(--neutral-500);
-    --text-accented: var(--neutral-600);
-    --text: var(--neutral-900);
+    --text-accented: var(--ho-gray-text);
+    --text: var(--ho-gray-text);
+    --text-heading: var(--ho-gray-dark);
+    --text-link: var(--ho-blue);
+    --text-link-hover: var(--ho-navy);
 
     /* Border neutral colors */
     --border-muted: var(--neutral-200);
@@ -111,21 +151,20 @@ html {
     --border-accented: var(--neutral-600);
 
     /* Background neutral colors */
-    --bg: var(--white);
-    --bg-muted: var(--neutral-50);
-    --bg-lifted: var(--neutral-100);
+    --bg: var(--ho-white);
+    --bg-muted: var(--ho-off-white);
+    --bg-lifted: var(--ho-gray-light);
     --bg-accented: var(--neutral-200);
-    --bg-inverted: var(--neutral-900);
+    --bg-inverted: var(--ho-navy);
 
     /* Additional colors */
-    --yellow-200: #fff085;
-    --yellow-300: #ffdf20;
-    --teal-300: #46edd5;
-    --teal-400: #00d5be;
-    --emerald-300: #5ee9b5;
-    --pink-400: #fb64b6;
+    --yellow-200: #FFF085;
+    --yellow-300: #FFDF20;
+    --teal-300: #46EDD5;
+    --teal-400: #00D5BE;
+    --emerald-300: #5EE9B5;
+    --pink-400: #FB64B6;
 
-    /* Additional custom properties */
     /* Font sizes */
     --text-xs: 0.625rem;
     --text-sm: 0.75rem;
@@ -146,24 +185,21 @@ html {
     --letter-spacing: 0em;
     --disabled-opacity: 25%;
 
-    /* -----------------------------------------------------------
-       Hostorio additions below.
+    /* =========================================================
+       Hostorio additions
        WHMCS only wires the tokens above into the newer Dynamic
-       Store pages (store/dynamic/assets/dynamic-store.css). The
-       rest of the theme (header, footer, dashboard, invoices,
-       tickets — styles.css/all.css/overrides.css) still hardcodes
-       colors and fonts. These additions extend the same token set
-       so the whole theme can be re-skinned from this one file.
-       Replace the placeholder values once brand colors/fonts are
-       final; everything else should keep referencing var(--...).
-       ----------------------------------------------------------- */
+       Store pages. The rest of the theme (header, footer,
+       dashboard, invoices, tickets) still hardcodes colors in
+       styles.css / all.css / overrides.css. These extra tokens
+       cover what those sheets need as we migrate them.
+       ========================================================= */
 
-    /* Typography */
-    --font-family-base: "Open Sans", Verdana, Tahoma, sans-serif; /* placeholder — matches current stock font */
-    --font-family-heading: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif; /* placeholder */
+    /* Typography — Roboto (body) + Rosario (headings) */
+    --font-family-base: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-family-heading: "Rosario", "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --font-size-base: 14px;
     --font-weight-normal: 400;
-    --font-weight-semibold: 600;
+    --font-weight-medium: 500;
     --font-weight-bold: 700;
 
     /* Spacing scale */
@@ -176,21 +212,190 @@ html {
     --space-7: 64px;
 
     /* Elevation */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-sm: 0 1px 2px rgba(1, 37, 125, 0.06);
+    --shadow-md: 0 4px 12px rgba(1, 37, 125, 0.10);
+    --shadow-lg: 0 8px 24px rgba(1, 37, 125, 0.14);
 
     /* Layout */
     --header-height: 70px;
     --container-max-width: 1200px;
+
+    /* Motion */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.25s ease;
 }
 
 /* -----------------------------------------------------------
    Dark mode skeleton (opt-in via a manually toggled attribute,
    not prefers-color-scheme, so a JS toggle can drive it).
-   Left empty on purpose — fill in once light-mode brand colors
-   are final, then derive dark equivalents from them.
+   Left commented out until the light theme is signed off.
    ----------------------------------------------------------- */
 [data-theme="dark"] {
-    /* --bg: ...; --bg-muted: ...; --bg-lifted: ...; --text: ...; --border: ...; */
+    /* --bg: #0F1115; --bg-muted: #161A21; --bg-lifted: #1D222B; */
+    /* --text: #E9ECEF; --text-heading: #FFFFFF; --border: #2A303B; */
+}
+
+
+/* ===========================================================
+   Base layer — typography
+   =========================================================== */
+
+body,
+input,
+button,
+select,
+textarea {
+    font-family: var(--font-family-base);
+    color: var(--text);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: var(--font-family-heading);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-heading);
+}
+
+a {
+    color: var(--text-link);
+    transition: color var(--transition-fast);
+}
+
+a:hover,
+a:focus {
+    color: var(--text-link-hover);
+}
+
+/* Selectors in all.css / styles.css that hardcode the stock
+   Open Sans / Raleway stacks. Those families are no longer
+   loaded, so without these overrides the elements would fall
+   back to a generic sans-serif instead of the brand fonts. */
+.navbar-main {
+    font-family: var(--font-family-heading);
+}
+
+section#header .logo-text {
+    font-family: var(--font-family-heading);
+}
+
+.popover-user-notifications,
+.panel-sidebar .panel-title {
+    font-family: var(--font-family-base);
+}
+
+
+/* ===========================================================
+   Base layer — buttons
+
+   Brand rule: primary calls to action are ORANGE, never navy.
+   Navy is reserved for chrome (header, nav, headings).
+   Semantic buttons (success/danger) keep their status colors
+   so state stays readable.
+   =========================================================== */
+
+.btn {
+    border-radius: var(--rounding-sm);
+    font-weight: var(--font-weight-medium);
+    transition: background-color var(--transition-fast),
+                border-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+/* Primary CTA — orange */
+.btn-primary {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    color: var(--text-inverted);
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary.focus,
+.btn-primary:active,
+.btn-primary.active,
+.open > .dropdown-toggle.btn-primary {
+    background-color: var(--secondary-lifted);
+    border-color: var(--secondary-lifted);
+    color: var(--text-inverted);
+}
+
+.btn-primary.disabled,
+.btn-primary[disabled],
+fieldset[disabled] .btn-primary {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    opacity: var(--disabled-opacity);
+}
+
+/* Secondary / neutral actions — outlined, navy text */
+.btn-default {
+    background-color: var(--bg);
+    border-color: var(--border);
+    color: var(--primary);
+}
+
+.btn-default:hover,
+.btn-default:focus,
+.btn-default.focus,
+.btn-default:active,
+.btn-default.active,
+.open > .dropdown-toggle.btn-default {
+    background-color: var(--bg-lifted);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Status buttons keep semantic colors */
+.btn-success {
+    background-color: var(--success);
+    border-color: var(--success);
+    color: var(--text-inverted);
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active,
+.btn-success.active {
+    background-color: var(--success-lifted);
+    border-color: var(--success-lifted);
+    color: var(--text-inverted);
+}
+
+.btn-danger {
+    background-color: var(--error);
+    border-color: var(--error);
+    color: var(--text-inverted);
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active,
+.btn-danger.active {
+    background-color: var(--error-lifted);
+    border-color: var(--error-lifted);
+    color: var(--text-inverted);
+}
+
+.btn-info {
+    background-color: var(--info);
+    border-color: var(--info);
+    color: var(--text-inverted);
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active {
+    background-color: var(--info-lifted);
+    border-color: var(--info-lifted);
+    color: var(--text-inverted);
+}
+
+.btn-link {
+    color: var(--text-link);
+}
+
+.btn-link:hover,
+.btn-link:focus {
+    color: var(--text-link-hover);
 }
