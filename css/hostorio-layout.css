@@ -124,146 +124,380 @@ ul.top-nav > li > a.btn-logged-in-admin:hover {
 }
 
 
-/* ===========================================================
-   2. MAIN NAVIGATION — sticky, orange active indicator
-   Stock: flat #0e5077 bar, solid block highlight on hover.
-   New:   navy bar that sticks to the top on scroll, with an
-          animated orange underline instead of a block fill.
-   =========================================================== */
+/* Drawer toggle (mobile only) ------------------------------ */
+/* Replaces the old .navbar-toggle. Lives in the header so it is
+   reachable whether or not the rail is on screen. */
 
-section#main-menu {
-    position: sticky;
-    top: 0;
-    z-index: 1030;
+.ho-sidebar-toggle {
+    display: none;
+    float: left;
+    margin: 5px var(--space-3) 0 0;
+    padding: 7px 12px;
+    background-color: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: var(--rounding-sm);
+    color: var(--text-inverted);
+    font-size: 17px;
+    line-height: 1;
+    transition: background-color var(--transition-fast);
 }
 
-.navbar-main {
-    min-height: 48px;
+.ho-sidebar-toggle:hover,
+.ho-sidebar-toggle:focus {
+    background-color: rgba(255, 255, 255, 0.20);
+    color: var(--text-inverted);
+    outline: none;
+}
+
+
+/* ===========================================================
+   2. APP SHELL — left navigation rail + content column
+   Stock: full-width horizontal navbar under the header.
+   New:   control-panel layout. The rail spans the page height on
+          the left, the rest of the page flows beside it.
+
+   Markup comes from header.tpl / footer.tpl:
+
+       section#header          (full width, above the shell)
+       div.ho-shell
+         aside#main-menu.ho-sidebar
+           div.ho-sidebar-inner   <- this is what sticks
+         div.ho-content
+           section#main-body ... section#footer
+   =========================================================== */
+
+.ho-shell {
+    display: flex;
+    align-items: stretch;
+}
+
+.ho-content {
+    flex: 1 1 auto;
+    /* Flex items default to min-width:auto, which lets a wide table
+       or <pre> stretch the column instead of scrolling inside it. */
+    min-width: 0;
+}
+
+.ho-sidebar {
     background-color: var(--ho-navy);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: var(--shadow-md);
+}
+
+/* Scoped scrollbar for a long menu, so it does not read as a
+   second page scrollbar. */
+.ho-sidebar-inner {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+.ho-sidebar-inner::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ho-sidebar-inner::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ho-sidebar-inner::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.20);
+    border-radius: 3px;
+}
+
+/* Drawer header — brand + close, drawer mode only */
+
+.ho-sidebar-head {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-3) var(--space-2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.ho-sidebar-brand {
+    font-family: var(--font-family-heading);
+    font-size: 1.35rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-inverted);
+    letter-spacing: -0.5px;
+}
+
+.ho-sidebar-brand:hover,
+.ho-sidebar-brand:focus {
+    color: var(--text-inverted);
+    text-decoration: none;
+}
+
+.ho-sidebar-brand::after {
+    content: ".";
+    color: var(--ho-orange);
+}
+
+.ho-sidebar-close {
+    padding: var(--space-1) var(--space-2);
+    background: none;
+    border: 0;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 18px;
+    line-height: 1;
+}
+
+.ho-sidebar-close:hover,
+.ho-sidebar-close:focus {
+    color: var(--text-inverted);
+    outline: none;
+}
+
+/* Dimmer behind the drawer. The element is injected by
+   js/hostorio-sidebar.js so the markup stays clean. */
+
+.ho-sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    background-color: rgba(1, 18, 64, 0.55);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-base),
+                visibility var(--transition-base);
+}
+
+body.ho-sidebar-open .ho-sidebar-backdrop {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* ===========================================================
+   3. SIDEBAR NAVIGATION
+   Same menu items as before; the active indicator moves from an
+   underline to an orange bar down the left edge, and sub-menus
+   expand inline instead of floating.
+
+   Rules are prefixed .ho-sidebar .navbar-main .navbar-nav so they
+   outrank Bootstrap's own .navbar-default chain without !important.
+   =========================================================== */
+
+.ho-sidebar .navbar-main {
+    margin: 0;
+    min-height: 0;
+    padding: var(--space-3) var(--space-2) var(--space-6);
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
     font-family: var(--font-family-heading);
     font-size: 15px;
 }
 
-/* The stock sheet gives the account item its own darker fill;
-   the underline indicator replaces that treatment. */
-.navbar-main li.account {
-    background-color: transparent;
+.ho-sidebar .navbar-main .navbar-nav {
+    float: none;
+    width: 100%;
+    margin: 0;
 }
 
-.navbar-main .navbar-nav > li > a {
+/* overrides.css bleeds the horizontal bar's list past its gutters
+   with `#main-menu .navbar-nav { margin: 0 -15px }`. That is an ID
+   selector, so the rule above cannot reach it — matching the ID is
+   the only way to keep the rows inset evenly inside the rail. */
+#main-menu .navbar-main .navbar-nav {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.ho-sidebar .navbar-main .navbar-nav > li {
+    float: none;
+}
+
+/* Divider between the primary menu and the account menu that used
+   to sit on the right-hand side of the bar. */
+.ho-sidebar .navbar-main .ho-nav-secondary {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* Top-level items ----------------------------------------- */
+
+/* Left padding reserves a fixed icon gutter so labels line up
+   whether or not an item carries an icon. */
+.ho-sidebar .navbar-main .navbar-nav > li > a {
     position: relative;
-    padding: 13px 16px;
-    color: rgba(255, 255, 255, 0.86);
+    display: block;
+    padding: 11px 16px 11px 46px;
+    border-radius: var(--rounding-md);
+    color: rgba(255, 255, 255, 0.80);
     font-weight: var(--font-weight-medium);
+    line-height: 1.35;
+    white-space: normal;
+    transition: background-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+.ho-sidebar .navbar-main .navbar-nav > li > a > i:first-child {
+    position: absolute;
+    left: 16px;
+    /* Pinned to the first line rather than centred, so a label that
+       wraps to two lines keeps its icon beside the first one. */
+    top: 12px;
+    width: 18px;
+    text-align: center;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.55);
     transition: color var(--transition-fast);
 }
 
-/* Underline indicator, hidden until hover / active */
-.navbar-main .navbar-nav > li > a::after {
+/* Active / hover indicator down the left edge */
+.ho-sidebar .navbar-main .navbar-nav > li > a::before {
     content: "";
     position: absolute;
-    left: 16px;
-    right: 16px;
-    bottom: 7px;
-    height: 2px;
-    border-radius: 2px;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
     background-color: var(--secondary);
-    transform: scaleX(0);
+    transform: scaleY(0);
     transition: transform var(--transition-base);
 }
 
-.navbar-main .navbar-nav > li > a:hover,
-.navbar-main .navbar-nav > li > a:focus,
-.navbar-main .navbar-nav > .active > a,
-.navbar-main .navbar-nav > .active > a:hover,
-.navbar-main .navbar-nav > .active > a:focus,
-.navbar-main .navbar-nav > .open > a,
-.navbar-main .navbar-nav > .open > a:hover,
-.navbar-main .navbar-nav > .open > a:focus {
+.ho-sidebar .navbar-main .navbar-nav > li > a:hover,
+.ho-sidebar .navbar-main .navbar-nav > li > a:focus,
+.ho-sidebar .navbar-main .navbar-nav > .open > a,
+.ho-sidebar .navbar-main .navbar-nav > .open > a:hover,
+.ho-sidebar .navbar-main .navbar-nav > .open > a:focus,
+.ho-sidebar .navbar-main .navbar-nav > .ho-nav-open > a,
+.ho-sidebar .navbar-main .navbar-nav > .ho-nav-open > a:hover,
+.ho-sidebar .navbar-main .navbar-nav > .ho-nav-open > a:focus {
+    background-color: rgba(255, 255, 255, 0.08);
     color: var(--text-inverted);
+}
+
+.ho-sidebar .navbar-main .navbar-nav > .active > a,
+.ho-sidebar .navbar-main .navbar-nav > .active > a:hover,
+.ho-sidebar .navbar-main .navbar-nav > .active > a:focus {
+    background-color: rgba(255, 255, 255, 0.13);
+    color: var(--text-inverted);
+}
+
+.ho-sidebar .navbar-main .navbar-nav > li > a:hover::before,
+.ho-sidebar .navbar-main .navbar-nav > li > a:focus::before,
+.ho-sidebar .navbar-main .navbar-nav > .open > a::before,
+.ho-sidebar .navbar-main .navbar-nav > .ho-nav-open > a::before,
+.ho-sidebar .navbar-main .navbar-nav > .active > a::before {
+    transform: scaleY(1);
+}
+
+.ho-sidebar .navbar-main .navbar-nav > li > a:hover > i:first-child,
+.ho-sidebar .navbar-main .navbar-nav > .open > a > i:first-child,
+.ho-sidebar .navbar-main .navbar-nav > .ho-nav-open > a > i:first-child,
+.ho-sidebar .navbar-main .navbar-nav > .active > a > i:first-child {
+    color: var(--secondary);
+}
+
+/* The stock sheet gives the account item its own darker fill; the
+   left-edge indicator replaces that treatment. */
+.ho-sidebar .navbar-main li.account {
     background-color: transparent;
 }
 
-.navbar-main .navbar-nav > li > a:hover::after,
-.navbar-main .navbar-nav > li > a:focus::after,
-.navbar-main .navbar-nav > .active > a::after,
-.navbar-main .navbar-nav > .open > a::after {
-    transform: scaleX(1);
-}
-
 /* Badge counters sitting in nav items */
-.navbar-main .navbar-nav > li > a .badge {
+.ho-sidebar .navbar-main .navbar-nav > li > a .badge {
+    float: right;
+    margin-left: var(--space-2);
     background-color: var(--secondary);
     font-weight: var(--font-weight-bold);
 }
 
-/* Dropdowns ------------------------------------------------ */
+/* Caret — points down when closed, flips when the item expands */
 
-.navbar-main .dropdown-menu {
-    margin-top: 2px;
-    padding: var(--space-2) 0;
-    min-width: 215px;
-    border: 0;
-    border-radius: var(--rounding-md);
-    box-shadow: var(--shadow-lg);
+.ho-sidebar .navbar-main .navbar-nav > li.dropdown > a {
+    padding-right: 34px;
 }
 
-.navbar-main .dropdown-menu > li > a {
-    padding: 9px 18px;
-    color: var(--text);
+.ho-sidebar .navbar-main .navbar-nav > li.dropdown > a > .caret {
+    position: absolute;
+    right: 15px;
+    top: 18px;
+    margin: 0;
+    opacity: 0.7;
+    transition: transform var(--transition-fast);
+}
+
+.ho-sidebar .navbar-main .navbar-nav > li.dropdown.open > a > .caret,
+.ho-sidebar .navbar-main .navbar-nav > li.dropdown.ho-nav-open > a > .caret {
+    transform: rotate(180deg);
+}
+
+/* Sub-menus ------------------------------------------------ */
+/* Taken out of their floating box and inlined under the parent.
+   Expansion is driven by .ho-nav-open, set by js/hostorio-sidebar.js
+   — see the note there on why Bootstrap's own .open is not used.
+   The .open rules stay as a fallback for a no-JS page. */
+
+.ho-sidebar .navbar-main .navbar-nav > li.ho-nav-open > .dropdown-menu {
+    display: block;
+}
+
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu {
+    position: static;
+    float: none;
+    width: auto;
+    min-width: 0;
+    margin: var(--space-1) 0 var(--space-2) 25px;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a {
+    padding: 8px 14px 8px 21px;
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.62);
+    font-family: var(--font-family-base);
+    font-size: 0.93em;
     font-weight: var(--font-weight-normal);
+    line-height: 1.4;
+    white-space: normal;
     transition: background-color var(--transition-fast),
                 color var(--transition-fast),
                 padding-left var(--transition-fast);
 }
 
-.navbar-main .navbar-nav .dropdown-menu > li > a:hover,
-.navbar-main .navbar-nav .dropdown-menu > li > a:focus,
-.navbar-main .navbar-nav .dropdown-menu > .active > a,
-.navbar-main .navbar-nav .dropdown-menu > .active > a:hover,
-.navbar-main .navbar-nav .dropdown-menu > .active > a:focus,
-.navbar-main .navbar-nav .dropdown-menu > .open > a,
-.navbar-main .navbar-nav .dropdown-menu > .open > a:hover,
-.navbar-main .navbar-nav .dropdown-menu > .open > a:focus,
-.navbar-main .dropdown-menu > li > a:hover,
-.navbar-main .dropdown-menu > li > a:focus {
-    padding-left: 22px;
-    background-color: var(--primary-50);
-    color: var(--ho-navy);
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a > i {
+    display: inline-block;
+    width: 16px;
+    text-align: center;
+    opacity: 0.75;
 }
 
-.navbar-main .dropdown-menu .divider {
-    background-color: var(--border-muted);
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a:hover,
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a:focus,
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > .active > a,
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > .active > a:hover,
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > .active > a:focus {
+    padding-left: 25px;
+    background-color: rgba(255, 255, 255, 0.07);
+    color: var(--text-inverted);
 }
 
-/* Mobile toggle -------------------------------------------- */
-
-.navbar-main .navbar-toggle {
-    margin-top: 7px;
-    margin-bottom: 7px;
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    border-radius: var(--rounding-sm);
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a .badge {
+    background-color: var(--secondary);
+    font-weight: var(--font-weight-bold);
 }
 
-.navbar-main .navbar-toggle .icon-bar {
-    background-color: var(--text-inverted);
-}
-
-.navbar-main .navbar-toggle:focus,
-.navbar-main .navbar-toggle:hover {
-    background-color: rgba(255, 255, 255, 0.12);
-}
-
-.navbar-main .navbar-toggle:focus .icon-bar,
-.navbar-main .navbar-toggle:hover .icon-bar {
-    background-color: var(--text-inverted);
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu .divider {
+    margin: var(--space-1) 0;
+    background-color: rgba(255, 255, 255, 0.10);
 }
 
 
 /* ===========================================================
-   3. FOOTER — navy, four columns
+   4. FOOTER — navy, four columns
    Stock: single light-gray strip with a copyright line.
    =========================================================== */
 
@@ -495,16 +729,117 @@ section#footer .back-to-top i {
 
 
 /* ===========================================================
-   4. RESPONSIVE
+   5. RESPONSIVE
+
+   992px is the shell's breakpoint: at or above it the rail is a
+   permanent column, below it an off-canvas drawer.
    =========================================================== */
 
+/* --- Desktop: permanent rail ------------------------------ */
+
+@media (min-width: 992px) {
+    .ho-sidebar {
+        flex: 0 0 var(--ho-sidebar-width);
+        width: var(--ho-sidebar-width);
+        box-shadow: 2px 0 14px rgba(1, 37, 125, 0.10);
+    }
+
+    /* .ho-sidebar itself stretches to the full shell height so its
+       navy runs down to the footer; the inner wrapper is the part
+       that sticks once the header scrolls away. */
+    .ho-sidebar-inner {
+        position: sticky;
+        top: 0;
+        max-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    /* The header sits above the shell at full width, so square its
+       container off to the viewport edges — that puts the logo over
+       the rail instead of floating in from a centred gutter. */
+    section#header > .container {
+        width: 100%;
+        max-width: none;
+        padding-left: var(--space-4);
+        padding-right: var(--space-4);
+    }
+
+    /* Content sections keep their own .container, but it now has to
+       fit the column beside the rail rather than the full viewport,
+       otherwise the fixed Bootstrap widths overflow. */
+    .ho-content > * > .container {
+        width: 100%;
+        max-width: 1320px;
+        padding-left: var(--space-4);
+        padding-right: var(--space-4);
+    }
+}
+
+/* --- Tablet / mobile: off-canvas drawer ------------------- */
+
 @media (max-width: 991px) {
+    .ho-shell {
+        display: block;
+    }
+
+    .ho-sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1045;
+        width: var(--ho-sidebar-drawer-width);
+        max-width: 84vw;
+        transform: translateX(-100%);
+        transition: transform var(--transition-base);
+        box-shadow: 0 0 28px rgba(1, 18, 64, 0.45);
+    }
+
+    body.ho-sidebar-open .ho-sidebar {
+        transform: translateX(0);
+    }
+
+    /* Stop the page behind the drawer from scrolling with it */
+    body.ho-sidebar-open {
+        overflow: hidden;
+    }
+
+    .ho-sidebar-inner {
+        height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .ho-sidebar .navbar-main {
+        padding-top: var(--space-2);
+    }
+
+    .ho-sidebar-head {
+        display: flex;
+    }
+
+    .ho-sidebar-toggle {
+        display: inline-block;
+    }
+
     section#header .logo-text {
         font-size: 1.7em;
     }
 
     ul.top-nav > li.primary-action > a.btn {
         padding: 6px 15px;
+    }
+}
+
+/* Slide the drawer in instantly for users who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+    .ho-sidebar {
+        transition: none;
+    }
+
+    .ho-sidebar-backdrop {
+        transition: none;
     }
 }
 
@@ -532,25 +867,19 @@ section#footer .back-to-top i {
         margin-left: 0;
     }
 
-    /* Keep a long collapsed menu scrollable instead of pushing
-       the sticky bar past the viewport */
-    .navbar-main .navbar-collapse {
-        max-height: calc(100vh - 60px);
-        overflow-y: auto;
+    section#header > .container {
+        position: relative;
     }
 
-    /* Underline indicator does not read well in the stacked
-       mobile menu, so fall back to a filled row */
-    .navbar-main .navbar-nav > li > a::after {
-        display: none;
-    }
-
-    .navbar-main .navbar-nav > li > a:hover,
-    .navbar-main .navbar-nav > li > a:focus,
-    .navbar-main .navbar-nav > .active > a,
-    .navbar-main .navbar-nav > .open > a {
-        background-color: rgba(255, 255, 255, 0.09);
-        border-left: 3px solid var(--secondary);
+    /* The header centres its contents at this width, so take the
+       drawer toggle out of the flow and pin it to the left edge
+       rather than letting a float pull the logo off centre. */
+    .ho-sidebar-toggle {
+        position: absolute;
+        top: 0;
+        left: 15px;
+        float: none;
+        margin: 0;
     }
 
     section#footer {

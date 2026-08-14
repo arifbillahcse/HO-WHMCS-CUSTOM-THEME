@@ -37,6 +37,9 @@
     {if $captcha}{$captcha->getPageJs()}{/if}
 </script>
 <script src="{assetPath file='scripts.min.js'}?v={$versionHash}"></script>
+<!-- Off-canvas behaviour for the sidebar rail below 992px. Same
+     $WEB_ROOT + $template path as hostorio-layout.css. -->
+<script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-sidebar.js?v={$versionHash}" defer></script>
 
 {if $templatefile == "viewticket" && !$loggedin}
   <meta name="robots" content="noindex" />

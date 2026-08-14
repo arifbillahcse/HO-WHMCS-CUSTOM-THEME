@@ -220,6 +220,12 @@ html {
     --header-height: 70px;
     --container-max-width: 1200px;
 
+    /* Width of the left navigation rail on desktop, and of the
+       off-canvas drawer it turns into below 992px. Changing these
+       reflows the content column automatically. */
+    --ho-sidebar-width: 252px;
+    --ho-sidebar-drawer-width: 276px;
+
     /* Motion */
     --transition-fast: 0.15s ease;
     --transition-base: 0.25s ease;

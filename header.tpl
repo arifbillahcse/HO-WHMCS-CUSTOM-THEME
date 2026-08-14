@@ -17,6 +17,17 @@
 
 <section id="header">
     <div class="container">
+
+        {*
+            Opens the navigation drawer below 992px. On wider screens
+            the rail is permanently visible and this button is hidden,
+            so it replaces the old .navbar-toggle entirely.
+        *}
+        <button type="button" class="ho-sidebar-toggle" aria-controls="main-menu" aria-expanded="false">
+            <span class="sr-only">{lang key='toggleNav'}</span>
+            <i class="fas fa-bars"></i>
+        </button>
+
         <ul class="top-nav">
             {if $languagechangeenabled && count($locales) > 1}
                 <li>
@@ -99,40 +110,55 @@
     </div>
 </section>
 
-<section id="main-menu">
+{*
+    App shell: left navigation rail + content column.
 
-    <nav id="nav" class="navbar navbar-default navbar-main" role="navigation">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#primary-nav">
-                    <span class="sr-only">{lang key='toggleNav'}</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            </div>
+    The rail carries the same $primaryNavbar / $secondaryNavbar data
+    the horizontal bar used to render, so nothing about the menu
+    source changes — only the wrapper markup, which stacks the items
+    vertically. Bootstrap's dropdown JS still drives the sub-menus;
+    hostorio-layout.css renders them inline (accordion style) rather
+    than as floating panels.
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="primary-nav">
+    .ho-shell must stay closed in footer.tpl.
+*}
+<div class="ho-shell">
 
-                <ul class="nav navbar-nav">
+<aside id="main-menu" class="ho-sidebar">
+    <div class="ho-sidebar-inner">
+
+        {* Only shown while the rail is an overlay drawer (<992px);
+           on desktop the logo in the header sits directly above it. *}
+        <div class="ho-sidebar-head">
+            <a href="{$WEB_ROOT}/index.php" class="ho-sidebar-brand">{$companyname}</a>
+            <button type="button" class="ho-sidebar-close">
+                <span class="sr-only">{$LANG.close}</span>
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <nav id="nav" class="navbar navbar-default navbar-main" role="navigation">
+            <div id="primary-nav" class="ho-sidebar-nav">
+
+                <ul class="nav navbar-nav ho-nav-primary">
 
                     {include file="$template/includes/navbar.tpl" navbar=$primaryNavbar}
 
                 </ul>
 
-                <ul class="nav navbar-nav navbar-right">
+                <ul class="nav navbar-nav ho-nav-secondary">
 
                     {include file="$template/includes/navbar.tpl" navbar=$secondaryNavbar}
 
                 </ul>
 
-            </div><!-- /.navbar-collapse -->
-        </div>
-    </nav>
+            </div>
+        </nav>
 
-</section>
+    </div>
+</aside>
+
+<div class="ho-content">
 
 {if $templatefile == 'homepage'}
     <section id="home-banner">

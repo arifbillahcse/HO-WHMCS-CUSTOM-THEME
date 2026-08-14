@@ -97,6 +97,9 @@
     <a href="#" class="back-to-top" title="Back to top"><i class="fas fa-chevron-up"></i></a>
 </section>
 
+    </div><!-- /.ho-content -->
+</div><!-- /.ho-shell — opened in header.tpl -->
+
 <div id="fullpage-overlay" class="hidden">
     <div class="outer-wrapper">
         <div class="inner-wrapper">
