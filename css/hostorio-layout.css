@@ -497,6 +497,123 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
 
 
 /* ===========================================================
+   3b. CONTENT FILTER BAR
+
+   WHMCS's $primarySidebar ("View" filters, "Actions", etc. on
+   Services/Domains/Invoices/Tickets) used to render as its own
+   col-md-3 column next to .main-content (see includes/sidebar.tpl,
+   still used elsewhere). includes/sidebar-horizontal.tpl renders
+   the same panel/item objects as this row of pills instead, living
+   inside .main-content above the page's own content.
+   =========================================================== */
+
+.ho-filterbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+    margin: 0 0 var(--space-4);
+    padding: var(--space-3);
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-md);
+}
+
+.ho-filterbar + .ho-filterbar {
+    margin-top: calc(var(--space-4) * -1 + var(--space-2));
+}
+
+.ho-filterbar-label {
+    flex: 0 0 auto;
+    font-family: var(--font-family-heading);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--text-md);
+    color: var(--text-heading);
+    white-space: nowrap;
+}
+
+.ho-filterbar-label .badge {
+    background-color: var(--neutral-400);
+}
+
+.ho-filterbar-items {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 2px;
+}
+
+.ho-filterbar-item {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background-color: var(--bg);
+    color: var(--text);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    transition: background-color var(--transition-fast),
+                border-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+.ho-filterbar-item:hover,
+.ho-filterbar-item:focus {
+    border-color: var(--primary-accented);
+    color: var(--primary-accented);
+    text-decoration: none;
+}
+
+.ho-filterbar-item.active {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--text-inverted);
+}
+
+.ho-filterbar-item.active:hover,
+.ho-filterbar-item.active:focus {
+    background-color: var(--primary-lifted);
+    border-color: var(--primary-lifted);
+    color: var(--text-inverted);
+}
+
+.ho-filterbar-item.disabled {
+    opacity: var(--disabled-opacity);
+    pointer-events: none;
+}
+
+.ho-filterbar-item .badge {
+    background-color: var(--neutral-400);
+    color: var(--text-inverted);
+}
+
+.ho-filterbar-item.active .badge {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* WHMCS gives "View" filter items a fa-circle / fa-dot-circle radio
+   glyph — meaningful in a vertical list, redundant once the pill's
+   own background communicates the active state. */
+.ho-filterbar-item-icon.fa-circle,
+.ho-filterbar-item-icon.fa-dot-circle {
+    display: none;
+}
+
+.ho-filterbar-body,
+.ho-filterbar-footer {
+    flex: 1 1 100%;
+}
+
+
+/* ===========================================================
    4. FOOTER — navy, four columns
    Stock: single light-gray strip with a copyright line.
    =========================================================== */

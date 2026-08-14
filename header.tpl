@@ -306,18 +306,21 @@
     <div class="container{if $skipMainBodyContainer}-fluid without-padding{/if}">
         <div class="row">
 
-        {if !$inShoppingCart && ($primarySidebar->hasChildren() || $secondarySidebar->hasChildren())}
-            {if $primarySidebar->hasChildren() && !$skipMainBodyContainer}
-                <div class="col-md-9 pull-md-right">
-                    {include file="$template/includes/pageheader.tpl" title=$displayTitle desc=$tagline showbreadcrumb=true}
-                </div>
-            {/if}
-            <div class="col-md-3 pull-md-left sidebar">
-                {include file="$template/includes/sidebar.tpl" sidebar=$primarySidebar}
-            </div>
-        {/if}
+        {*
+            $primarySidebar (the "View" filters / "Actions" panel WHMCS
+            renders on Services, Domains, Invoices, Tickets, etc.) used
+            to get its own col-md-3 left column here, mirroring the
+            old horizontal navbar's sibling layout. Now that navigation
+            lives in the rail (see the .ho-shell above), that left
+            column is gone — the panel renders as a horizontal bar
+            inside .main-content instead. Same $primarySidebar data,
+            no core/PHP changes; see includes/sidebar-horizontal.tpl.
+        *}
         <!-- Container for main page display content -->
-        <div class="{if !$inShoppingCart && ($primarySidebar->hasChildren() || $secondarySidebar->hasChildren())}col-md-9 pull-md-right{else}col-xs-12{/if} main-content">
-            {if !$primarySidebar->hasChildren() && !$showingLoginPage && !$inShoppingCart && $templatefile != 'homepage' && !$skipMainBodyContainer}
+        <div class="{if !$inShoppingCart && $secondarySidebar->hasChildren()}col-md-9 pull-md-right{else}col-xs-12{/if} main-content">
+            {if !$showingLoginPage && !$inShoppingCart && $templatefile != 'homepage' && !$skipMainBodyContainer}
                 {include file="$template/includes/pageheader.tpl" title=$displayTitle desc=$tagline showbreadcrumb=true}
+            {/if}
+            {if !$inShoppingCart && $primarySidebar->hasChildren()}
+                {include file="$template/includes/sidebar-horizontal.tpl" sidebar=$primarySidebar}
             {/if}
