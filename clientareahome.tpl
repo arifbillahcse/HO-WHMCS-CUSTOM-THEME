@@ -1,5 +1,7 @@
 {include file="$template/includes/flashmessage.tpl"}
 
+{include file="$template/includes/ai-search.tpl"}
+
 <div class="tiles clearfix">
     <div class="row">
         <div class="col-sm-3 col-xs-6 tile" onclick="window.location='clientarea.php?action=services'">
@@ -57,14 +59,21 @@
     </div>
 </div>
 
-<form role="form" method="post" action="clientarea.php?action=kbsearch">
-    <div class="row">
-        <div class="col-md-12 home-kb-search">
-            <input type="text" name="search" class="form-control input-lg" placeholder="{$LANG.clientHomeSearchKb}" />
-            <i class="fas fa-search"></i>
+{*
+    The stock knowledgebase search box stood here. The AI box above
+    covers the same ground and a second search field directly under it
+    only competes for the same intent, so it is retired — its link
+    lives in that box's footer instead. To bring it back, restore:
+
+    <form role="form" method="post" action="clientarea.php?action=kbsearch">
+        <div class="row">
+            <div class="col-md-12 home-kb-search">
+                <input type="text" name="search" class="form-control input-lg" placeholder="{$LANG.clientHomeSearchKb}" />
+                <i class="fas fa-search"></i>
+            </div>
         </div>
-    </div>
-</form>
+    </form>
+*}
 
 {foreach from=$addons_html item=addon_html}
     <div>
