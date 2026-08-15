@@ -10,6 +10,12 @@
 
     {$headoutput}
 
+    {* Hostorio Chatbot Widget *}
+    <script src="https://chat.hostorio.com/api/widget/widget.js"
+            data-endpoint="https://chat.hostorio.com/api/chat"
+            data-accent="#2563eb"
+            defer></script>
+
 </head>
 <body data-phone-cc-input="{$phoneNumberInputStyle}">
 {if $captcha}{$captcha->getMarkup()}{/if}
