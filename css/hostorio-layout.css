@@ -1030,24 +1030,6 @@ section#footer p {
     font-size: 0.95em;
 }
 
-/* Login and registration drop the link columns (see footer.tpl), which
-   leaves this strip alone in the footer. Close up the room the columns
-   used to occupy and drop the divider — a rule ruled against nothing,
-   under a tall empty band, is the giveaway that something is missing.
-
-   Keyed off the strip being the container's first child rather than a
-   modifier class, so it follows the columns automatically. The :has()
-   rule is the cosmetic half; where it is unsupported the footer just
-   keeps its usual top padding. */
-section#footer > .container > .footer-bottom:first-child {
-    margin-top: 0;
-    border-top: 0;
-}
-
-section#footer:has(> .container > .footer-bottom:first-child) {
-    padding-top: 0;
-}
-
 .footer-legal {
     margin: 0;
     padding: 0;
@@ -1111,7 +1093,47 @@ section#footer .back-to-top i {
 
 
 /* ===========================================================
-   5. RESPONSIVE
+   5. CHROMELESS PAGES — login and registration
+
+   header.tpl drops the nav rail on these two and footer.tpl drops
+   the footer, leaving the form alone on the page. body carries
+   .ho-page-chromeless (set in header.tpl) so what that leaves
+   behind can be tidied from here.
+   =========================================================== */
+
+/* With the footer gone nothing sits below the content block, so the
+   body background showed through as a hard seam across the page
+   wherever the white stopped. Painting the page through in the same
+   colour retires the seam outright — steadier than stretching the
+   block to a viewport height the form has no need of. */
+body.ho-page-chromeless {
+    background-color: var(--bg);
+}
+
+/* Stock, both forms are full-bleed inside the content column. That
+   was survivable while the rail took 260px off the left; without it
+   a field runs the whole window, and the paired rows on the
+   registration form (first/last name, city/state/postcode) end up so
+   far apart they stop reading as pairs.
+
+   Capping .main-content rather than the form itself keeps the page
+   heading, its rule and the breadcrumb on the same measure — a
+   full-width heading over a narrow form looks like a mistake. The
+   login box is unaffected: .logincontainer is already centred at
+   500px, well inside this. */
+body.ho-page-chromeless .main-content {
+    /* .main-content is a col-xs-12, and Bootstrap floats its grid
+       columns. A float ignores auto margins, so without clearing it
+       first the capped column just pins itself to the left edge. */
+    float: none;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* ===========================================================
+   6. RESPONSIVE
 
    992px is the shell's breakpoint: at or above it the rail is a
    permanent column, below it an off-canvas drawer.

@@ -17,7 +17,13 @@
             defer></script>
 
 </head>
-<body data-phone-cc-input="{$phoneNumberInputStyle}">
+{*
+    Login and registration render without the nav rail (below) and
+    without the footer (footer.tpl). This class is the hook for what
+    that leaves behind — see the chromeless-pages section in
+    css/hostorio-layout.css.
+*}
+<body data-phone-cc-input="{$phoneNumberInputStyle}"{if $showingLoginPage || $templatefile == 'clientregister'} class="ho-page-chromeless"{/if}>
 {if $captcha}{$captcha->getMarkup()}{/if}
 {$headeroutput}
 
