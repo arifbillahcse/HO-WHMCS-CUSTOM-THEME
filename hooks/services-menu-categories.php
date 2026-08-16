@@ -65,10 +65,16 @@ add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
         // against getLabel(), lower-cased, on the left of each pair.
         $navTweaks = [
             'services' => [
-                'hideByName' => ['View Available Addons'],
+                'hideByName' => ['View Available Addons', 'Services Divider'],
                 'renameByLabel' => [
                     'order new services' => 'Order Hosting',
                 ],
+            ],
+            'domains' => [
+                'hideByName' => ['Domains Divider', 'Domains Divider 2'],
+            ],
+            'billing' => [
+                'hideByName' => ['Billing Divider'],
             ],
             'support' => [
                 'hideByLabel' => ['downloads'],
