@@ -2,7 +2,24 @@
                 Secondary sidebar (Categories/Actions on store pages, etc.)
                 now renders as a horizontal sticky bar at the top instead of
                 a left column. The main-content is now full width.
+
+                Client Contacts and Client Shortcuts, on the client area
+                home page, arrive through this collection — same
+                reasoning as $primarySidebar above (see header.tpl):
+                dropped here, before hasChildren() is checked, rather
+                than in sidebar-horizontal-secondary.tpl, which store
+                pages also use for their own, unrelated Categories bar
+                and must stay generic. Filtering before the check means
+                a home page with nothing left in $secondarySidebar skips
+                this whole sticky, shadowed container instead of
+                rendering it empty.
             *}
+            {assign var="hiddenSidebarPanelNames" value=['Client Details', 'Client Contacts', 'Client Shortcuts']}
+            {foreach $secondarySidebar as $sidebarItem}
+                {if in_array($sidebarItem->getName(), $hiddenSidebarPanelNames)}
+                    {assign var="secondarySidebar" value=$secondarySidebar->removeChild($sidebarItem->getName())}
+                {/if}
+            {/foreach}
             {if !$inShoppingCart && $secondarySidebar->hasChildren()}
                 <div class="ho-secondary-sidebar-container">
                     {include file="$template/includes/sidebar-horizontal-secondary.tpl" sidebar=$secondarySidebar}

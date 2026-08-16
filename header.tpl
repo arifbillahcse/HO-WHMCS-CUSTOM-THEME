@@ -374,6 +374,32 @@
             {if !$showingLoginPage && !$inShoppingCart && $templatefile != 'homepage' && !$skipMainBodyContainer}
                 {include file="$template/includes/pageheader.tpl" title=$displayTitle desc=$tagline showbreadcrumb=true}
             {/if}
+            {*
+                Client Details ("Your Info" on the client area home
+                page) is not part of $panels — clientareahome.tpl
+                filters that collection separately and never touches
+                this one. It arrives through $primarySidebar instead,
+                the same collection Services/Domains/Tickets pages use
+                for their View/Actions bar, which is why it has to be
+                filtered here rather than in sidebar-horizontal.tpl:
+                that template is shared by every page using this
+                sidebar and must stay generic.
+
+                Filtered before hasChildren() is checked, not after,
+                so that if this is the only panel present the whole
+                bar — and its border — never renders instead of
+                showing empty.
+
+                Matched on getName(), read directly off this page's
+                own rendered menuItemName="..." attribute rather than
+                guessed.
+            *}
+            {assign var="hiddenSidebarPanelNames" value=['Client Details', 'Client Contacts', 'Client Shortcuts']}
+            {foreach $primarySidebar as $sidebarItem}
+                {if in_array($sidebarItem->getName(), $hiddenSidebarPanelNames)}
+                    {assign var="primarySidebar" value=$primarySidebar->removeChild($sidebarItem->getName())}
+                {/if}
+            {/foreach}
             {if !$inShoppingCart && $primarySidebar->hasChildren()}
                 {include file="$template/includes/sidebar-horizontal.tpl" sidebar=$primarySidebar}
             {/if}
