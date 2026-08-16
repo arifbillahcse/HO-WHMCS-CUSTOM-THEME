@@ -105,7 +105,7 @@
     The two-column split below counts iterations rather than fixed
     positions, so the remaining panels re-flow to close the gaps.
 *}
-{assign var="hiddenPanels" value=['Your Info', 'Recent News', 'Contacts']}
+{assign var="hiddenPanels" value=['Your Info', 'Recent News', 'Contacts', 'Shortcuts']}
 {foreach $hiddenPanels as $hiddenPanel}
     {assign var="panels" value=$panels->removeChild($hiddenPanel)}
 {/foreach}
