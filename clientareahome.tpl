@@ -96,18 +96,23 @@
     here rather than in an includes/hooks/ PHP file keeps the change
     inside the template set.
 
-    The strings are internal menu item names, not the translated
-    headings shown on screen. Each panel renders its own as
-    menuItemName="..." on the wrapping <div>, so inspecting a panel in
-    the browser gives you the exact string to add or correct here.
+    Matched by getLabel() — the heading printed on screen — rather
+    than by getName(). getName() is an internal identifier that is
+    not documented and is not the string this page displays, so a
+    list of guessed getName() values silently matched nothing on a
+    real install and every panel below kept rendering. The label is
+    exactly what is visible in a screenshot, so it is what is edited
+    here if the list needs to change.
 
-    Order does not matter, and a name that matches nothing is ignored.
-    The two-column split below counts iterations rather than fixed
-    positions, so the remaining panels re-flow to close the gaps.
+    Order does not matter, and a label that matches nothing is
+    ignored. The two-column split below counts iterations rather than
+    fixed positions, so the remaining panels re-flow to close the gaps.
 *}
-{assign var="hiddenPanels" value=['Your Info', 'Recent News', 'Contacts', 'Shortcuts']}
-{foreach $hiddenPanels as $hiddenPanel}
-    {assign var="panels" value=$panels->removeChild($hiddenPanel)}
+{assign var="hiddenPanelLabels" value=['Your Info', 'Recent News', 'Contacts', 'Shortcuts']}
+{foreach $panels as $item}
+    {if in_array($item->getLabel(), $hiddenPanelLabels)}
+        {assign var="panels" value=$panels->removeChild($item->getName())}
+    {/if}
 {/foreach}
 
 <div class="client-home-panels">
