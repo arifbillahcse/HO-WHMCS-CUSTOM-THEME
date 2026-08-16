@@ -13,6 +13,10 @@ Because WHMCS has no child-theme mechanism, keeping a full untouched copy alongs
 
 `ho-whmcs-theme/css/custom.css` holds the single `:root` CSS custom-properties block used across the theme (colors, spacing, radius, typography). It reuses the token names WHMCS itself introduced for the newer Dynamic Store pages, extended to cover the rest of the theme (header, footer, dashboard, invoices, tickets). Update brand colors/fonts in one place there.
 
+## Hooks
+
+`hooks/` holds WHMCS hooks that support the theme but cannot run from inside it — WHMCS only auto-loads hooks from the WHMCS installation's own `includes/hooks/` directory, never from `templates/*`. Deploy by copying each file there. Kept in this repo purely so the source is version-controlled alongside the theme; each file's header comment documents what it does and where it goes.
+
 ## Local preview
 
 This repo only contains the theme layer, not a full WHMCS install. To preview changes:
