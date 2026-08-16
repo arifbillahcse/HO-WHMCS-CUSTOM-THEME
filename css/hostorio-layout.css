@@ -19,7 +19,7 @@
 
 section#header {
     padding: var(--space-3) 0;
-    background: var(--ho-gradient-navy-blue);
+    background-color: var(--ho-navy);
     border-radius: 0;
 }
 

@@ -118,10 +118,18 @@
             {/if}
         </ul>
 
+        {*
+            $assetLogoPath is WHMCS's own logo, set in Admin > Setup >
+            General Settings > General > Company Logo; if one is
+            uploaded there it takes priority automatically. Until
+            then, the marketing site's own logo is the fallback rather
+            than the plain wordmark text, so the client area matches
+            hostorio.com without depending on that admin step.
+        *}
         {if $assetLogoPath}
             <a href="{$WEB_ROOT}/index.php" class="logo"><img src="{$assetLogoPath}" alt="{$companyname}"></a>
         {else}
-            <a href="{$WEB_ROOT}/index.php" class="logo logo-text">{$companyname}</a>
+            <a href="{$WEB_ROOT}/index.php" class="logo"><img src="https://hostorio.com/wp-content/themes/Hostorio/assets/images/logo/hostorio-logo.png" alt="{$companyname}"></a>
         {/if}
 
     </div>
