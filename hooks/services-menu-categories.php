@@ -79,9 +79,16 @@ add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
                 continue;
             }
 
+            // ho-nav-category-item is the CSS hook that draws the divider
+            // between the stock Services children and these — see
+            // css/hostorio-layout.css. If setClass() is not part of this
+            // WHMCS version's builder API, the same catch block below
+            // aborts the whole loop before anything is added, same as
+            // any other assumption in this hook turning out wrong.
             $child = $itemClass::create()
                 ->setLabel($group->name)
-                ->setUri('cart.php?gid=' . (int) $group->id);
+                ->setUri('cart.php?gid=' . (int) $group->id)
+                ->setClass('ho-nav-category-item');
 
             $servicesItem->addChild($child);
         }
