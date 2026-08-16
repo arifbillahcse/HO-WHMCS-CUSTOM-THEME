@@ -71,7 +71,7 @@ add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
                 ],
             ],
             'domains' => [
-                'hideByName' => ['Domains Divider', 'Domains Divider 2'],
+                'hideByName' => ['Domains Divider', 'Domains Divider 2', 'Domain Search'],
             ],
             'billing' => [
                 'hideByName' => ['Billing Divider'],
