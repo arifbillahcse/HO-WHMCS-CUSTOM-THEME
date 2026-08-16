@@ -87,6 +87,29 @@
     </div>
 {/if}
 
+{*
+    Panels WHMCS puts on this page that we do not want.
+
+    These are not markup anywhere in the theme — WHMCS builds them as
+    menu items and hands them over in $panels — so they cannot be
+    deleted, only dropped from the menu before it is rendered. Doing it
+    here rather than in an includes/hooks/ PHP file keeps the change
+    inside the template set.
+
+    The strings are internal menu item names, not the translated
+    headings shown on screen. Each panel renders its own as
+    menuItemName="..." on the wrapping <div>, so inspecting a panel in
+    the browser gives you the exact string to add or correct here.
+
+    Order does not matter, and a name that matches nothing is ignored.
+    The two-column split below counts iterations rather than fixed
+    positions, so the remaining panels re-flow to close the gaps.
+*}
+{assign var="hiddenPanels" value=['Your Info', 'Recent News', 'Contacts']}
+{foreach $hiddenPanels as $hiddenPanel}
+    {assign var="panels" value=$panels->removeChild($hiddenPanel)}
+{/foreach}
+
 <div class="client-home-panels">
     <div class="row">
         <div class="col-sm-12">
