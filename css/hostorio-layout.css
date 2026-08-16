@@ -1110,26 +1110,13 @@ body.ho-page-chromeless {
     background-color: var(--bg);
 }
 
-/* Stock, both forms are full-bleed inside the content column. That
-   was survivable while the rail took 260px off the left; without it
-   a field runs the whole window, and the paired rows on the
-   registration form (first/last name, city/state/postcode) end up so
-   far apart they stop reading as pairs.
-
-   Capping .main-content rather than the form itself keeps the page
-   heading, its rule and the breadcrumb on the same measure — a
-   full-width heading over a narrow form looks like a mistake. The
-   login box is unaffected: .logincontainer is already centred at
-   500px, well inside this. */
-body.ho-page-chromeless .main-content {
-    /* .main-content is a col-xs-12, and Bootstrap floats its grid
-       columns. A float ignores auto margins, so without clearing it
-       first the capped column just pins itself to the left edge. */
-    float: none;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-}
+/* The narrower measure these pages use is not set here — header.tpl
+   gives .main-content col-md-6 col-md-offset-3 so the row reads
+   col-3 | col-6 | col-3, which keeps it in the grid the rest of the
+   theme lays out with and collapses to full width below 992px on its
+   own. Capping the column rather than the form keeps the page
+   heading, its rule and the breadcrumb on that same measure; a
+   full-width heading over a narrow form looks like a mistake. */
 
 
 /* ===========================================================

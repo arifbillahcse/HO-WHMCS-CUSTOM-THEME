@@ -347,8 +347,22 @@
             inside .main-content instead. Same $primarySidebar data,
             no core/PHP changes; see includes/sidebar-horizontal.tpl.
         *}
+        {*
+            Login and registration take the middle six columns of the
+            grid, so the row reads col-3 | col-6 | col-3 — the offset
+            supplies the empty quarter on the left, the column's own
+            width the one on the right. Both are md classes, so the
+            split only applies from 992px up and the form stays
+            full-bleed on phones and tablets.
+
+            Stock the form is full width. That was survivable while the
+            nav rail took its width off the left, but these two pages
+            drop the rail, so without this a field runs the whole
+            window and the paired rows on the registration form drift
+            too far apart to read as pairs.
+        *}
         <!-- Container for main page display content -->
-        <div class="col-xs-12 main-content">
+        <div class="col-xs-12{if $showingLoginPage || $templatefile == 'clientregister'} col-md-6 col-md-offset-3{/if} main-content">
             {if !$showingLoginPage && !$inShoppingCart && $templatefile != 'homepage' && !$skipMainBodyContainer}
                 {include file="$template/includes/pageheader.tpl" title=$displayTitle desc=$tagline showbreadcrumb=true}
             {/if}
