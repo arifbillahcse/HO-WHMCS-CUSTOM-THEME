@@ -1030,6 +1030,24 @@ section#footer p {
     font-size: 0.95em;
 }
 
+/* Login and registration drop the link columns (see footer.tpl), which
+   leaves this strip alone in the footer. Close up the room the columns
+   used to occupy and drop the divider — a rule ruled against nothing,
+   under a tall empty band, is the giveaway that something is missing.
+
+   Keyed off the strip being the container's first child rather than a
+   modifier class, so it follows the columns automatically. The :has()
+   rule is the cosmetic half; where it is unsupported the footer just
+   keeps its usual top padding. */
+section#footer > .container > .footer-bottom:first-child {
+    margin-top: 0;
+    border-top: 0;
+}
+
+section#footer:has(> .container > .footer-bottom:first-child) {
+    padding-top: 0;
+}
+
 .footer-legal {
     margin: 0;
     padding: 0;

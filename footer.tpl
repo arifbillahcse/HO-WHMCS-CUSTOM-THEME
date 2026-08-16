@@ -25,68 +25,75 @@
             EDIT BEFORE GOING LIVE: the address, phone, email and social
             profile URLs in the "Contact" and "Follow us" blocks are
             placeholders.
+
+            The link columns are dropped on login and registration for the
+            same reason header.tpl drops the nav rail there: those pages
+            are for signing in, and a wall of links to pages that all
+            require a session only competes with the form. The copyright
+            and legal strip below stays on every page.
         *}
+        {if !$showingLoginPage && $templatefile != 'clientregister'}
+            <div class="row">
 
-        <div class="row">
+                <div class="col-md-4 col-sm-12 footer-col">
+                    <span class="footer-brand-name">{$companyname}</span>
+                    <p class="footer-about">
+                        Reliable web hosting, domain registration and business email,
+                        backed by round-the-clock support.
+                    </p>
+                    <ul class="footer-social">
+                        <li><a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="#" title="X"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
+                        <li><a href="#" title="YouTube"><i class="fab fa-youtube"></i></a></li>
+                        <li><a href="#" title="WhatsApp"><i class="fab fa-whatsapp"></i></a></li>
+                    </ul>
+                </div>
 
-            <div class="col-md-4 col-sm-12 footer-col">
-                <span class="footer-brand-name">{$companyname}</span>
-                <p class="footer-about">
-                    Reliable web hosting, domain registration and business email,
-                    backed by round-the-clock support.
-                </p>
-                <ul class="footer-social">
-                    <li><a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
-                    <li><a href="#" title="X"><i class="fab fa-twitter"></i></a></li>
-                    <li><a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
-                    <li><a href="#" title="YouTube"><i class="fab fa-youtube"></i></a></li>
-                    <li><a href="#" title="WhatsApp"><i class="fab fa-whatsapp"></i></a></li>
-                </ul>
+                <div class="col-md-2 col-sm-4 footer-col">
+                    <h5 class="footer-col-title">Account</h5>
+                    <ul class="footer-links">
+                        <li><a href="{$WEB_ROOT}/clientarea.php">Client Area</a></li>
+                        <li><a href="{$WEB_ROOT}/clientarea.php?action=services">My Services</a></li>
+                        <li><a href="{$WEB_ROOT}/clientarea.php?action=domains">My Domains</a></li>
+                        <li><a href="{$WEB_ROOT}/clientarea.php?action=invoices">Invoices</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3 col-sm-4 footer-col">
+                    <h5 class="footer-col-title">Services</h5>
+                    <ul class="footer-links">
+                        <li><a href="{$WEB_ROOT}/cart.php">{$LANG.orderhosting}</a></li>
+                        <li><a href="{$WEB_ROOT}/domainchecker.php">{$LANG.buyadomain}</a></li>
+                        <li><a href="{$WEB_ROOT}/announcements.php">Announcements</a></li>
+                        <li><a href="{$WEB_ROOT}/serverstatus.php">Network Status</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3 col-sm-4 footer-col">
+                    <h5 class="footer-col-title">Support</h5>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-life-ring"></i>
+                            <a href="{$WEB_ROOT}/submitticket.php">{$LANG.getsupport}</a>
+                        </li>
+                        <li>
+                            <i class="fas fa-book"></i>
+                            <a href="{$WEB_ROOT}/knowledgebase.php">Knowledgebase</a>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <a href="{$WEB_ROOT}/contact.php">Contact Us</a>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <span>+880 0000-000000</span>
+                        </li>
+                    </ul>
+                </div>
+
             </div>
-
-            <div class="col-md-2 col-sm-4 footer-col">
-                <h5 class="footer-col-title">Account</h5>
-                <ul class="footer-links">
-                    <li><a href="{$WEB_ROOT}/clientarea.php">Client Area</a></li>
-                    <li><a href="{$WEB_ROOT}/clientarea.php?action=services">My Services</a></li>
-                    <li><a href="{$WEB_ROOT}/clientarea.php?action=domains">My Domains</a></li>
-                    <li><a href="{$WEB_ROOT}/clientarea.php?action=invoices">Invoices</a></li>
-                </ul>
-            </div>
-
-            <div class="col-md-3 col-sm-4 footer-col">
-                <h5 class="footer-col-title">Services</h5>
-                <ul class="footer-links">
-                    <li><a href="{$WEB_ROOT}/cart.php">{$LANG.orderhosting}</a></li>
-                    <li><a href="{$WEB_ROOT}/domainchecker.php">{$LANG.buyadomain}</a></li>
-                    <li><a href="{$WEB_ROOT}/announcements.php">Announcements</a></li>
-                    <li><a href="{$WEB_ROOT}/serverstatus.php">Network Status</a></li>
-                </ul>
-            </div>
-
-            <div class="col-md-3 col-sm-4 footer-col">
-                <h5 class="footer-col-title">Support</h5>
-                <ul class="footer-contact">
-                    <li>
-                        <i class="fas fa-life-ring"></i>
-                        <a href="{$WEB_ROOT}/submitticket.php">{$LANG.getsupport}</a>
-                    </li>
-                    <li>
-                        <i class="fas fa-book"></i>
-                        <a href="{$WEB_ROOT}/knowledgebase.php">Knowledgebase</a>
-                    </li>
-                    <li>
-                        <i class="fas fa-envelope"></i>
-                        <a href="{$WEB_ROOT}/contact.php">Contact Us</a>
-                    </li>
-                    <li>
-                        <i class="fas fa-phone"></i>
-                        <span>+880 0000-000000</span>
-                    </li>
-                </ul>
-            </div>
-
-        </div>
+        {/if}
 
         <div class="footer-bottom">
             <p>{lang key="copyrightFooterNotice" year=$date_year company=$companyname}</p>

@@ -28,11 +28,16 @@
             Opens the navigation drawer below 992px. On wider screens
             the rail is permanently visible and this button is hidden,
             so it replaces the old .navbar-toggle entirely.
+
+            Login and registration render without the rail (see the
+            .ho-shell below), so there is nothing there for it to open.
         *}
-        <button type="button" class="ho-sidebar-toggle" aria-controls="main-menu" aria-expanded="false">
-            <span class="sr-only">{lang key='toggleNav'}</span>
-            <i class="fas fa-bars"></i>
-        </button>
+        {if !$showingLoginPage && $templatefile != 'clientregister'}
+            <button type="button" class="ho-sidebar-toggle" aria-controls="main-menu" aria-expanded="false">
+                <span class="sr-only">{lang key='toggleNav'}</span>
+                <i class="fas fa-bars"></i>
+            </button>
+        {/if}
 
         <ul class="top-nav">
             {if $languagechangeenabled && count($locales) > 1}
@@ -130,39 +135,53 @@
 *}
 <div class="ho-shell">
 
-<aside id="main-menu" class="ho-sidebar">
-    <div class="ho-sidebar-inner">
+{*
+    Login and registration are deliberately chromeless. A visitor who
+    is not signed in has nowhere to navigate to — every rail link
+    bounces straight back to the login form — so the rail is dropped
+    rather than hidden.
 
-        {* Only shown while the rail is an overlay drawer (<992px);
-           on desktop the logo in the header sits directly above it. *}
-        <div class="ho-sidebar-head">
-            <a href="{$WEB_ROOT}/index.php" class="ho-sidebar-brand">{$companyname}</a>
-            <button type="button" class="ho-sidebar-close">
-                <span class="sr-only">{$LANG.close}</span>
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
+    Nothing else has to change for it: .ho-content is flex:1 1 auto,
+    so the content column simply takes the full width, and
+    js/hostorio-sidebar.js no-ops when #main-menu is absent.
 
-        <nav id="nav" class="navbar navbar-default navbar-main" role="navigation">
-            <div id="primary-nav" class="ho-sidebar-nav">
+    footer.tpl trims its link columns on the same condition.
+*}
+{if !$showingLoginPage && $templatefile != 'clientregister'}
+    <aside id="main-menu" class="ho-sidebar">
+        <div class="ho-sidebar-inner">
 
-                <ul class="nav navbar-nav ho-nav-primary">
-
-                    {include file="$template/includes/navbar.tpl" navbar=$primaryNavbar}
-
-                </ul>
-
-                <ul class="nav navbar-nav ho-nav-secondary">
-
-                    {include file="$template/includes/navbar.tpl" navbar=$secondaryNavbar}
-
-                </ul>
-
+            {* Only shown while the rail is an overlay drawer (<992px);
+               on desktop the logo in the header sits directly above it. *}
+            <div class="ho-sidebar-head">
+                <a href="{$WEB_ROOT}/index.php" class="ho-sidebar-brand">{$companyname}</a>
+                <button type="button" class="ho-sidebar-close">
+                    <span class="sr-only">{$LANG.close}</span>
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-        </nav>
 
-    </div>
-</aside>
+            <nav id="nav" class="navbar navbar-default navbar-main" role="navigation">
+                <div id="primary-nav" class="ho-sidebar-nav">
+
+                    <ul class="nav navbar-nav ho-nav-primary">
+
+                        {include file="$template/includes/navbar.tpl" navbar=$primaryNavbar}
+
+                    </ul>
+
+                    <ul class="nav navbar-nav ho-nav-secondary">
+
+                        {include file="$template/includes/navbar.tpl" navbar=$secondaryNavbar}
+
+                    </ul>
+
+                </div>
+            </nav>
+
+        </div>
+    </aside>
+{/if}
 
 <div class="ho-content">
 
