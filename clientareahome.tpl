@@ -100,17 +100,39 @@
     than by getName(). getName() is an internal identifier that is
     not documented and is not the string this page displays, so a
     list of guessed getName() values silently matched nothing on a
-    real install and every panel below kept rendering. The label is
-    exactly what is visible in a screenshot, so it is what is edited
-    here if the list needs to change.
+    real install and every panel below kept rendering.
 
-    Order does not matter, and a label that matches nothing is
-    ignored. The two-column split below counts iterations rather than
-    fixed positions, so the remaining panels re-flow to close the gaps.
+    Even matching the label exactly was not enough: 'Recent News' and
+    'Shortcuts' were removed, but 'Your Info' and 'Contacts' were not,
+    on a real install. That split proves getLabel() does hold the
+    visible text — it rules out a systemic bug — so the remaining
+    difference is almost certainly casing or singular/plural wording
+    ('Contact' vs 'Contacts') too small to see in a screenshot but
+    enough to break a byte-for-byte match.
+
+    |lower folds case on both sides before comparing. It is a genuine
+    compiled-in Smarty modifier (libs/plugins/modifiercompiler.lower.php
+    ships with Smarty itself), so it runs regardless of what WHMCS's
+    Smarty security policy on this install allows or forbids. |trim is
+    not: this Smarty version has no such built-in, so it silently falls
+    back to calling PHP's trim() as an unregistered function — exactly
+    the kind of call a security policy exists to block. No other
+    template in this theme calls trim(), lower-cases, or any other raw
+    function inside a real Smarty tag (only inside plain-PHP .tpl files
+    like invoicepdf.tpl, which Smarty's policy never sees), so there is
+    no evidence it is permitted here — using it risked trading two
+    stubborn panels for a page that errors outright. Singular and
+    plural forms are listed explicitly instead, which needs nothing
+    beyond in_array().
+
+    If a label still gets through after this, the remaining gap is
+    wording, not case or plural — copy the heading text directly from
+    the rendered page (view source, not a screenshot) and add that
+    exact string, lowercased, below.
 *}
-{assign var="hiddenPanelLabels" value=['Your Info', 'Recent News', 'Contacts', 'Shortcuts']}
+{assign var="hiddenPanelLabels" value=['your info', 'recent news', 'contacts', 'contact', 'shortcuts', 'shortcut']}
 {foreach $panels as $item}
-    {if in_array($item->getLabel(), $hiddenPanelLabels)}
+    {if in_array($item->getLabel()|lower, $hiddenPanelLabels)}
         {assign var="panels" value=$panels->removeChild($item->getName())}
     {/if}
 {/foreach}
