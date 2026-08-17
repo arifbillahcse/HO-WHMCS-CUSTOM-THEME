@@ -64,13 +64,6 @@
                     Reliable web hosting, domain registration and business email,
                     backed by round-the-clock support.
                 </p>
-                <ul class="footer-social">
-                    <li><a href="https://www.facebook.com/hostorio/" title="Facebook" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a></li>
-                    <li><a href="#" title="X"><i class="fab fa-twitter"></i></a></li>
-                    <li><a href="https://www.linkedin.com/company/hostorio" title="LinkedIn" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a></li>
-                    <li><a href="#" title="YouTube"><i class="fab fa-youtube"></i></a></li>
-                    <li><a href="#" title="WhatsApp"><i class="fab fa-whatsapp"></i></a></li>
-                </ul>
             </div>
 
             <div class="col-md-2 col-sm-4 footer-col">
@@ -120,8 +113,8 @@
         <div class="footer-bottom">
             <p>{lang key="copyrightFooterNotice" year=$date_year company=$companyname}</p>
             <ul class="footer-legal">
-                <li><a href="{$WEB_ROOT}/index.php">Privacy Policy</a></li>
-                <li><a href="{$WEB_ROOT}/index.php">Terms of Service</a></li>
+                <li><a href="https://hostorio.com/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a></li>
+                <li><a href="https://hostorio.com/terms-and-conditions/" target="_blank" rel="noopener">Terms of Service</a></li>
             </ul>
         </div>
 
