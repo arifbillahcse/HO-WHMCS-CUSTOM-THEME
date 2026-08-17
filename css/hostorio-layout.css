@@ -1331,22 +1331,46 @@ div.header-lined .breadcrumb li a:focus {
    rule below it, so adding a fifth accent later is one line, not a
    repeat of the whole block. */
 
+/* Structure, which the first pass got wrong: the card is a div INSIDE
+   the Bootstrap column (.ho-stat-col), not the column itself. Putting
+   both on one element meant the column rules and the card rules
+   fought over the same box — the column's own padding won on
+   specificity, so the card looked cramped no matter what padding it
+   asked for, and a card cannot carry a visible edge and the grid's
+   gutters at once anyway. Dropping the stock .tiles/.tile classes at
+   the same time removes `.tiles .tile`'s #f8f8f8 fill and 12px
+   padding (styles.css), which outranked .ho-stat-tile for the same
+   reason.
+
+   The row is a flex container so the cards come out equal height:
+   Bootstrap 3 columns are floats, and `height: 100%` on a float
+   resolves against a parent with no set height, so a card with no
+   action link below its underline (Invoices) rendered visibly shorter
+   than its neighbours. flex-wrap keeps col-xs-6's two-per-row
+   behaviour intact below the sm breakpoint. */
 .ho-stat-tiles > .row {
-    margin-right: calc(var(--space-2) * -1);
-    margin-left: calc(var(--space-2) * -1);
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -10px;
+    margin-left: -10px;
 }
 
-.ho-stat-tiles > .row > [class*="col-"] {
-    padding-right: var(--space-2);
-    padding-left: var(--space-2);
+.ho-stat-col {
+    /* Flex, so the card inside stretches to the row's full height
+       rather than only as tall as its own content. */
+    display: flex;
+    padding-right: 10px;
+    padding-left: 10px;
     margin-bottom: var(--space-3);
 }
 
 .ho-stat-tile {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    padding: var(--space-3);
+    /* width, not height: as a flex child it already stretches
+       vertically, and needs to fill its column horizontally. */
+    width: 100%;
+    padding: var(--space-4);
     background-color: var(--bg);
     border: 1px solid var(--border-muted);
     border-radius: var(--rounding-lg);
@@ -1371,7 +1395,7 @@ div.header-lined .breadcrumb li a:focus {
 .ho-stat-tile-body {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--space-3);
     color: inherit;
 }
 
@@ -1383,14 +1407,17 @@ div.header-lined .breadcrumb li a:focus {
 
 .ho-stat-tile-icon {
     flex: 0 0 auto;
-    font-size: 1.2em;
+    font-size: 1.35em;
+    line-height: 1;
     color: var(--tile-accent);
 }
 
 .ho-stat-tile-label {
     color: var(--text-lifted);
     font-weight: var(--font-weight-medium);
-    font-size: var(--text-sm);
+    /* --text-sm is 0.75rem (12px) — too small to sit beside a 2em
+       number without looking like a caption. */
+    font-size: 0.9375rem;
 }
 
 .ho-stat-tile-num {
@@ -1398,25 +1425,29 @@ div.header-lined .breadcrumb li a:focus {
     text-align: right;
     color: var(--text-heading);
     font-family: var(--font-family-heading);
-    font-size: 1.8em;
+    font-size: 2em;
     font-weight: var(--font-weight-bold);
     line-height: 1;
 }
 
 .ho-stat-tile-underline {
-    margin-top: var(--space-2);
+    margin-top: var(--space-3);
     height: 3px;
     border-radius: 2px;
     background-color: var(--tile-accent);
 }
 
+/* margin-top:auto pins the action to the card's bottom edge, so the
+   links line up across the row even though the cards are now equal
+   height and their content above is not identical. */
 .ho-stat-tile-action {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    margin-top: var(--space-2);
+    gap: 6px;
+    margin-top: auto;
+    padding-top: var(--space-3);
     color: var(--tile-accent);
-    font-size: var(--text-sm);
+    font-size: 0.875rem;
     font-weight: var(--font-weight-medium);
 }
 
