@@ -796,6 +796,119 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
     display: none;
 }
 
+/* "Your Recent Tickets" panel (client area home, and above Open
+   Ticket) — the one .ho-filterbar-item this theme does not want as a
+   pill. Elsewhere a pill holds one short label; here WHMCS packs two
+   lines — the subject, then a status word and a relative time — into
+   the same rounded chip, which reads as a stadium-shaped button
+   rather than as ticket information, and stretches into an oval on
+   any subject longer than a few words (WHMCS truncates it, but not
+   until several hundred pixels in).
+
+   Restyled as a plain list: each ticket is a full-width row —
+   subject, status, relative time, left to right on one line — with a
+   hairline rule between rows instead of a pill boundary. The markup
+   (.recent-ticket, .truncate, the two spans in <small>) is WHMCS
+   core's own sidebar widget, not template output in this repo, so
+   only its rendering is touched here, not its structure. */
+
+[menuitemname="Recent Tickets" i] .ho-filterbar-items {
+    display: block;
+    /* This is still a flex item of .ho-filterbar (flex-wrap: wrap).
+       Its default auto min-width would otherwise take the widest
+       ticket subject's full unwrapped text width — the min-content
+       size a browser computes ignoring .truncate's own overflow —
+       and hold the whole panel open that wide rather than letting a
+       long subject ellipsize on a narrow screen. */
+    min-width: 0;
+    overflow: visible;
+    padding-bottom: 0;
+}
+
+[menuitemname="Recent Tickets" i] .ho-filterbar-item {
+    display: flex;
+    width: 100%;
+    padding: var(--space-2) 0;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--border-muted);
+    border-radius: 0;
+    white-space: normal;
+}
+
+[menuitemname="Recent Tickets" i] .ho-filterbar-item:last-child {
+    border-bottom: 0;
+}
+
+[menuitemname="Recent Tickets" i] .ho-filterbar-item:hover,
+[menuitemname="Recent Tickets" i] .ho-filterbar-item:focus {
+    border-color: var(--border-muted);
+    color: var(--primary-accented);
+}
+
+[menuitemname="Recent Tickets" i] .recent-ticket {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    /* Same reasoning as .ho-filterbar-items above, one level down:
+       this is the flex item .ho-filterbar-item shrinks to fit the
+       row, and needs the same override to actually do so. */
+    min-width: 0;
+}
+
+/* WHMCS renders the ticket number + subject as one string, so it
+   cannot be split into two columns without parsing that string back
+   apart. flex:1 with an ellipsis is what keeps a long subject from
+   pushing the status and time off the row instead. */
+[menuitemname="Recent Tickets" i] .recent-ticket .truncate {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-heading);
+    font-weight: var(--font-weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+[menuitemname="Recent Tickets" i] .recent-ticket small {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+}
+
+/* Visual order is status, then time — DOM order is the reverse (the
+   time span comes first, carrying the .pull-right WHMCS used to float
+   it right in the stock stacked layout), so it is set explicitly with
+   `order` rather than assumed from source order. Floats do not apply
+   to flex items, so .pull-right's own float:right is inert here
+   regardless — cleared anyway so nothing reintroduces it if a
+   surrounding rule ever changes small's display. */
+[menuitemname="Recent Tickets" i] .recent-ticket small .pull-right {
+    order: 2;
+    float: none;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* The status word is the one child WHMCS gives an inline
+   color:#xxxxxx rather than a class — matched on [style] since that
+   is the only hook available. The inline color is left standing
+   rather than overridden: it already carries the status's meaning
+   (green for Open, grey for Closed, and so on), so only a badge shell
+   is added around it. */
+[menuitemname="Recent Tickets" i] .recent-ticket small span[style] {
+    order: 1;
+    padding: 2px var(--space-2);
+    background-color: var(--bg-muted);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-sm);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+}
+
 .ho-filterbar-body,
 .ho-filterbar-footer {
     flex: 1 1 100%;
