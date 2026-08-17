@@ -1847,19 +1847,44 @@ a[id$="-order-button"]:active {
    brand's "CTAs are orange" rule rather than the green semantic. The
    .btn-checkout class is unique to this button, so no attribute
    selector is needed here the way Order Now's shared id suffix
-   required one. */
+   required one.
+
+   !important, confirmed necessary: this button lives on cart.php,
+   rendered by WHMCS's Order Form Template system (orderforms-
+   standard_cart, per WHMCS's own public source), a template set
+   entirely separate from this client-area theme. It ships its own
+   bundled stylesheet, loaded after this one on that page only, which
+   re-asserts .btn-success at the same specificity and wins on source
+   order without !important — confirmed by this exact rule, without
+   !important, not taking effect live. Same root cause as the Order
+   Now buttons above. */
 .btn-checkout {
-    background-color: var(--secondary);
-    border-color: var(--secondary);
-    color: var(--text-inverted);
+    background-color: var(--secondary) !important;
+    border-color: var(--secondary) !important;
+    color: var(--text-inverted) !important;
 }
 
 .btn-checkout:hover,
 .btn-checkout:focus,
 .btn-checkout:active {
-    background-color: var(--secondary-lifted);
-    border-color: var(--secondary-lifted);
-    color: var(--text-inverted);
+    background-color: var(--secondary-lifted) !important;
+    border-color: var(--secondary-lifted) !important;
+    color: var(--text-inverted) !important;
+}
+
+/* Order Summary panel (cart.php review/checkout page, same Order
+   Form Template as above) — .order-summary h2, confirmed against
+   WHMCS's own orderforms-standard_cart source. Its own bundled
+   stylesheet gives this a plain gray fill by default; re-pointed at
+   the same navy used for the "Product/Options" table header
+   alongside it, so the two match instead of one being on-brand and
+   the other looking like an unstyled leftover. */
+.order-summary h2 {
+    margin: 0;
+    padding: var(--space-3);
+    background-color: var(--primary) !important;
+    color: var(--text-inverted) !important;
+    font-size: 1.15em !important;
 }
 
 
