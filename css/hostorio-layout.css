@@ -2030,6 +2030,114 @@ a[id$="-order-button"]:active {
 }
 
 
+/* --- Support department picker ----------------------------- */
+/* submitticket.php step 1. Markup: supportticketsubmit-stepone.tpl. */
+
+.ho-dept-intro {
+    margin: 0 0 var(--space-4);
+    color: var(--text-lifted);
+    font-size: 1.0625rem;
+}
+
+/* auto-fit + minmax rather than fixed column classes: the track count
+   follows the available width, so this needs no breakpoint of its own
+   and still collapses to a single column on a phone.
+
+   320px, not a smaller floor: below roughly that the description wraps
+   to three or four lines beside the icon and the card stops reading as
+   one line of text. The inner min(…, 100%) is what keeps that 320
+   from forcing a track wider than a narrow phone screen. */
+.ho-dept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+}
+
+.ho-dept-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+    color: inherit;
+    transition: border-color var(--transition-fast),
+                box-shadow var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+.ho-dept-card:hover,
+.ho-dept-card:focus {
+    border-color: var(--secondary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    color: inherit;
+    text-decoration: none;
+}
+
+.ho-dept-card-icon {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--primary-50);
+    color: var(--primary);
+    font-size: 1.15rem;
+    transition: background-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+/* Badge flips to the brand orange on hover so the whole card responds,
+   not just its border. */
+.ho-dept-card:hover .ho-dept-card-icon,
+.ho-dept-card:focus .ho-dept-card-icon {
+    background-color: var(--secondary);
+    color: var(--text-inverted);
+}
+
+/* min-width:0 so a long unbroken description can shrink this track
+   instead of pushing the arrow out of the card. */
+.ho-dept-card-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+}
+
+.ho-dept-card-name {
+    color: var(--text-heading);
+    font-family: var(--font-family-heading);
+    font-size: 1.0625rem;
+    font-weight: var(--font-weight-bold);
+}
+
+.ho-dept-card-desc {
+    color: var(--text-lifted);
+    font-size: var(--text-md);
+    line-height: 1.5;
+}
+
+.ho-dept-card-go {
+    flex: 0 0 auto;
+    color: var(--text-muted);
+    transition: color var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+.ho-dept-card:hover .ho-dept-card-go,
+.ho-dept-card:focus .ho-dept-card-go {
+    color: var(--secondary);
+    transform: translateX(3px);
+}
+
+
 /* ===========================================================
    7. RESPONSIVE
 

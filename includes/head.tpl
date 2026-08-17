@@ -29,7 +29,7 @@
     WHMCS's Smarty security policy may refuse unregistered PHP calls, and
     a stale stylesheet is a better failure than a fatal template error.
 *}
-{assign var="hoAssetVersion" value="ho-3"}
+{assign var="hoAssetVersion" value="ho-4"}
 <!-- Hostorio layout: header, navigation, footer. Loads last so it
      can override both the stock bundle and the token base layer.
      Built from $WEB_ROOT + $template rather than assetPath so it

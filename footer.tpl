@@ -14,7 +14,16 @@
                 this whole sticky, shadowed container instead of
                 rendering it empty.
             *}
-            {assign var="hiddenSidebarPanelNames" value=['Client Details', 'Client Contacts', 'Client Shortcuts']}
+            {*
+                'Support' is the bar of My Support Tickets /
+                Announcements / Knowledgebase / Downloads / Network
+                Status / Open Ticket that WHMCS puts under every
+                support page. Every one of those links is already in
+                the nav rail, so it restated the navigation directly
+                beneath itself. Dropped by name, which takes it off
+                all of those pages at once, not only Open Ticket.
+            *}
+            {assign var="hiddenSidebarPanelNames" value=['Client Details', 'Client Contacts', 'Client Shortcuts', 'Support']}
             {foreach $secondarySidebar as $sidebarItem}
                 {if in_array($sidebarItem->getName(), $hiddenSidebarPanelNames)}
                     {assign var="secondarySidebar" value=$secondarySidebar->removeChild($sidebarItem->getName())}
