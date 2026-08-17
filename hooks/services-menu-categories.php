@@ -119,7 +119,25 @@ function findChildByLabel($navbar, $label)
  */
 function addProductCategories($servicesItem)
 {
-    if (!$servicesItem || !method_exists($servicesItem, 'addChild')) {
+    // Each of these three used to return silently. Hiding and renaming
+    // (removeChild(), setLabel()) were confirmed working on a real
+    // install while categories still never appeared, which means one
+    // of exactly these three guards is the cause — but a silent
+    // return never reaches the try/catch in the caller, so it never
+    // wrote anything to the Activity Log, and checking that log
+    // taught us nothing. Logging each one directly is how we find out
+    // which, instead of guessing a fourth time.
+    if (!$servicesItem) {
+        if (function_exists('logActivity')) {
+            logActivity('services-menu-categories: Services item not found — findChildByLabel() did not match a top-level nav item labeled "services"');
+        }
+        return;
+    }
+
+    if (!method_exists($servicesItem, 'addChild')) {
+        if (function_exists('logActivity')) {
+            logActivity('services-menu-categories: addChild() not available on ' . get_class($servicesItem) . ' — categories skipped');
+        }
         return;
     }
 
@@ -129,14 +147,21 @@ function addProductCategories($servicesItem)
         ->get();
 
     if (!$groups || !count($groups)) {
+        if (function_exists('logActivity')) {
+            logActivity('services-menu-categories: tblproductgroups query returned 0 visible groups — categories skipped');
+        }
         return;
     }
 
     $itemClass = get_class($servicesItem);
     if (!method_exists($itemClass, 'create')) {
+        if (function_exists('logActivity')) {
+            logActivity('services-menu-categories: ' . $itemClass . '::create() not available — categories skipped');
+        }
         return;
     }
 
+    $added = 0;
     foreach ($groups as $group) {
         if (empty($group->name) || empty($group->id)) {
             continue;
@@ -148,6 +173,11 @@ function addProductCategories($servicesItem)
             ->setClass('ho-nav-category-item');
 
         $servicesItem->addChild($child);
+        $added++;
+    }
+
+    if (function_exists('logActivity')) {
+        logActivity("services-menu-categories: added $added categor" . ($added === 1 ? 'y' : 'ies') . ' under Services');
     }
 }
 
