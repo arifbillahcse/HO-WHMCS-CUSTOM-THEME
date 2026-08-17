@@ -1982,6 +1982,50 @@ table.table-list tbody td {
 .panel.panel-accent-orange { border-top: 3px solid var(--secondary); }
 .panel.panel-accent-gold   { border-top: 3px solid var(--secondary-accented); }
 
+/* "View More..." footer link, Your Active Products/Services panel
+   (client area home). The link itself — markup, class, text — is
+   WHMCS core content via $item->getFooterHtml() in clientareahome.tpl,
+   not this template's own HTML, so only its appearance can be
+   changed here. Stock renders it as bare underlined text
+   (styles.css only sets its font-size); given a small pill-button
+   shell instead so it reads as an action to take, not a stray
+   footer link. Scoped to this one panel's menuitemname, the same way
+   stock's own .btn-view-more font-size rule already is, rather than
+   to .btn-view-more generally, in case that class is reused elsewhere
+   with different footer content this treatment would not suit. */
+div[menuitemname='Active Products/Services'] .btn-view-more {
+    display: inline-block;
+    padding: 3px var(--space-3);
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: 999px;
+    color: var(--primary-accented);
+    font-weight: var(--font-weight-medium);
+    transition: background-color var(--transition-fast),
+                border-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+div[menuitemname='Active Products/Services'] .btn-view-more:hover,
+div[menuitemname='Active Products/Services'] .btn-view-more:focus {
+    background-color: var(--primary-50);
+    border-color: var(--primary-accented);
+    color: var(--primary-accented);
+    text-decoration: none;
+}
+
+/* WHMCS adds .disabled here (via scripts.js) once there is nothing
+   left to page in — e.g. exactly 4 services, so "View More..." has
+   nothing more to show. Grayed out and inert-looking rather than the
+   same clickable pill, so it doesn't invite a click that does
+   nothing. */
+div[menuitemname='Active Products/Services'] .btn-view-more.disabled {
+    background-color: var(--bg-muted);
+    border-color: var(--border-muted);
+    color: var(--text-muted);
+    cursor: default;
+}
+
 
 /* --- Service row action buttons (Dashboard "Your Active
    Products/Services" panel, and the same include on the product

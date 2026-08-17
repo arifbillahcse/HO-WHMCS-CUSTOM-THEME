@@ -202,7 +202,24 @@
                                 <div class="pull-right">
                                     <a href="{$item->getExtra('btn-link')}" class="btn btn-default bg-color-{$item->getExtra('color')} btn-xs">
                                         {if $item->getExtra('btn-icon')}<i class="{$item->getExtra('btn-icon')}"></i>{/if}
-                                        {$item->getExtra('btn-text')}
+                                        {*
+                                            btn-text is WHMCS core's own label ("My
+                                            Services") for this one panel — not
+                                            literal text in this template, so it
+                                            can't be edited by just changing a
+                                            string here. Overridden by panel name
+                                            (menuItemName="Active Products/Services",
+                                            confirmed against this page's own
+                                            rendered HTML) rather than by matching
+                                            the incoming btn-text itself, so this
+                                            still applies even if WHMCS's own
+                                            wording for it ever changes.
+                                        *}
+                                        {if $item->getName()|lower eq 'active products/services'}
+                                            All Services
+                                        {else}
+                                            {$item->getExtra('btn-text')}
+                                        {/if}
                                     </a>
                                 </div>
                             {/if}
