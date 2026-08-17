@@ -65,9 +65,9 @@
                     backed by round-the-clock support.
                 </p>
                 <ul class="footer-social">
-                    <li><a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+                    <li><a href="https://www.facebook.com/hostorio/" title="Facebook" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a></li>
                     <li><a href="#" title="X"><i class="fab fa-twitter"></i></a></li>
-                    <li><a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
+                    <li><a href="https://www.linkedin.com/company/hostorio" title="LinkedIn" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a></li>
                     <li><a href="#" title="YouTube"><i class="fab fa-youtube"></i></a></li>
                     <li><a href="#" title="WhatsApp"><i class="fab fa-whatsapp"></i></a></li>
                 </ul>
@@ -110,7 +110,7 @@
                     </li>
                     <li>
                         <i class="fas fa-phone"></i>
-                        <span>+880 0000-000000</span>
+                        <a href="tel:+8801779440297">+880 1779-440297</a>
                     </li>
                 </ul>
             </div>
