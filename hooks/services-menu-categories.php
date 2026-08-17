@@ -17,7 +17,12 @@
  *    under "Services" instead — the same category list is not there.
  *    Appends it, reading tblproductgroups directly so a category added
  *    in Admin -> Products/Services -> Product Groups appears here
- *    automatically, with no further edits.
+ *    automatically, with no further edits. pinServicesTopItems() pins
+ *    "My Services" (order=1) and "Order New Services" (order=2) above
+ *    these, and each category gets its own setOrder() (3, 4, 5, ...)
+ *    in the same sequence as tblproductgroups.order (the admin-
+ *    configured order) — without that, everything after the two
+ *    pinned items rendered alphabetically instead.
  *
  * 2. Applies a small set of per-item tweaks to the Services and
  *    Support dropdowns — see $navTweaks below. Hides "View Available
@@ -63,6 +68,13 @@ add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
         }
 
         $servicesItem = findChildByLabel($primaryNavbar, 'services');
+
+        // Pins "My Services" (order=1) and "Order New Services" (order=2)
+        // to the top before addProductCategories() appends the category
+        // links below them — must run first so the categories' own
+        // setOrder() calls (3, 4, 5, ...) start after these two, not
+        // collide with them.
+        pinServicesTopItems($servicesItem);
         addProductCategories($servicesItem);
 
         // "Home" itself, not a child of it — findChildByLabel() finds
@@ -162,6 +174,39 @@ function renameAccountGreeting($navbar)
 }
 
 /**
+ * Forces "My Services" and "Order New Services" to the very top of the
+ * Services dropdown via setOrder() — a real, documented method on
+ * WHMCS\View\Menu\Item (developers.whmcs.com/themes/navigation/), not
+ * a guess. Needed because the product categories addProductCategories()
+ * appends below were rendering ABOVE these two stock items and in
+ * alphabetical order rather than the admin-configured
+ * tblproductgroups.order — every child getting an explicit setOrder()
+ * (these two here, the categories in addProductCategories()) pins the
+ * final position outright instead of relying on whatever WHMCS falls
+ * back to when no order is set.
+ */
+function pinServicesTopItems($servicesItem)
+{
+    if (!$servicesItem) {
+        return;
+    }
+
+    $myServices = findChildByLabel($servicesItem, 'my services');
+    if ($myServices && method_exists($myServices, 'setOrder')) {
+        $myServices->setOrder(1);
+    }
+
+    // Matched by its original label — this runs before the
+    // 'order new services' => 'Order/Add Services' rename in
+    // $navTweaks, but setOrder() acts on the item object itself, so
+    // the order sticks regardless of what the label becomes after.
+    $orderServices = findChildByLabel($servicesItem, 'order new services');
+    if ($orderServices && method_exists($orderServices, 'setOrder')) {
+        $orderServices->setOrder(2);
+    }
+}
+
+/**
  * First top-level child of $navbar whose label matches, case-insensitive.
  */
 function findChildByLabel($navbar, $label)
@@ -237,6 +282,15 @@ function addProductCategories($servicesItem)
     // which could never have worked — it never had a factory to give
     // the class it was trying to construct.
     $added = 0;
+    // 1 and 2 are reserved for "My Services" / "Order New Services",
+    // pinned by pinServicesTopItems() before this function runs.
+    // Assigning 3, 4, 5, ... here — in the same order this query
+    // already sorted the groups (tblproductgroups.order ascending,
+    // the admin-configured order) — is what fixes categories
+    // rendering alphabetically instead of matching that order: see
+    // the comment on pinServicesTopItems() for why setOrder() is
+    // needed at all rather than relying on insertion order.
+    $order = 3;
     foreach ($groups as $group) {
         if (empty($group->name) || empty($group->id)) {
             continue;
@@ -257,6 +311,11 @@ function addProductCategories($servicesItem)
             if ($child && method_exists($child, 'setClass')) {
                 $child->setClass('ho-nav-category-item');
             }
+
+            if ($child && method_exists($child, 'setOrder')) {
+                $child->setOrder($order);
+            }
+            $order++;
 
             $added++;
         } catch (\Throwable $e) {
