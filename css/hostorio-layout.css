@@ -57,9 +57,14 @@ ul.top-nav {
     margin-top: 14px;
 }
 
+/* 1em, not the 0.92em this carried before: against a 15px base that
+   shrank the utility nav to 13.8px, so the header read a step smaller
+   than the page under it. The logout button inherits its size from
+   here — this selector is more specific than the .btn rule in
+   custom.css — so it was undersized by the same amount. */
 ul.top-nav > li > a {
     color: rgba(255, 255, 255, 0.82);
-    font-size: 0.92em;
+    font-size: 1em;
     font-weight: var(--font-weight-medium);
     border-radius: var(--rounding-sm);
     transition: color var(--transition-fast),
@@ -148,7 +153,7 @@ ul.top-nav > li.language-nav-item {
     padding: 7px 12px;
     border-radius: var(--rounding-sm);
     color: rgba(255, 255, 255, 0.82);
-    font-size: 0.92em;
+    font-size: 1em;
     font-weight: var(--font-weight-medium);
     cursor: pointer;
     user-select: none;
@@ -215,7 +220,9 @@ ul.top-nav > li.language-nav-item {
     padding: 9px 12px;
     border-radius: var(--rounding-sm);
     color: var(--text);
-    font-size: 0.95em;
+    /* 1em so the rows land on the base size. At 0.95em they compounded
+       against the trigger's own reduction and rendered at 13.1px. */
+    font-size: 1em;
     white-space: nowrap;
     transition: background-color var(--transition-fast),
                 color var(--transition-fast);
