@@ -1323,43 +1323,107 @@ div.header-lined .breadcrumb li a:focus {
 
 /* --- Dashboard tiles -------------------------------------- */
 
-/* Stock renders these as a flat #f8f8f8 strip divided by #ccc
-   rules. Grouped into one card instead, so the dashboard opens
-   on the same card language as everything below it. The inner
-   .row's negative gutters are zeroed, otherwise they push past
-   the rounded corners that overflow is clipping. */
-.tiles {
-    margin-bottom: var(--space-4);
+/* Redesigned from one connected strip (stock: flat #f8f8f8, divided
+   by #ccc rules) into four separate cards, each carrying its own
+   accent color end-to-end: icon, count, underline, and — on the
+   tiles where one makes sense — an "+ Order..." action link below
+   it. --tile-accent is set once per accent class and read by every
+   rule below it, so adding a fifth accent later is one line, not a
+   repeat of the whole block. */
+
+.ho-stat-tiles > .row {
+    margin-right: calc(var(--space-2) * -1);
+    margin-left: calc(var(--space-2) * -1);
+}
+
+.ho-stat-tiles > .row > [class*="col-"] {
+    padding-right: var(--space-2);
+    padding-left: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.ho-stat-tile {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--space-3);
     background-color: var(--bg);
     border: 1px solid var(--border-muted);
     border-radius: var(--rounding-lg);
     box-shadow: var(--shadow-sm);
-    overflow: hidden;
+    transition: box-shadow var(--transition-fast),
+                transform var(--transition-fast);
 }
 
-.tiles > .row {
-    margin-right: 0;
-    margin-left: 0;
+.ho-stat-tile:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
 }
 
-.tiles .tile {
-    background-color: transparent;
-    border-right: 1px solid var(--border-muted);
-    transition: background-color var(--transition-fast);
+.ho-stat-tile-blue   { --tile-accent: var(--primary-accented); }
+.ho-stat-tile-green  { --tile-accent: var(--success); }
+/* No dedicated purple token in custom.css; matches the purple stop
+   already used in --ho-gradient-blue-purple rather than introducing
+   an unrelated new brand color. */
+.ho-stat-tile-purple { --tile-accent: #7C4DB0; }
+.ho-stat-tile-red    { --tile-accent: var(--error); }
+
+.ho-stat-tile-body {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: inherit;
 }
 
-.tiles .tile:hover {
-    background-color: var(--bg-muted);
+.ho-stat-tile-body:hover,
+.ho-stat-tile-body:focus {
+    color: inherit;
+    text-decoration: none;
 }
 
-.tiles .tile .stat {
-    color: var(--primary);
-    font-family: var(--font-family-heading);
-    font-weight: var(--font-weight-bold);
+.ho-stat-tile-icon {
+    flex: 0 0 auto;
+    font-size: 1.2em;
+    color: var(--tile-accent);
 }
 
-.tiles .tile .title {
+.ho-stat-tile-label {
     color: var(--text-lifted);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--text-sm);
+}
+
+.ho-stat-tile-num {
+    flex: 1 1 auto;
+    text-align: right;
+    color: var(--text-heading);
+    font-family: var(--font-family-heading);
+    font-size: 1.8em;
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+}
+
+.ho-stat-tile-underline {
+    margin-top: var(--space-2);
+    height: 3px;
+    border-radius: 2px;
+    background-color: var(--tile-accent);
+}
+
+.ho-stat-tile-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: var(--space-2);
+    color: var(--tile-accent);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.ho-stat-tile-action:hover,
+.ho-stat-tile-action:focus {
+    color: var(--tile-accent);
+    text-decoration: underline;
 }
 
 
