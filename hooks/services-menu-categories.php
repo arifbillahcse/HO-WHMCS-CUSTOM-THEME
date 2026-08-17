@@ -67,7 +67,7 @@ add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
             'services' => [
                 'hideByName' => ['View Available Addons', 'Services Divider'],
                 'renameByLabel' => [
-                    'order new services' => 'Order Hosting',
+                    'order new services' => 'Order/Add Services',
                 ],
             ],
             'domains' => [
