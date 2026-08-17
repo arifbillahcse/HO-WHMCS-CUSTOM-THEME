@@ -70,31 +70,6 @@
                         <span id="cartItemCount" class="label label-info">{$cartitemcount}</span>
                     </a>
                 </li>
-                <li>
-                    <a href="#" data-toggle="popover" id="accountNotifications" data-placement="bottom">
-                        {$LANG.notifications}
-                        {if count($clientAlerts) > 0}
-                            <span class="label label-info">{lang key='notificationsnew'}</span>
-                        {/if}
-                        <b class="caret"></b>
-                    </a>
-                    <div id="accountNotificationsContent" class="hidden">
-                        <ul class="client-alerts">
-                        {foreach $clientAlerts as $alert}
-                            <li>
-                                <a href="{$alert->getLink()}">
-                                    <i class="fas fa-fw fa-{if $alert->getSeverity() == 'danger'}exclamation-circle{elseif $alert->getSeverity() == 'warning'}exclamation-triangle{elseif $alert->getSeverity() == 'info'}info-circle{else}check-circle{/if}"></i>
-                                    <div class="message">{$alert->getMessage()}</div>
-                                </a>
-                            </li>
-                        {foreachelse}
-                            <li class="none">
-                                {$LANG.notificationsnone}
-                            </li>
-                        {/foreach}
-                        </ul>
-                    </div>
-                </li>
                 <li class="primary-action">
                     <a href="{$WEB_ROOT}/logout.php" class="btn">
                         {$LANG.clientareanavlogout}
