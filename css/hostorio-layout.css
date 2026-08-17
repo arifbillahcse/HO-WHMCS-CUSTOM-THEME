@@ -107,6 +107,26 @@ ul.top-nav .label-info {
     font-weight: var(--font-weight-bold);
 }
 
+/* Cart icon — sits beside Notifications. Reuses the same orange
+   .label-info pill as the notifications "NEW" tag for a consistent
+   badge language, but as a live item count instead of a flag, so it
+   is shown even at 0 rather than only appearing once non-empty —
+   #cartItemCount must always be present in the page for WHMCS's own
+   stock JS (js/whmcs.js, js/scripts.js) to find and increment it the
+   moment something is added to the cart, without a page reload. */
+ul.top-nav > li.cart-nav-item > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1em;
+}
+
+ul.top-nav > li.cart-nav-item .label-info {
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 0.78em;
+}
+
 /* Admin "return to admin area" button */
 ul.top-nav > li > a.btn-logged-in-admin {
     color: rgba(255, 255, 255, 0.82);

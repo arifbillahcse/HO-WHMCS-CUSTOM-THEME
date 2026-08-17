@@ -64,6 +64,12 @@
                 </li>
             {/if}
             {if $loggedin}
+                <li class="cart-nav-item">
+                    <a href="{$WEB_ROOT}/cart.php?a=view" title="{$LANG.viewcart}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartItemCount" class="label label-info">{$cartitemcount}</span>
+                    </a>
+                </li>
                 <li>
                     <a href="#" data-toggle="popover" id="accountNotifications" data-placement="bottom">
                         {$LANG.notifications}
@@ -103,9 +109,10 @@
                         <a href="{$WEB_ROOT}/register.php">{$LANG.register}</a>
                     </li>
                 {/if}
-                <li class="primary-action">
-                    <a href="{$WEB_ROOT}/cart.php?a=view" class="btn">
-                        {$LANG.viewcart}
+                <li class="cart-nav-item">
+                    <a href="{$WEB_ROOT}/cart.php?a=view" title="{$LANG.viewcart}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartItemCount" class="label label-info">{$cartitemcount}</span>
                     </a>
                 </li>
             {/if}
