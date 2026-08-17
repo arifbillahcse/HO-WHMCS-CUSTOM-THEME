@@ -1708,16 +1708,29 @@ div.header-lined .breadcrumb li a:focus {
     font-family: var(--font-family-heading);
 }
 
-/* Stock draws a 4px rule under every header cell, alternating
-   #a2d27a / #7bc144 — two greens from outside this palette.
-   The :nth-child(even) half outranks a plain `.table-list
-   thead th`, so both have to be named to retire it. */
+/* Header row: deliberately smaller and muted rather than raised to
+   match the 15px base the rest of the theme was brought up to
+   elsewhere. That earlier pass was about content parity (a button
+   label should not read smaller than the paragraph beside it); a
+   table header is not content, it is a running label for the column
+   below it, and a modern data table keeps that label a size down from
+   its own data so the data — what someone is actually scanning the
+   list for — carries the visual weight instead of the caption over
+   it. Stock draws a 4px rule under every header cell, alternating
+   #a2d27a / #7bc144 — two greens from outside this palette. The
+   :nth-child(even) half outranks a plain `.table-list thead th`, so
+   both have to be named to retire it. */
 .dataTables_wrapper table.table-list thead th,
 .dataTables_wrapper table.table-list thead th:nth-child(even) {
+    padding-top: var(--space-3);
+    padding-bottom: var(--space-3);
     border-bottom: 2px solid var(--border);
-    color: var(--text-heading);
+    color: var(--text-lifted);
     font-family: var(--font-family-heading);
-    font-weight: var(--font-weight-medium);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .table-list tbody tr {
@@ -1728,10 +1741,193 @@ div.header-lined .breadcrumb li a:focus {
     background-color: var(--bg-muted);
 }
 
+/* Stock alternates rows white / #f8fcfd (styles.css). A flat white
+   body with just the hover tint and the hairline row rule below reads
+   as one clean list rather than a zebra grid, and matches the plain-
+   row treatment already used for Recent Tickets. */
+.table-list > tbody > tr:nth-child(even) > td {
+    background-color: var(--bg);
+}
+
 .table > tbody > tr > td,
 .table > tbody > tr > th {
     border-top: 1px solid var(--border-muted);
     color: var(--text);
+}
+
+/* table.table-list tbody td (styles.css) pins cell text to 0.94em —
+   the one table selector the sitewide 15px-base pass (custom.css)
+   missed, since it is a class+element combinator of equal specificity
+   to that pass's own rules and simply never came up against a table
+   to reveal it. Equal specificity, so this file's later load order is
+   what wins here, not an added qualifier. Padding raised at the same
+   time: 10px read cramped once the row also carries a two-line
+   subject cell (ticket number above, subject below). */
+table.table-list tbody td {
+    padding: var(--space-3) var(--space-2);
+    font-size: 1rem;
+}
+
+/* Ticket number + subject (supportticketslist.tpl). Stock already
+   stacks WHMCS's own .ticket-number above .ticket-subject on separate
+   lines (.ticket-number is block-level) — only their weight and color
+   are restyled here, not the structure. The number is demoted to
+   small muted meta text; stock gives it a larger italic teal
+   treatment that outweighs the subject sitting right below it, when
+   the subject is the one thing a customer is actually scanning the
+   list for. Unread stays bold, as stock already had it; read tickets
+   drop to normal weight so the two states read as distinct at a
+   glance instead of every row being equally heavy. */
+.table-list .ticket-number {
+    margin-bottom: 2px;
+    font-size: var(--text-sm);
+    font-style: normal;
+    font-weight: var(--font-weight-medium);
+    color: var(--text-muted);
+}
+
+/* Capped at two lines rather than left to wrap freely: dataTables
+   .responsive.min.js (loaded by includes/tablelist.tpl) collapses the
+   Status and Last Updated columns first on a narrow phone, but a long
+   subject in the Subject column that remains can still run to six or
+   seven wrapped lines and dwarf every other row in the list. */
+.table-list .ticket-subject {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--text-heading);
+    font-weight: var(--font-weight-normal);
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+}
+
+.table-list .ticket-subject.unread {
+    font-weight: var(--font-weight-bold);
+}
+
+/* Small dot ahead of the number on an unread ticket — added in
+   supportticketslist.tpl as .ticket-unread-dot, not part of WHMCS's
+   own .recent-ticket widget markup this pairs with visually. Bold
+   text alone (stock's only unread cue) is easy to miss scanning a
+   list top to bottom; a colored dot in the same left column as every
+   other row's number is not. */
+.table-list .ticket-unread-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background-color: var(--secondary);
+    vertical-align: middle;
+}
+
+/* Ticket / invoice / domain status pill. Stock renders it as a full-
+   width bordered box (border: 2px solid #ccc, display: block, from
+   .status in styles.css) with only the text tinted per status — every
+   status reads the same pale gray chip regardless of what it means.
+   Recolored into a compact pill with a colored dot instead, using
+   currentColor to pick up whatever color the status already carries
+   — a .status-{class} rule (color: green/gray/etc.) or, for a
+   WHMCS-assigned custom status, its own inline style="color: ..." —
+   so every status is covered without this rule needing to know each
+   one individually or be kept in step as new ones appear.
+
+   Scoped to .table-list rather than to the tickets table alone: the
+   same .status/.status-* convention renders invoice, domain and
+   product status elsewhere in the client area, and a status that
+   means the same thing should look the same wherever it appears. */
+.table-list .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: auto;
+    padding: 3px var(--space-2) 3px 10px;
+    background-color: var(--bg-muted);
+    background-color: color-mix(in srgb, currentColor 12%, var(--bg));
+    border: 0;
+    border-radius: 999px;
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.5;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.table-list .status::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+/* Search box (top-right of the navy info bar). Stock paints a
+   magnifying-glass sprite in as a background-image on the input
+   itself (background: url(...) no-repeat 8px 5px) with 45px of
+   left padding to clear it — swapped for a Font Awesome glyph
+   positioned on the wrapping <label>, which lines up correctly
+   regardless of the input's actual rendered height instead of a
+   sprite offset tuned to one fixed size. */
+.dataTables_wrapper .dataTables_filter label {
+    position: relative;
+    padding: var(--space-3);
+}
+
+.dataTables_wrapper .dataTables_filter label::before {
+    content: "\f002";
+    position: absolute;
+    top: 50%;
+    left: calc(var(--space-3) + 12px);
+    color: var(--text-muted);
+    font-family: "Font Awesome 5 Free";
+    font-size: 0.85em;
+    font-weight: 900;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.dataTables_wrapper .dataTables_filter label .form-control {
+    background: var(--bg) !important;
+    padding: 8px 14px 8px 34px !important;
+    border: 1px solid var(--border-muted) !important;
+    border-radius: 999px !important;
+    color: var(--text);
+    font-size: var(--text-md);
+}
+
+.dataTables_wrapper .dataTables_filter label .form-control:focus {
+    border-color: var(--secondary) !important;
+    box-shadow: 0 0 0 3px rgba(255, 120, 0, 0.14);
+}
+
+/* Entries-per-page control (bottom-left). Stock gives its own wrapper
+   a flat #f6f6f6 fill and shrinks the text to 0.8em, which reads as a
+   leftover system control rather than part of this page — the select
+   itself already picks up this theme's .form-control styling, so only
+   the wrapper's stock overrides need retiring. */
+.dataTables_wrapper .dataTables_length {
+    background-color: transparent;
+    padding: var(--space-3);
+    font-size: var(--text-md);
+    color: var(--text-lifted);
+}
+
+.dataTables_wrapper .dataTables_length label {
+    padding: 0;
+    font-weight: var(--font-weight-normal);
+}
+
+.dataTables_wrapper .dataTables_length .form-control {
+    display: inline-block;
+    width: auto;
+    height: auto;
+    padding: 4px var(--space-2);
+    border: 1px solid var(--border-muted) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    padding: var(--space-3);
 }
 
 

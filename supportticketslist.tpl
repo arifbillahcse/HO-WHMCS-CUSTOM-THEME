@@ -34,7 +34,20 @@
                     </td>
                     <td>
                         <a href="viewticket.php?tid={$ticket.tid}&amp;c={$ticket.c}" class="border-left">
-                            <span class="ticket-number">#{$ticket.tid}</span>
+                            {*
+                                .ticket-unread-dot is added here, not part of
+                                stock markup — bold subject text alone (the
+                                only unread cue WHMCS renders) is easy to miss
+                                scanning a list top to bottom; a dot in the
+                                same position on every row is not. Styled in
+                                hostorio-layout.css. "Unread" is a literal
+                                string rather than a $LANG key: no existing
+                                key covers this one-word tooltip, and none of
+                                the WHMCS core language packs (including the
+                                Bangla one this theme's switcher points at)
+                                ship one to borrow instead.
+                            *}
+                            <span class="ticket-number">{if $ticket.unread}<span class="ticket-unread-dot" title="Unread"></span>{/if}#{$ticket.tid}</span>
                             <span class="ticket-subject{if $ticket.unread} unread{/if}">{$ticket.subject|escape}</span>
                         </a>
                     </td>
