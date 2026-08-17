@@ -1472,26 +1472,61 @@ div.header-lined .breadcrumb li a:focus {
    (unstyled gray, the case seen live). Scoping by .btn-custom-action
    catches both without caring which one a given module produces.
    "View Details" gets its own solid navy so it stays visually
-   secondary to the orange login action, not competing with it. */
+   secondary to the orange login action, not competing with it.
 
-.div-service-buttons .btn-custom-action {
+   .btn-custom-action is also reused, unchanged, on the plain <li>
+   items inside the dropdown-menu (e.g. "Log in to Webmail" under the
+   caret) — the button rules below are element-qualified to `button`
+   so they don't reach those <li>s: applied to a bare <li> with no
+   padding/border-radius, the orange fill rendered as a jammed,
+   edge-to-edge block instead of a normal dropdown row. Those get
+   their own rule further down. */
+
+.div-service-buttons button.btn-custom-action {
     background-color: var(--secondary);
     border-color: var(--secondary);
     color: var(--text-inverted);
     font-weight: var(--font-weight-medium);
 }
 
-.div-service-buttons .btn-custom-action:hover,
-.div-service-buttons .btn-custom-action:focus,
-.div-service-buttons .btn-custom-action:active {
+.div-service-buttons button.btn-custom-action:hover,
+.div-service-buttons button.btn-custom-action:focus,
+.div-service-buttons button.btn-custom-action:active {
     background-color: var(--secondary-lifted);
     border-color: var(--secondary-lifted);
     color: var(--text-inverted);
 }
 
-.div-service-buttons .btn-custom-action.disabled {
+.div-service-buttons button.btn-custom-action.disabled {
     background-color: var(--secondary);
     border-color: var(--secondary);
+    opacity: var(--disabled-opacity);
+}
+
+/* The dropdown <li> variant — plain text with no wrapping <a>, so it
+   gets none of Bootstrap's own .dropdown-menu > li > a padding.
+   Styled as a normal dropdown row (white, navy text, light orange
+   hover) rather than reusing the button's solid fill, which is what
+   looked broken in the screenshot. */
+.div-service-buttons .dropdown-menu li.btn-custom-action {
+    padding: 8px 16px;
+    color: var(--primary);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+.div-service-buttons .dropdown-menu li.btn-custom-action:hover,
+.div-service-buttons .dropdown-menu li.btn-custom-action:focus {
+    background-color: rgba(255, 120, 0, 0.10);
+    color: var(--secondary-lifted);
+}
+
+.div-service-buttons .dropdown-menu li.btn-custom-action.disabled {
+    color: var(--text-muted);
+    cursor: default;
     opacity: var(--disabled-opacity);
 }
 
