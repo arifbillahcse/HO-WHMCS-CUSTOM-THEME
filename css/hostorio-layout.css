@@ -1461,6 +1461,77 @@ div.header-lined .breadcrumb li a:focus {
 .panel.panel-accent-gold   { border-top: 3px solid var(--secondary-accented); }
 
 
+/* --- Service row action buttons (Dashboard "Your Active
+   Products/Services" panel, and the same include on the product
+   list page) --------------------------------------------------
+
+   includes/active-products-services-item.tpl can render the cPanel/
+   Webmail login button as one of two Bootstrap classes depending on
+   whether the hosting module flags it "accent" server-side —
+   .btn-primary (already orange sitewide) or plain .btn-default
+   (unstyled gray, the case seen live). Scoping by .btn-custom-action
+   catches both without caring which one a given module produces.
+   "View Details" gets its own solid navy so it stays visually
+   secondary to the orange login action, not competing with it. */
+
+.div-service-buttons .btn-custom-action {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    color: var(--text-inverted);
+    font-weight: var(--font-weight-medium);
+}
+
+.div-service-buttons .btn-custom-action:hover,
+.div-service-buttons .btn-custom-action:focus,
+.div-service-buttons .btn-custom-action:active {
+    background-color: var(--secondary-lifted);
+    border-color: var(--secondary-lifted);
+    color: var(--text-inverted);
+}
+
+.div-service-buttons .btn-custom-action.disabled {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    opacity: var(--disabled-opacity);
+}
+
+/* The caret-only toggle beside the button (opens Webmail etc.) reads
+   as part of the same action, so it carries the same fill. Two
+   selectors, not one: styles.css shows .btn-group-secondary only at
+   >=768px and .btn-group-primary — the same action collapsed into a
+   single caret-only button — only below that, so both need covering
+   or mobile visitors would still see a plain gray button. */
+.div-service-buttons .btn-group-secondary .dropdown-toggle,
+.div-service-buttons .btn-group-primary .dropdown-toggle {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    color: var(--text-inverted);
+}
+
+.div-service-buttons .btn-group-secondary .dropdown-toggle:hover,
+.div-service-buttons .btn-group-secondary .dropdown-toggle:focus,
+.div-service-buttons .btn-group-primary .dropdown-toggle:hover,
+.div-service-buttons .btn-group-primary .dropdown-toggle:focus {
+    background-color: var(--secondary-lifted);
+    border-color: var(--secondary-lifted);
+}
+
+.div-service-buttons .btn-view-details {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--text-inverted);
+    font-weight: var(--font-weight-medium);
+}
+
+.div-service-buttons .btn-view-details:hover,
+.div-service-buttons .btn-view-details:focus,
+.div-service-buttons .btn-view-details:active {
+    background-color: var(--primary-lifted);
+    border-color: var(--primary-lifted);
+    color: var(--text-inverted);
+}
+
+
 /* --- List groups inside panels ---------------------------- */
 
 .list-group-item {
