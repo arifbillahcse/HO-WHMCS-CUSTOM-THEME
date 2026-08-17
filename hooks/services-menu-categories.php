@@ -26,10 +26,13 @@
  *
  * 2. Applies a small set of per-item tweaks to the Services and
  *    Support dropdowns — see $navTweaks below. Hides "View Available
- *    Addons" (Services) and "Downloads" (Support); renames "Order New
- *    Services" to "Order/Add Services". To add another later, add an
- *    entry under the right parent's label in $navTweaks; nothing else
- *    in this file needs to change.
+ *    Addons" (Services) and "Downloads" (Support). To add another
+ *    later, add an entry under the right parent's label in $navTweaks;
+ *    nothing else in this file needs to change. ("Order New Services"
+ *    -> "Order/Add Services" used to be a $navTweaks renameByLabel
+ *    entry too, but now happens inside pinServicesTopItems() /
+ *    moveChildToFront() instead — see that function's own docblock
+ *    for why.)
  *
  * 3. Renames "Home" itself to "Dashboard" on the primary navbar, and
  *    the account dropdown's "Hello, {name}!" to "Profile {name}!" on
@@ -69,11 +72,12 @@ add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
 
         $servicesItem = findChildByLabel($primaryNavbar, 'services');
 
-        // Pins "My Services" (order=1) and "Order New Services" (order=2)
-        // to the top before addProductCategories() appends the category
-        // links below them — must run first so the categories' own
-        // setOrder() calls (3, 4, 5, ...) start after these two, not
-        // collide with them.
+        // Moves "My Services" (order=1) and "Order New Services" — given
+        // its "Order/Add Services" rename right here rather than in
+        // $navTweaks below, see moveChildToFront() — to the top, before
+        // addProductCategories() appends the category links below them,
+        // so the categories' own setOrder() calls (3, 4, 5, ...) start
+        // after these two rather than colliding with them.
         pinServicesTopItems($servicesItem);
         addProductCategories($servicesItem);
 
@@ -86,12 +90,16 @@ add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
         // hideByName matches a child's exact, confirmed getName();
         // hideByLabel and renameByLabel match case-insensitively
         // against getLabel(), lower-cased, on the left of each pair.
+        //
+        // No renameByLabel entry for "Order New Services" here — that
+        // used to live in this list, but pinServicesTopItems() now
+        // removes and re-adds that item under its new label directly
+        // (see moveChildToFront() below), so by the time this list runs
+        // there is no longer a child labeled "Order New Services" left
+        // to match.
         $navTweaks = [
             'services' => [
                 'hideByName' => ['View Available Addons', 'Services Divider'],
-                'renameByLabel' => [
-                    'order new services' => 'Order/Add Services',
-                ],
             ],
             'domains' => [
                 'hideByName' => ['Domains Divider', 'Domains Divider 2', 'Domain Search'],
@@ -175,15 +183,32 @@ function renameAccountGreeting($navbar)
 
 /**
  * Forces "My Services" and "Order New Services" to the very top of the
- * Services dropdown via setOrder() — a real, documented method on
- * WHMCS\View\Menu\Item (developers.whmcs.com/themes/navigation/), not
- * a guess. Needed because the product categories addProductCategories()
- * appends below were rendering ABOVE these two stock items and in
- * alphabetical order rather than the admin-configured
- * tblproductgroups.order — every child getting an explicit setOrder()
- * (these two here, the categories in addProductCategories()) pins the
- * final position outright instead of relying on whatever WHMCS falls
- * back to when no order is set.
+ * Services dropdown.
+ *
+ * REVISION: the first version of this function called setOrder(1) /
+ * setOrder(2) directly on the two EXISTING stock items and left it at
+ * that — setOrder() is real and documented
+ * (developers.whmcs.com/themes/navigation/), but confirmed live
+ * against an actual install (see the screenshot behind this commit),
+ * it had no visible effect: both items still rendered AFTER every
+ * category, in whatever position WHMCS's own core menu-building gave
+ * them before this hook ever ran. The categories addProductCategories()
+ * appends below, by contrast, DO land in the right relative order
+ * (matching tblproductgroups.order) — the difference being that they
+ * are built fresh via addChild() with setOrder() called on the brand
+ * new item, never mutated after the fact. That points at WHMCS/KnpMenu
+ * only consulting order at the moment a child is inserted into its
+ * parent, not re-sorting the collection when an already-present
+ * item's order is changed later.
+ *
+ * This version acts on that: rather than reordering "My Services" and
+ * "Order New Services" in place, it removes each one and re-adds it
+ * as a fresh child — the same addChild()-then-setOrder() sequence
+ * already proven to work for the categories — carrying over its own
+ * uri/label/icon so nothing about the link itself changes, only its
+ * position and (for "Order New Services") giving moveChildToFront()
+ * an explicit new label so the separate rename in $navTweaks has
+ * nothing left to do for it.
  */
 function pinServicesTopItems($servicesItem)
 {
@@ -191,18 +216,78 @@ function pinServicesTopItems($servicesItem)
         return;
     }
 
-    $myServices = findChildByLabel($servicesItem, 'my services');
-    if ($myServices && method_exists($myServices, 'setOrder')) {
-        $myServices->setOrder(1);
+    moveChildToFront($servicesItem, 'my services', null, 1);
+    moveChildToFront($servicesItem, 'order new services', 'Order/Add Services', 2);
+}
+
+/**
+ * Removes $parentItem's child labeled $originalLabel (case-insensitive)
+ * and re-adds it as a brand new child carrying the same uri/icon, an
+ * explicit setOrder($order), and $newLabel if given (null keeps the
+ * original label untouched — used for "My Services", which nothing
+ * else in this file renames).
+ *
+ * Logs every branch, including success, the same way
+ * addProductCategories() already does: the first version of this
+ * pinning logic failed silently and left nothing in the Activity Log
+ * to show whether it had even found its target, which is exactly the
+ * gap this function closes for its own replacement.
+ */
+function moveChildToFront($parentItem, $originalLabel, $newLabel, $order)
+{
+    if (!method_exists($parentItem, 'getChildren') || !method_exists($parentItem, 'removeChild')
+        || !method_exists($parentItem, 'addChild')) {
+        if (function_exists('logActivity')) {
+            logActivity("services-menu-categories: moveChildToFront('$originalLabel') skipped — parent item missing getChildren/removeChild/addChild");
+        }
+        return;
     }
 
-    // Matched by its original label — this runs before the
-    // 'order new services' => 'Order/Add Services' rename in
-    // $navTweaks, but setOrder() acts on the item object itself, so
-    // the order sticks regardless of what the label becomes after.
-    $orderServices = findChildByLabel($servicesItem, 'order new services');
-    if ($orderServices && method_exists($orderServices, 'setOrder')) {
-        $orderServices->setOrder(2);
+    $original = findChildByLabel($parentItem, $originalLabel);
+    if (!$original) {
+        if (function_exists('logActivity')) {
+            logActivity("services-menu-categories: moveChildToFront('$originalLabel') — no child matched this label, nothing moved");
+        }
+        return;
+    }
+
+    $name = method_exists($original, 'getName') ? $original->getName() : null;
+    $uri = method_exists($original, 'getUri') ? $original->getUri() : null;
+    $label = $newLabel !== null ? $newLabel : (method_exists($original, 'getLabel') ? $original->getLabel() : $originalLabel);
+    $icon = (method_exists($original, 'hasIcon') && $original->hasIcon() && method_exists($original, 'getIcon'))
+        ? $original->getIcon()
+        : null;
+
+    if (!$name || !$uri) {
+        if (function_exists('logActivity')) {
+            logActivity("services-menu-categories: moveChildToFront('$originalLabel') — matched child but getName()/getUri() came back empty, leaving it in place rather than risk removing it with nothing to re-add");
+        }
+        return;
+    }
+
+    try {
+        $parentItem->removeChild($name);
+
+        $newChild = $parentItem->addChild($name, [
+            'label' => $label,
+            'uri' => $uri,
+        ]);
+
+        if ($newChild && $icon && method_exists($newChild, 'setIcon')) {
+            $newChild->setIcon($icon);
+        }
+
+        if ($newChild && method_exists($newChild, 'setOrder')) {
+            $newChild->setOrder($order);
+        }
+
+        if (function_exists('logActivity')) {
+            logActivity("services-menu-categories: moveChildToFront('$originalLabel') — re-added as '$label' at order $order");
+        }
+    } catch (\Throwable $e) {
+        if (function_exists('logActivity')) {
+            logActivity("services-menu-categories: moveChildToFront('$originalLabel') failed: " . $e->getMessage());
+        }
     }
 }
 
