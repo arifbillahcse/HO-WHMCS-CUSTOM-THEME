@@ -2389,6 +2389,81 @@ a[id$="-order-button"]:active {
     font-size: 1.15em !important;
 }
 
+/* Cart sidebar (Categories / Actions) on the store's category-listing
+   pages (cart.php?gid=... / /store/<category>) — confirmed against
+   this page's own rendered HTML, pasted directly rather than
+   guessed. Not $secondarySidebar (footer.tpl already hides the
+   client-area version of that by name) and not this theme's
+   markup at all: card, mb-3 and list-group-item-action are Bootstrap
+   4 classes, so this comes from the Order Form Template
+   (templates/orderforms/...), a different, Bootstrap-4 template set
+   entirely separate from this Bootstrap-3 theme — same system the
+   Checkout button and Order Summary heading above already had to
+   fight with !important.
+
+   Every category already lives in the nav rail's Services dropdown,
+   and every "Actions" link (renew/register/transfer a domain, view
+   cart) already lives in the Domains dropdown or the cart icon in the
+   header, so this sidebar only restates navigation that already
+   exists elsewhere on the page — hidden outright rather than
+   restyled.
+
+   Hiding the sidebar alone would leave the grid column wrapping it
+   still holding its width, so the product grid would keep its old
+   narrower measure beside an empty gap. The pasted markup shows
+   .cart-sidebar carries no col-* class of its own, so that wrapping
+   column exists but its exact classes are not known here — :has()
+   is what lets this hide "whatever column contains the sidebar" and
+   widen "every other column in that row" without naming either, so
+   nothing about the order form's structure has to be guessed. Both
+   the `width` (Bootstrap 3, float grid) and `flex`/`max-width`
+   (Bootstrap 4, flex grid) properties are set together for the same
+   reason — the order form is Bootstrap 4, this theme Bootstrap 3,
+   and it costs nothing to satisfy both.
+
+   The last rule covers the other possible shape, where .cart-sidebar
+   is itself the grid column rather than sitting inside one; it is a
+   no-op if that is not how the page is built.
+
+   Every rule is gated on the sidebar actually CONTAINING a
+   Categories or Actions panel, rather than keying off .cart-sidebar
+   alone. That class is WHMCS's, not this theme's, and cart.php's
+   later checkout steps are part of the same Order Form Template —
+   if any of them reuse the wrapper for something that matters (the
+   Order Summary styled a few rules above being the obvious one),
+   an unguarded `.cart-sidebar { display: none }` would silently
+   delete it. The guard means these rules can only ever fire on a
+   sidebar holding the two panels being removed on purpose.
+
+   Written as `:has(> .cart-sidebar > [menuitemname=...])` — one
+   :has() holding a child-combinator chain — rather than the more
+   obvious `:has(> .cart-sidebar:has(...))`. :has() may not be nested
+   inside another :has(); doing so is invalid and the whole rule is
+   dropped at parse time, silently, with the sidebar left on screen.
+   Confirmed here by exactly that happening on the first attempt. */
+.cart-sidebar:has(> [menuitemname="Categories"]),
+.cart-sidebar:has(> [menuitemname="Actions"]) {
+    display: none !important;
+}
+
+[class*="col-"]:has(> .cart-sidebar > [menuitemname="Categories"]),
+[class*="col-"]:has(> .cart-sidebar > [menuitemname="Actions"]) {
+    display: none !important;
+}
+
+/* Widens every column in the affected row, including the hidden one
+   — setting a width on a display:none element costs nothing, and
+   skipping it would need a :not(:has(...)) that only adds a way to
+   get this wrong. */
+.row:has(> [class*="col-"] > .cart-sidebar > [menuitemname="Categories"]) > [class*="col-"],
+.row:has(> [class*="col-"] > .cart-sidebar > [menuitemname="Actions"]) > [class*="col-"],
+.row:has(> .cart-sidebar > [menuitemname="Categories"]) > [class*="col-"],
+.row:has(> .cart-sidebar > [menuitemname="Actions"]) > [class*="col-"] {
+    width: 100% !important;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+}
+
 
 /* --- Support department picker ----------------------------- */
 /* submitticket.php step 1. Markup: supportticketsubmit-stepone.tpl. */
