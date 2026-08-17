@@ -1518,6 +1518,40 @@ label {
 .product-status-suspended  { background-color: var(--info-lifted); }
 .product-status-terminated { background-color: var(--neutral); }
 
+/* Order Now buttons on the product-listing pages, confirmed from a
+   real page as a#product{N}-order-button — one such id per product
+   tile, not a single button, hence the attribute selector matching
+   the shared "-order-button" suffix rather than one literal id.
+
+   These carry .btn-success, same as every other success-state
+   button in the theme (e.g. "Active" status pills), so recoloring
+   .btn-success itself was not an option — that would repaint every
+   success button orange, not just this one. This is the one place
+   .btn-success is deliberately NOT followed, because "Order Now" is
+   a purchase call-to-action first and a success state second; the
+   brand rule elsewhere in this theme is that CTAs are always orange.
+
+   !important because plain specificity was tried first and did not
+   win on the real page — something in WHMCS's own order-form output
+   outranks a same-specificity override, most likely an inline style
+   set per-product from Admin's "Featured Product" highlight color.
+   Without visibility into that markup this could not be confirmed
+   the way every other rule in this file was, so !important is used
+   deliberately here rather than chased further blind. */
+a[id$="-order-button"] {
+    background-color: var(--secondary) !important;
+    border-color: var(--secondary) !important;
+    color: var(--text-inverted) !important;
+}
+
+a[id$="-order-button"]:hover,
+a[id$="-order-button"]:focus,
+a[id$="-order-button"]:active {
+    background-color: var(--secondary-lifted) !important;
+    border-color: var(--secondary-lifted) !important;
+    color: var(--text-inverted) !important;
+}
+
 
 /* ===========================================================
    7. RESPONSIVE
