@@ -455,6 +455,7 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
 }
 
 .ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a {
+    position: relative;
     padding: 8px 14px 8px 21px;
     background-color: transparent;
     color: rgba(255, 255, 255, 0.62);
@@ -475,14 +476,51 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
     opacity: 0.75;
 }
 
+/* Accent bar overlaid on the sub-menu's shared left border. Fades in
+   on hover; stays on permanently for the current page (.active) so a
+   customer can tell which sub-item they are on even after the mouse
+   moves away — the plain hover/focus background alone looked
+   identical to a page that was simply being pointed at. */
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    border-radius: 1px;
+    background-color: var(--secondary);
+    transform: scaleY(0);
+    transition: transform var(--transition-base);
+}
+
 .ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a:hover,
-.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a:focus,
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a:focus {
+    padding-left: 25px;
+    background-color: rgba(255, 255, 255, 0.07);
+    color: var(--text-inverted);
+}
+
+/* Current page: same shift as hover, but persists without a pointer
+   on it and adds weight + the brand-orange label so it reads as
+   "you are here", not "you are pointing here". */
 .ho-sidebar .navbar-main .navbar-nav .dropdown-menu > .active > a,
 .ho-sidebar .navbar-main .navbar-nav .dropdown-menu > .active > a:hover,
 .ho-sidebar .navbar-main .navbar-nav .dropdown-menu > .active > a:focus {
     padding-left: 25px;
-    background-color: rgba(255, 255, 255, 0.07);
-    color: var(--text-inverted);
+    background-color: rgba(255, 255, 255, 0.09);
+    color: var(--secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a:hover::before,
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a:focus::before,
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > .active > a::before {
+    transform: scaleY(1);
+}
+
+.ho-sidebar .navbar-main .navbar-nav .dropdown-menu > .active > a > i {
+    opacity: 1;
 }
 
 .ho-sidebar .navbar-main .navbar-nav .dropdown-menu > li > a .badge {
