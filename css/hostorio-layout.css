@@ -663,6 +663,67 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
     flex: 1 1 100%;
 }
 
+/* Service Details "Actions" bar (Log in to cPanel / Log in to
+   Webmail / Change Password / Request Cancellation, on a product's
+   overview page) reuses the same .ho-filterbar-item pill as the
+   "View" filters elsewhere (Services/Domains/Invoices/Tickets), so
+   these rules are scoped to this one panel via its menuItemName —
+   confirmed live as "Service Details Actions" — instead of to
+   .ho-filterbar-item generally.
+
+   cPanel/Webmail/Change Password are the actions a customer reaches
+   for constantly; recolored into the brand orange CTA and sized up
+   so they read as clearly clickable against the rest of the page.
+   Request Cancellation stays a separate red outline — it is
+   destructive, not routine, and should not carry the same "go ahead
+   and click me" weight as the other three. */
+
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[data-identifier="cpanel"],
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[data-identifier="webmail"],
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[menuitemname="Change Password" i] {
+    padding: var(--space-2) var(--space-4);
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    color: var(--text-inverted);
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-bold);
+    box-shadow: 0 2px 8px rgba(255, 120, 0, 0.28);
+}
+
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[data-identifier="cpanel"]:hover,
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[data-identifier="cpanel"]:focus,
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[data-identifier="cpanel"].active,
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[data-identifier="webmail"]:hover,
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[data-identifier="webmail"]:focus,
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[data-identifier="webmail"].active,
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[menuitemname="Change Password" i]:hover,
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[menuitemname="Change Password" i]:focus,
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[menuitemname="Change Password" i].active {
+    background-color: var(--secondary-lifted);
+    border-color: var(--secondary-lifted);
+    color: var(--text-inverted);
+}
+
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[menuitemname="Cancel" i] {
+    padding: var(--space-2) var(--space-4);
+    background-color: transparent;
+    border-color: var(--error);
+    color: var(--error);
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-bold);
+}
+
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[menuitemname="Cancel" i]:hover,
+[menuitemname="Service Details Actions" i] .ho-filterbar-item[menuitemname="Cancel" i]:focus {
+    background-color: var(--error);
+    border-color: var(--error);
+    color: var(--text-inverted);
+}
+
+[menuitemname="Service Details Actions" i] .ho-filterbar-item-icon {
+    font-size: 1.05em;
+}
+
 
 /* ===========================================================
    3c. STICKY SECONDARY SIDEBAR (IDEA 5)
