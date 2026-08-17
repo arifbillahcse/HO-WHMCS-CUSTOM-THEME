@@ -153,68 +153,51 @@ function addProductCategories($servicesItem)
         return;
     }
 
-    $itemClass = get_class($servicesItem);
-    if (!method_exists($itemClass, 'create')) {
-        // Confirmed on a real install: this is where it stops. $itemClass
-        // is WHMCS\View\Menu\Item — a real object, addChild() exists on
-        // it, and the tblproductgroups query above returned rows, so
-        // every other guard already passed. create() specifically is
-        // missing. That class ships ionCube-encoded, so its source
-        // cannot be read (and WHMCS's license forbids decompiling it
-        // even if it could be) — Reflection is the legitimate way to
-        // ask an already-loaded class what its real constructor and
-        // static methods are, since that queries the live class
-        // definition rather than decoding anything.
-        if (function_exists('logActivity')) {
-            $info = $itemClass . '::create() not available.';
-            try {
-                $ref = new \ReflectionClass($itemClass);
-                $ctor = $ref->getConstructor();
-                if ($ctor) {
-                    $params = [];
-                    foreach ($ctor->getParameters() as $p) {
-                        $type = $p->hasType() ? $p->getType() . ' ' : '';
-                        $default = $p->isDefaultValueAvailable()
-                            ? '=' . var_export($p->getDefaultValue(), true)
-                            : '';
-                        $params[] = $type . '$' . $p->getName() . $default;
-                    }
-                    $info .= ' Constructor(' . implode(', ', $params) . '), '
-                        . ($ctor->isPublic() ? 'public' : 'not public') . '.';
-                } else {
-                    $info .= ' No declared constructor.';
-                }
-                // IS_PUBLIC | IS_STATIC is an OR filter, not AND — it
-                // also returns every plain public method (including
-                // __construct). Filtered to true statics explicitly.
-                $staticMethods = [];
-                foreach ($ref->getMethods(\ReflectionMethod::IS_PUBLIC) as $m) {
-                    if ($m->isStatic()) {
-                        $staticMethods[] = $m->getName();
-                    }
-                }
-                $info .= ' Public static methods: ' . (implode(', ', $staticMethods) ?: '(none)') . '.';
-            } catch (\Throwable $re) {
-                $info .= ' Reflection failed: ' . $re->getMessage();
-            }
-            logActivity('services-menu-categories: ' . $info . ' — categories skipped');
-        }
-        return;
-    }
-
+    // WHMCS\View\Menu\Item's constructor turned out to require a
+    // Knp\Menu\FactoryInterface (confirmed via Reflection against a
+    // real install — see git history for how that was found, since
+    // this class ships ionCube-encoded and its source cannot be read
+    // directly). That is not a WHMCS detail, it is KnpMenu itself:
+    // WHMCS's menu system is built on knplabs/knp-menu, a public,
+    // documented open-source library. There is no ::create() because
+    // KnpMenu's own design never expects one — a factory is not
+    // something calling code builds by hand.
+    //
+    // KnpMenu's actual convention is addChild($name, array $options),
+    // called on the PARENT: the parent already holds a working
+    // factory, and builds + returns the fully constructed child for
+    // you. That is what runs below in place of the old
+    // itemClass::create()->setLabel()->setUri()->setClass() chain,
+    // which could never have worked — it never had a factory to give
+    // the class it was trying to construct.
     $added = 0;
     foreach ($groups as $group) {
         if (empty($group->name) || empty($group->id)) {
             continue;
         }
 
-        $child = $itemClass::create()
-            ->setLabel($group->name)
-            ->setUri('cart.php?gid=' . (int) $group->id)
-            ->setClass('ho-nav-category-item');
+        try {
+            $child = $servicesItem->addChild($group->name, [
+                'label' => $group->name,
+                'uri' => 'cart.php?gid=' . (int) $group->id,
+            ]);
 
-        $servicesItem->addChild($child);
-        $added++;
+            // setClass() is proven working (the Order Hosting rename
+            // uses the same method, on a different item, on this same
+            // install) — kept as a normal call, not another guarded
+            // silent skip. ho-nav-category-item is the CSS hook that
+            // draws the divider between the stock Services children
+            // and these, in css/hostorio-layout.css.
+            if ($child && method_exists($child, 'setClass')) {
+                $child->setClass('ho-nav-category-item');
+            }
+
+            $added++;
+        } catch (\Throwable $e) {
+            if (function_exists('logActivity')) {
+                logActivity('services-menu-categories: addChild("' . $group->name . '", ...) failed: ' . $e->getMessage());
+            }
+        }
     }
 
     if (function_exists('logActivity')) {
