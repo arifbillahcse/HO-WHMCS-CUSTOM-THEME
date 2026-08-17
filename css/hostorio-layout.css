@@ -1133,7 +1133,394 @@ body.ho-page-chromeless {
 
 
 /* ===========================================================
-   6. RESPONSIVE
+   6. CONTENT AREA — page titles, tiles, tables, panels, forms
+
+   Sections 1-5 brand the chrome (header, rail, footer) and
+   custom.css brands the base layer (fonts, links, buttons).
+   Everything between those two — the panels, tables, tiles and
+   form fields that make up the actual pages — was still stock
+   Twenty-One: #005588 titles, a #4f5360 table bar, #a2d27a
+   header rules, 4px corners, flat borders.
+
+   Carries the same palette through, using only tokens already
+   declared in custom.css. Shape comes from --rounding-*, depth
+   from --shadow-*, which are navy-tinted rather than black, so
+   cards read as the same family as the rail beside them.
+
+   all.min.css loads first, so a plain selector of equal
+   specificity wins on order alone. Where a stock rule outranks
+   that, the extra specificity is noted at the rule.
+   =========================================================== */
+
+/* --- Page title + breadcrumb ------------------------------ */
+
+/* Stock is #005588 — a teal-blue belonging to no part of this
+   palette. custom.css already points bare h1-h6 at
+   --text-heading, but `.header-lined h1` outranks a bare `h1`,
+   so the page title has to be said again here. Navy rather
+   than the body-heading grey: custom.css reserves navy for
+   "logo, header, nav, headings", and this is the one heading
+   on every page. */
+div.header-lined h1 {
+    color: var(--primary);
+    border-bottom: 1px solid var(--border-muted);
+}
+
+div.header-lined h1 small {
+    color: var(--text-lifted);
+    font-family: var(--font-family-base);
+}
+
+div.header-lined .breadcrumb li a {
+    color: var(--text-lifted);
+    transition: color var(--transition-fast);
+}
+
+div.header-lined .breadcrumb li a:hover,
+div.header-lined .breadcrumb li a:focus {
+    color: var(--text-link);
+}
+
+.breadcrumb > .active {
+    color: var(--text-link);
+}
+
+
+/* --- Alerts ----------------------------------------------- */
+
+/* Stock tints are neutral enough to keep; the accent edge and
+   the rounding are what tie them to the rest of the page. */
+.alert {
+    padding: var(--space-3);
+    border-width: 1px 1px 1px 4px;
+    border-radius: var(--rounding-md);
+}
+
+.alert-success { border-left-color: var(--success); }
+.alert-danger  { border-left-color: var(--error); }
+.alert-info    { border-left-color: var(--info-lifted); }
+.alert-warning { border-left-color: var(--warning); }
+
+
+/* --- Dashboard tiles -------------------------------------- */
+
+/* Stock renders these as a flat #f8f8f8 strip divided by #ccc
+   rules. Grouped into one card instead, so the dashboard opens
+   on the same card language as everything below it. The inner
+   .row's negative gutters are zeroed, otherwise they push past
+   the rounded corners that overflow is clipping. */
+.tiles {
+    margin-bottom: var(--space-4);
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.tiles > .row {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.tiles .tile {
+    background-color: transparent;
+    border-right: 1px solid var(--border-muted);
+    transition: background-color var(--transition-fast);
+}
+
+.tiles .tile:hover {
+    background-color: var(--bg-muted);
+}
+
+.tiles .tile .stat {
+    color: var(--primary);
+    font-family: var(--font-family-heading);
+    font-weight: var(--font-weight-bold);
+}
+
+.tiles .tile .title {
+    color: var(--text-lifted);
+}
+
+
+/* --- Tables and DataTables -------------------------------- */
+
+.table-container {
+    margin-bottom: var(--space-4);
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+/* The "Showing 1 to 10 of 39 entries" bar, stock #4f5360. */
+.dataTables_wrapper .dataTables_info {
+    background-color: var(--primary);
+    border-bottom: 0;
+    color: var(--text-inverted);
+    font-family: var(--font-family-heading);
+}
+
+/* Stock draws a 4px rule under every header cell, alternating
+   #a2d27a / #7bc144 — two greens from outside this palette.
+   The :nth-child(even) half outranks a plain `.table-list
+   thead th`, so both have to be named to retire it. */
+.dataTables_wrapper table.table-list thead th,
+.dataTables_wrapper table.table-list thead th:nth-child(even) {
+    border-bottom: 2px solid var(--border);
+    color: var(--text-heading);
+    font-family: var(--font-family-heading);
+    font-weight: var(--font-weight-medium);
+}
+
+.table-list tbody tr {
+    transition: background-color var(--transition-fast);
+}
+
+.table-list tbody tr:hover {
+    background-color: var(--bg-muted);
+}
+
+.table > tbody > tr > td,
+.table > tbody > tr > th {
+    border-top: 1px solid var(--border-muted);
+    color: var(--text);
+}
+
+
+/* --- Panels ----------------------------------------------- */
+
+.panel {
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition-base);
+}
+
+.panel:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Bootstrap ships `.panel-default > .panel-heading` with a
+   #f5f5f5 fill, which outranks a bare `.panel-heading` — hence
+   the child combinator here rather than the shorter selector. */
+.panel-default > .panel-heading {
+    padding: var(--space-3);
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-muted);
+    border-top-left-radius: var(--rounding-lg);
+    border-top-right-radius: var(--rounding-lg);
+}
+
+.panel-title {
+    color: var(--primary);
+    font-family: var(--font-family-heading);
+    font-weight: var(--font-weight-bold);
+}
+
+.panel-body {
+    padding: var(--space-3);
+}
+
+.panel-footer {
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--bg-muted);
+    border-top: 1px solid var(--border-muted);
+    border-bottom-right-radius: var(--rounding-lg);
+    border-bottom-left-radius: var(--rounding-lg);
+}
+
+/* The accent stripe WHMCS puts on home-page panels, re-pointed
+   from Bootstrap's defaults at the brand's status colors. */
+.panel.panel-accent-blue   { border-top: 3px solid var(--info-lifted); }
+.panel.panel-accent-green  { border-top: 3px solid var(--success); }
+.panel.panel-accent-red    { border-top: 3px solid var(--error); }
+.panel.panel-accent-orange { border-top: 3px solid var(--secondary); }
+.panel.panel-accent-gold   { border-top: 3px solid var(--secondary-accented); }
+
+
+/* --- List groups inside panels ---------------------------- */
+
+.list-group-item {
+    border-color: var(--border-muted);
+    color: var(--text);
+}
+
+a.list-group-item:hover,
+a.list-group-item:focus {
+    background-color: var(--bg-muted);
+    color: var(--text-link-hover);
+}
+
+/* Stock active state is #465054, a dark slate that reads as a
+   different product from the navy rail two columns to the left.
+   Written as a.list-group-item, not .list-group-item: the stock
+   rule carries the element too, and would otherwise outrank
+   this. */
+a.list-group-item.active,
+a.list-group-item.active:hover,
+a.list-group-item.active:focus,
+.panel-sidebar a.list-group-item.active,
+.panel-sidebar a.list-group-item.active:hover,
+.panel-sidebar a.list-group-item.active:focus {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--text-inverted);
+}
+
+
+/* --- Accent bars and swatches ----------------------------- */
+
+/* WHMCS reuses .bg-color-* for the rule under each dashboard
+   tile and for small accent buttons in panel headings. Stock
+   values are Bootstrap's own (#5bc0de, #5cb85c, #d9534f,
+   #f0ad4e) — the last visible stock palette on the page once
+   everything above is branded. */
+.bg-color-blue   { background-color: var(--info-lifted); }
+.bg-color-green  { background-color: var(--success); }
+.bg-color-red    { background-color: var(--error); }
+.bg-color-gold   { background-color: var(--secondary); }
+.bg-color-orange { background-color: var(--secondary); }
+
+
+/* --- Form fields ------------------------------------------ */
+
+/* Stock pairs a #ccc border with an inset shadow and a #66afe9
+   focus glow. Flattened, and the focus ring moved onto the
+   brand navy so it matches the buttons beside it. */
+.form-control {
+    border: 1px solid var(--border);
+    border-radius: var(--rounding-sm);
+    box-shadow: none;
+    color: var(--text);
+    transition: border-color var(--transition-fast),
+                box-shadow var(--transition-fast);
+}
+
+.form-control:focus {
+    border-color: var(--primary-accented);
+    box-shadow: 0 0 0 3px rgba(1, 37, 125, 0.12);
+    outline: 0;
+}
+
+.control-label,
+label {
+    color: var(--text-accented);
+    font-weight: var(--font-weight-medium);
+}
+
+
+/* --- Tabs ------------------------------------------------- */
+
+.nav-tabs {
+    border-bottom: 1px solid var(--border-muted);
+}
+
+.nav-tabs > li > a {
+    border-radius: var(--rounding-sm) var(--rounding-sm) 0 0;
+    color: var(--text-lifted);
+}
+
+.nav-tabs > li > a:hover,
+.nav-tabs > li > a:focus {
+    background-color: var(--bg-muted);
+    border-color: var(--border-muted);
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+    border-color: var(--border-muted);
+    border-bottom-color: transparent;
+    color: var(--primary);
+    font-weight: var(--font-weight-medium);
+}
+
+
+/* --- Pagination ------------------------------------------- */
+
+/* Two selectors per state: Bootstrap's own markup, and the
+   .paginate_button wrapper DataTables adds around it. */
+.pagination > li > a,
+.pagination > li > span {
+    border-color: var(--border-muted);
+    color: var(--text-link);
+}
+
+.pagination > li > a:hover,
+.pagination > li > a:focus {
+    background-color: var(--bg-muted);
+    border-color: var(--border-muted);
+    color: var(--text-link-hover);
+}
+
+.pagination > .active > a,
+.pagination > .active > a:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span,
+.pagination > .paginate_button.active > a {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--text-inverted);
+}
+
+
+/* --- Labels and badges ------------------------------------ */
+
+.label {
+    padding: 0.28em 0.6em;
+    border-radius: var(--rounding-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.label-success { background-color: var(--success); }
+.label-danger  { background-color: var(--error); }
+.label-warning { background-color: var(--warning); }
+.label-info    { background-color: var(--info-lifted); }
+.label-default { background-color: var(--neutral); }
+
+.badge {
+    background-color: var(--primary);
+    font-weight: var(--font-weight-medium);
+}
+
+
+/* --- Wells ------------------------------------------------ */
+
+.well {
+    background-color: var(--bg-muted);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-md);
+    box-shadow: none;
+}
+
+
+/* --- Order form / product pages --------------------------- */
+
+/* NOT VERIFIED LOCALLY: the cart and product-listing markup
+   lives in WHMCS core (templates/orderforms/), not in this
+   theme, so unlike everything above it could not be rendered
+   and checked here. These are the generic Bootstrap hooks
+   those pages are built from, so they should carry; if a cart
+   page looks wrong after deploying, this block is the first
+   place to look. */
+.product-icon {
+    background-color: var(--bg-muted);
+    border-radius: var(--rounding-lg);
+    color: var(--primary);
+}
+
+.product-status-active     { background-color: var(--success); }
+.product-status-pending    { background-color: var(--warning); }
+.product-status-suspended  { background-color: var(--info-lifted); }
+.product-status-terminated { background-color: var(--neutral); }
+
+
+/* ===========================================================
+   7. RESPONSIVE
 
    992px is the shell's breakpoint: at or above it the rail is a
    permanent column, below it an off-canvas drawer.
