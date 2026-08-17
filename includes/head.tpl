@@ -22,13 +22,14 @@
     previous copy and the change appears not to have deployed at all.
 
     BUMP THIS STRING on every deploy that touches css/custom.css,
-    css/hostorio-layout.css or js/hostorio-sidebar.js.
+    css/hostorio-layout.css, js/hostorio-sidebar.js, or
+    js/hostorio-product-overview.js.
 
     A literal rather than filemtime() because WHMCS's Smarty security
     policy may refuse unregistered PHP calls, and a stale stylesheet is
     a better failure than a fatal template error.
 *}
-{assign var="hoAssetVersion" value="ho-11"}
+{assign var="hoAssetVersion" value="ho-12"}
 {*
     custom.css previously rendered as bare {$__assetPath__}, with no
     version query at all — so an edit to the token layer could never
@@ -66,6 +67,14 @@
 <!-- Off-canvas behaviour for the sidebar rail below 992px. Same
      $WEB_ROOT + $template path as hostorio-layout.css. -->
 <script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-sidebar.js?v={$hoAssetVersion}" defer></script>
+<!-- Removes the "Quick Shortcuts" / "Quick Create Email Account"
+     panels the cPanel provisioning module adds to a product's
+     Overview tab — module output, not a template in this theme, so
+     there is no .tpl to edit them out of. Loaded sitewide rather than
+     only on clientareaproductdetails: it is a no-op wherever those
+     headings are not present, and gating it on $templatefile would
+     need to name every action value that page can be reached under. -->
+<script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-product-overview.js?v={$hoAssetVersion}" defer></script>
 
 {if $templatefile == "viewticket" && !$loggedin}
   <meta name="robots" content="noindex" />
