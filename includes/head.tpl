@@ -11,25 +11,35 @@
 <link href="{$WEB_ROOT}/assets/fonts/css/fontawesome-light.min.css" rel="stylesheet">
 <link href="{$WEB_ROOT}/assets/fonts/css/fontawesome-brands.min.css" rel="stylesheet">
 <link href="{$WEB_ROOT}/assets/fonts/css/fontawesome-duotone.min.css" rel="stylesheet">
-{assetExists file="custom.css"}
-<link href="{$__assetPath__}" rel="stylesheet">
-{/assetExists}
 {*
-    Cache-buster for this theme's own CSS/JS.
+    Cache-buster for this theme's own CSS and JS.
 
     The stock assets above use ?v={$versionHash}, which is derived from
     the WHMCS version — it changes when WHMCS is upgraded, never when a
     template file is edited. That is right for files that only change on
-    upgrade, but wrong for these two: editing them leaves the URL
+    upgrade, but wrong for the three below: editing them leaves the URL
     byte-identical, so browsers and any CDN in front keep serving the
     previous copy and the change appears not to have deployed at all.
 
-    Bump this string on every deploy that touches css/hostorio-layout.css
-    or js/hostorio-sidebar.js. A literal rather than filemtime() because
-    WHMCS's Smarty security policy may refuse unregistered PHP calls, and
-    a stale stylesheet is a better failure than a fatal template error.
+    BUMP THIS STRING on every deploy that touches css/custom.css,
+    css/hostorio-layout.css or js/hostorio-sidebar.js.
+
+    A literal rather than filemtime() because WHMCS's Smarty security
+    policy may refuse unregistered PHP calls, and a stale stylesheet is
+    a better failure than a fatal template error.
 *}
-{assign var="hoAssetVersion" value="ho-4"}
+{assign var="hoAssetVersion" value="ho-5"}
+{*
+    custom.css previously rendered as bare {$__assetPath__}, with no
+    version query at all — so an edit to the token layer could never
+    reach a returning visitor. Written out the same way as
+    hostorio-layout.css below so all three share one buster. The
+    assetExists guard stays: custom.css is optional, and linking it
+    unconditionally would 404 on an install that has none.
+*}
+{assetExists file="custom.css"}
+<link href="{$WEB_ROOT}/templates/{$template}/css/custom.css?v={$hoAssetVersion}" rel="stylesheet">
+{/assetExists}
 <!-- Hostorio layout: header, navigation, footer. Loads last so it
      can override both the stock bundle and the token base layer.
      Built from $WEB_ROOT + $template rather than assetPath so it

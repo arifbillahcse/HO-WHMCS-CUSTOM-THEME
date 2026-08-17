@@ -15,8 +15,12 @@
 
 ***************************************************** */
 
+/* Root size the rem tokens below resolve against, so raising it
+   scales the theme's whole type scale in step rather than leaving
+   15px body copy beside labels still sized for a 14px base.
+   Matched to hostorio.com, whose body copy is 15px. */
 html {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 :root {
@@ -197,7 +201,7 @@ html {
     /* Typography — Roboto (body) + Rosario (headings) */
     --font-family-base: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     --font-family-heading: "Rosario", "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --font-size-base: 14px;
+    --font-size-base: 15px;
     --font-weight-normal: 400;
     --font-weight-medium: 500;
     --font-weight-bold: 700;
@@ -252,7 +256,35 @@ button,
 select,
 textarea {
     font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
     color: var(--text);
+}
+
+/* all.min.css pins these to a literal 14px, so raising the root above
+   does not reach them — Bootstrap's `body{font-size:14px}` beats the
+   inherited root size, and the class rules beat a bare element
+   selector. Left alone they would sit a pixel under everything around
+   them: a 14px button label against 15px body copy, a 14px input
+   against its own 15px <label>. 1rem rather than a second literal, so
+   they keep following --font-size-base if it ever moves again.
+
+   .panel is the same problem one step removed — the bundle gives it
+   0.9em, which is relative, so it did follow the root up (12.6px to
+   13.5px) rather than staying pinned. It is listed anyway because
+   panels hold the client area's main content (the services table, the
+   tickets list, the domain box on the dashboard), and leaving that at
+   13.5px against 15px everywhere else would make the change look half
+   applied on the page it matters most. Checked at 1440/1200/992px:
+   the services table and its button group do not overflow at 15px.
+   To put the denser panel text back, drop .panel from this list. */
+body,
+.btn,
+.form-control,
+.input-group-addon,
+.dropdown-menu,
+.popover,
+.panel {
+    font-size: 1rem;
 }
 
 h1, h2, h3, h4, h5, h6,
