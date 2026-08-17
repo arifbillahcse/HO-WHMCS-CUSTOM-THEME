@@ -2454,6 +2454,206 @@ a[id$="-order-button"]:active {
 }
 
 
+/* --- View Ticket -------------------------------------------- */
+/* viewticket.tpl. Two things share this page and neither had been
+   touched before now: the reply form (a stock .panel-info, so its
+   heading carried Bootstrap's own pale-blue info tint rather than
+   this theme's panel treatment — .panel-default is what the rest of
+   the theme's panel-heading rule was scoped to, and this one is not
+   .panel-default) and the conversation thread (.ticket-reply — a
+   thin gray box with a flat #f8f8f8 header band, entirely unbranded,
+   where staff and customer replies were told apart only by a subtle
+   #efefef vs #CCE4FC border difference).
+
+   Scoped to .panel-collapsable rather than widened to .panel-info
+   generally: that class is unique to this one panel (grep confirms
+   no other template uses it), and .panel-info/.panel-warning/
+   .panel-danger elsewhere in the theme (cancellation notices, ToS,
+   server status) use Bootstrap's status colors on purpose — this
+   fix is not a sitewide "retire Bootstrap panel colors" pass. */
+
+.panel-collapsable > .panel-heading {
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-muted);
+    border-color: var(--border-muted);
+    transition: background-color var(--transition-fast);
+}
+
+.panel-collapsable > .panel-heading:hover {
+    background-color: var(--bg-muted);
+}
+
+.panel-collapsable .collapse-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    margin-top: 1px;
+    border-radius: 50%;
+    background-color: var(--primary-50);
+    color: var(--primary);
+    font-size: 0.75em;
+    transition: background-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+.panel-collapsable > .panel-heading:hover .collapse-icon {
+    background-color: var(--secondary);
+    color: var(--text-inverted);
+}
+
+.panel-collapsable > .panel-body {
+    padding: var(--space-4);
+}
+
+/* Conversation thread. Redesigned from a thin gray box into a card
+   per reply — this theme's own border/rounding/shadow, consistent
+   with every other card on the page — with a colored left accent
+   doing the staff/customer distinction instead of a barely-different
+   border tint. */
+.ticket-reply {
+    margin: 0 0 var(--space-3);
+    padding: 0;
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-left: 3px solid var(--border);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.ticket-reply.staff {
+    border-left-color: var(--primary);
+}
+
+/* Avatar / name+role / date, one row. float:none cancels stock's
+   `.ticket-reply .user i{float:left}` — needed since this is now a
+   flex row and a float on a flex item is simply ignored, but leaving
+   the stock value in place is confusing to read back later next to a
+   rule that depends on it not applying. */
+.ticket-reply .user {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--bg-muted);
+}
+
+.ticket-reply.staff .user {
+    background-color: var(--primary-50);
+}
+
+.ticket-reply .user i {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    float: none;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    background-color: var(--bg);
+    color: var(--text-muted);
+    font-size: 1.05em;
+}
+
+.ticket-reply.staff .user i {
+    background-color: var(--primary);
+    color: var(--text-inverted);
+}
+
+.ticket-reply .user-meta {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.ticket-reply .user .name {
+    display: block;
+    font-size: 1rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--text-heading);
+}
+
+.ticket-reply .user .name .label {
+    margin-left: 6px;
+    vertical-align: 1px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.ticket-reply .user .type {
+    display: block;
+    margin-top: 1px;
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-normal);
+    color: var(--text-muted);
+}
+
+.ticket-reply .user .date {
+    flex: 0 0 auto;
+    padding: 0;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+}
+
+.ticket-reply .message {
+    padding: var(--space-4);
+}
+
+.ticket-reply .message hr {
+    margin: var(--space-3) 0;
+    border: 0;
+    border-top: 1px solid var(--border-muted);
+}
+
+.ticket-reply .attachments {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--bg-muted);
+    border-top: 1px solid var(--border-muted);
+    font-size: var(--text-sm);
+}
+
+.ticket-reply .attachments ul {
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ticket-reply .attachments li {
+    padding: 3px 0;
+    color: var(--text-lifted);
+}
+
+.ticket-reply .attachments a {
+    margin-left: 4px;
+}
+
+/* Rating stars — stock gold (#F2DE88) swapped for the brand orange
+   already used for every other rating/accent affordance in the
+   theme, empty stars given a visible border-gray fill instead of
+   stock's near-invisible #999 on a white card. */
+.ticket-reply .rating span.star:before,
+.ticket-reply .rating-done span.star:before {
+    color: var(--border);
+}
+
+.ticket-reply .rating span.star:hover:before,
+.ticket-reply .rating span.star:hover ~ span.star:before,
+.ticket-reply .rating-done span.star.active:before {
+    color: var(--secondary);
+}
+
+.ticket-reply .rating-done .rated {
+    color: var(--text-muted);
+}
+
+
 /* ===========================================================
    7. RESPONSIVE
 

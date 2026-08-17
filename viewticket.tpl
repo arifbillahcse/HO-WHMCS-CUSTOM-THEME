@@ -93,35 +93,51 @@
 
     {foreach $descreplies as $reply}
         <div class="ticket-reply markdown-content{if $reply.admin} staff{/if}">
-            <div class="date">
-                {$reply.date}
-            </div>
+            {*
+                Stock puts .date directly under .ticket-reply as a
+                sibling of .user, floated right — visually it lands
+                above-right of the gray requestor band rather than in
+                it, on its own line disconnected from the name beside
+                it. Nested inside .user instead (still its own .date
+                span, so nothing outside this file needs to change),
+                so hostorio-layout.css can lay avatar / name+role /
+                date out as one flex row instead of a float trying to
+                land next to a block it isn't actually inside.
+                .user-meta is likewise new: it only wraps .name and
+                .type so they can stack as one flex column beside the
+                avatar rather than each spanning the full row.
+            *}
             <div class="user">
                 <i class="fas fa-user"></i>
-                <span class="name">
-                    {$reply.requestor.name}
-                    <span class="label requestor-type-{$reply.requestor.type_normalised}">
-                        {if $reply.requestor.type_normalised eq 'operator'}
-                            {lang key='support.requestor.operator'}
-                        {elseif $reply.requestor.type_normalised eq 'owner'}
-                            {lang key='support.requestor.owner'}
-                        {elseif $reply.requestor.type_normalised eq 'authorizeduser'}
-                            {lang key='support.requestor.authorizeduser'}
-                        {elseif $reply.requestor.type_normalised eq 'registereduser'}
-                            {lang key='support.requestor.registereduser'}
-                        {elseif $reply.requestor.type_normalised eq 'subaccount'}
-                            {lang key='support.requestor.subaccount'}
-                        {elseif $reply.requestor.type_normalised eq 'guest'}
-                            {lang key='support.requestor.guest'}
+                <span class="user-meta">
+                    <span class="name">
+                        {$reply.requestor.name}
+                        <span class="label requestor-type-{$reply.requestor.type_normalised}">
+                            {if $reply.requestor.type_normalised eq 'operator'}
+                                {lang key='support.requestor.operator'}
+                            {elseif $reply.requestor.type_normalised eq 'owner'}
+                                {lang key='support.requestor.owner'}
+                            {elseif $reply.requestor.type_normalised eq 'authorizeduser'}
+                                {lang key='support.requestor.authorizeduser'}
+                            {elseif $reply.requestor.type_normalised eq 'registereduser'}
+                                {lang key='support.requestor.registereduser'}
+                            {elseif $reply.requestor.type_normalised eq 'subaccount'}
+                                {lang key='support.requestor.subaccount'}
+                            {elseif $reply.requestor.type_normalised eq 'guest'}
+                                {lang key='support.requestor.guest'}
+                            {/if}
+                        </span>
+                    </span>
+                    <span class="type">
+                        {if $reply.admin}
+                            {$LANG.supportticketsstaff}
+                        {else}
+                            {$reply.requestor.email}
                         {/if}
                     </span>
                 </span>
-                <span class="type">
-                    {if $reply.admin}
-                        {$LANG.supportticketsstaff}
-                    {else}
-                        {$reply.requestor.email}
-                    {/if}
+                <span class="date">
+                    {$reply.date}
                 </span>
             </div>
             <div class="message">
