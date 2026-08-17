@@ -127,6 +127,117 @@ ul.top-nav > li.cart-nav-item .label-info {
     font-size: 0.78em;
 }
 
+/* Language switcher ---------------------------------------- */
+/* Flag + native name dropdown, mirroring the control on
+   hostorio.com so the marketing site and the client area read as one
+   product. Markup in header.tpl, open/close in js/hostorio-sidebar.js.
+
+   The trigger is a <div>, not a link: it only opens the panel, and the
+   two locales inside it are the actual navigation. That also means the
+   generic `ul.top-nav > li > a` colour and hover-fill rules above do
+   not reach it, so it carries its own. */
+
+ul.top-nav > li.language-nav-item {
+    position: relative;
+}
+
+.language-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: var(--rounding-sm);
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.92em;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    user-select: none;
+    transition: color var(--transition-fast),
+                background-color var(--transition-fast);
+}
+
+.language-selector:hover,
+.language-selector.active {
+    background-color: rgba(255, 255, 255, 0.10);
+    color: var(--text-inverted);
+}
+
+/* Fixed box on both the trigger and the options so the two rows stay
+   aligned — the source flags are not the same aspect ratio (40x21 vs
+   40x24) and would otherwise set different row heights. */
+.language-selector .flag-icon {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 14px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.language-selector > i.fa-chevron-down {
+    font-size: 0.72em;
+    transition: transform var(--transition-base);
+}
+
+.language-selector.active > i.fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Panel: hidden with visibility rather than display:none so the slide
+   and fade have something to animate from. */
+.language-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1000;
+    min-width: 170px;
+    padding: 6px;
+    background-color: var(--bg);
+    border-radius: var(--rounding-md);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity var(--transition-fast),
+                transform var(--transition-fast),
+                visibility var(--transition-fast);
+}
+
+.language-selector.active .language-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.language-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--rounding-sm);
+    color: var(--text);
+    font-size: 0.95em;
+    white-space: nowrap;
+    transition: background-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+.language-option:hover,
+.language-option:focus {
+    background-color: var(--primary-50);
+    color: var(--text);
+    text-decoration: none;
+}
+
+/* Current locale: brand orange, matching how the rail marks the page
+   the customer is already on. */
+.language-option.active,
+.language-option.active:hover,
+.language-option.active:focus {
+    background-color: var(--primary-50);
+    color: var(--secondary);
+    font-weight: var(--font-weight-medium);
+}
+
 /* Admin "return to admin area" button */
 ul.top-nav > li > a.btn-logged-in-admin {
     color: rgba(255, 255, 255, 0.82);

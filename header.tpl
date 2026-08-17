@@ -46,20 +46,47 @@
         {/if}
 
         <ul class="top-nav">
+            {*
+                Language switcher, restricted to English and Bangla.
+
+                WHMCS ships ~25 locales and the stock Bootstrap popover
+                listed every one of them in a three-column grid. Only two
+                are actually translated for this install, so the list is
+                filtered to those and rendered as the flag + native-name
+                dropdown the marketing site already uses, so the two
+                properties read as one product.
+
+                $offeredLanguages holds WHMCS's own language keys. 'bengali'
+                is the folder name a Bangla pack must use under /lang for
+                WHMCS to pick it up; until that pack exists WHMCS reports
+                only one locale, count($locales) > 1 is false, and this
+                whole block stays hidden — no empty control appears.
+
+                Unlike the marketing site's version, the options are plain
+                links rather than <button data-language="..."> driven by JS:
+                WHMCS switches locale server-side from the ?language= query
+                parameter, so a link does the work with nothing to script,
+                and the current locale is marked from $activeLocale rather
+                than tracked in the browser.
+            *}
             {if $languagechangeenabled && count($locales) > 1}
-                <li>
-                    <a href="#" class="choose-language" data-toggle="popover" id="languageChooser">
-                        {$activeLocale.localisedName}
-                        <b class="caret"></b>
-                    </a>
-                    <div id="languageChooserContent" class="hidden">
-                        <ul>
+                {assign var="offeredLanguages" value=['english', 'bengali']}
+                <li class="language-nav-item">
+                    <div class="language-selector" id="languageChooser">
+                        <img src="{$WEB_ROOT}/templates/{$template}/img/flags/{if $activeLocale.language == 'bengali'}bd{else}us{/if}.png" alt="{$activeLocale.localisedName}" class="flag-icon">
+                        <span>{$activeLocale.localisedName}</span>
+                        <i class="fas fa-chevron-down"></i>
+
+                        <div class="language-dropdown-menu">
                             {foreach $locales as $locale}
-                                <li>
-                                    <a href="{$currentpagelinkback}language={$locale.language}">{$locale.localisedName}</a>
-                                </li>
+                                {if in_array($locale.language, $offeredLanguages)}
+                                    <a href="{$currentpagelinkback}language={$locale.language}" class="language-option{if $locale.language == $activeLocale.language} active{/if}">
+                                        <img src="{$WEB_ROOT}/templates/{$template}/img/flags/{if $locale.language == 'bengali'}bd{else}us{/if}.png" alt="{$locale.localisedName}" class="flag-icon">
+                                        <span>{$locale.localisedName}</span>
+                                    </a>
+                                {/if}
                             {/foreach}
-                        </ul>
+                        </div>
                     </div>
                 </li>
             {/if}

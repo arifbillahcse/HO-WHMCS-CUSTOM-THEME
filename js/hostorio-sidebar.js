@@ -128,9 +128,45 @@
         });
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
+    // Header language switcher (header.tpl). Kept out of init() above
+    // because that returns early when #main-menu is absent, and login
+    // and registration render without the rail but with the header.
+    function initLanguageSelector() {
+        var selector = document.querySelector('.language-selector');
+        if (!selector) {
+            return;
+        }
+
+        // Bound on the document rather than the trigger so the same
+        // handler closes the panel on an outside click.
+        document.addEventListener('click', function (event) {
+            if (selector.contains(event.target)) {
+                // Each option is a real link; let it navigate rather
+                // than collapsing the panel under the pointer first.
+                if (event.target.closest('.language-option')) {
+                    return;
+                }
+                selector.classList.toggle('active');
+            } else {
+                selector.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' || event.keyCode === 27) {
+                selector.classList.remove('active');
+            }
+        });
+    }
+
+    function boot() {
         init();
+        initLanguageSelector();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
     }
 }());
