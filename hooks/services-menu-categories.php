@@ -155,8 +155,49 @@ function addProductCategories($servicesItem)
 
     $itemClass = get_class($servicesItem);
     if (!method_exists($itemClass, 'create')) {
+        // Confirmed on a real install: this is where it stops. $itemClass
+        // is WHMCS\View\Menu\Item — a real object, addChild() exists on
+        // it, and the tblproductgroups query above returned rows, so
+        // every other guard already passed. create() specifically is
+        // missing. That class ships ionCube-encoded, so its source
+        // cannot be read (and WHMCS's license forbids decompiling it
+        // even if it could be) — Reflection is the legitimate way to
+        // ask an already-loaded class what its real constructor and
+        // static methods are, since that queries the live class
+        // definition rather than decoding anything.
         if (function_exists('logActivity')) {
-            logActivity('services-menu-categories: ' . $itemClass . '::create() not available — categories skipped');
+            $info = $itemClass . '::create() not available.';
+            try {
+                $ref = new \ReflectionClass($itemClass);
+                $ctor = $ref->getConstructor();
+                if ($ctor) {
+                    $params = [];
+                    foreach ($ctor->getParameters() as $p) {
+                        $type = $p->hasType() ? $p->getType() . ' ' : '';
+                        $default = $p->isDefaultValueAvailable()
+                            ? '=' . var_export($p->getDefaultValue(), true)
+                            : '';
+                        $params[] = $type . '$' . $p->getName() . $default;
+                    }
+                    $info .= ' Constructor(' . implode(', ', $params) . '), '
+                        . ($ctor->isPublic() ? 'public' : 'not public') . '.';
+                } else {
+                    $info .= ' No declared constructor.';
+                }
+                // IS_PUBLIC | IS_STATIC is an OR filter, not AND — it
+                // also returns every plain public method (including
+                // __construct). Filtered to true statics explicitly.
+                $staticMethods = [];
+                foreach ($ref->getMethods(\ReflectionMethod::IS_PUBLIC) as $m) {
+                    if ($m->isStatic()) {
+                        $staticMethods[] = $m->getName();
+                    }
+                }
+                $info .= ' Public static methods: ' . (implode(', ', $staticMethods) ?: '(none)') . '.';
+            } catch (\Throwable $re) {
+                $info .= ' Reflection failed: ' . $re->getMessage();
+            }
+            logActivity('services-menu-categories: ' . $info . ' — categories skipped');
         }
         return;
     }
