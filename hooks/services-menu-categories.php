@@ -22,9 +22,15 @@
  * 2. Applies a small set of per-item tweaks to the Services and
  *    Support dropdowns — see $navTweaks below. Hides "View Available
  *    Addons" (Services) and "Downloads" (Support); renames "Order New
- *    Services" to "Order Hosting". To add another later, add an entry
- *    under the right parent's label in $navTweaks; nothing else in
- *    this file needs to change.
+ *    Services" to "Order/Add Services". To add another later, add an
+ *    entry under the right parent's label in $navTweaks; nothing else
+ *    in this file needs to change.
+ *
+ * 3. Renames "Home" itself to "Dashboard" on the primary navbar, and
+ *    the account dropdown's "Hello, {name}!" to "Profile {name}!" on
+ *    the secondary navbar — a separate WHMCS menu carrying Support,
+ *    Open Ticket, and that greeting, built from its own
+ *    ClientAreaSecondaryNavbar hook point.
  *
  * NOT LIVE-TESTED: everything else in this theme was verified by
  * actually rendering it through Smarty. This hook runs against WHMCS's
@@ -58,6 +64,11 @@ add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
 
         $servicesItem = findChildByLabel($primaryNavbar, 'services');
         addProductCategories($servicesItem);
+
+        // "Home" itself, not a child of it — findChildByLabel() finds
+        // the item, renameTopLevelByLabel() renames whatever matching
+        // item it finds directly on $primaryNavbar.
+        renameTopLevelByLabel($primaryNavbar, 'home', 'Dashboard');
 
         // Parent label => tweaks applied to that parent's own children.
         // hideByName matches a child's exact, confirmed getName();
@@ -94,6 +105,61 @@ add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
         }
     }
 });
+
+// The "Hello, {name}!" account dropdown is a separate menu from
+// Home/Services/Domains/Billing — WHMCS builds it from its own
+// ClientAreaSecondaryNavbar hook point, alongside Support and Open
+// Ticket.
+add_hook('ClientAreaSecondaryNavbar', 1, function ($secondaryNavbar) {
+    try {
+        if (!is_object($secondaryNavbar) || !method_exists($secondaryNavbar, 'getChildren')) {
+            return;
+        }
+
+        renameAccountGreeting($secondaryNavbar);
+    } catch (\Throwable $e) {
+        if (function_exists('logActivity')) {
+            logActivity('services-menu-categories secondary-navbar hook error: ' . $e->getMessage());
+        }
+    }
+});
+
+/**
+ * Renames a direct child of $navbar whose label matches $label,
+ * case-insensitive — for items that are themselves the target
+ * ("Home"), as opposed to applyNavTweaks() below, which renames
+ * children of an already-found parent ("Order New Services" under
+ * "Services").
+ */
+function renameTopLevelByLabel($navbar, $label, $newLabel)
+{
+    $item = findChildByLabel($navbar, $label);
+    if ($item && method_exists($item, 'setLabel')) {
+        $item->setLabel($newLabel);
+    }
+}
+
+/**
+ * WHMCS labels the account dropdown "Hello, {name}!" — the name is
+ * per-user, so it cannot be matched as a fixed string the way every
+ * other rename in this file is. Matches by the "Hello" lead-in
+ * instead and swaps only that word for "Profile", keeping whatever
+ * name WHMCS filled in: "Hello, Arif!" -> "Profile Arif!".
+ */
+function renameAccountGreeting($navbar)
+{
+    foreach ($navbar->getChildren() as $item) {
+        if (!method_exists($item, 'getLabel') || !method_exists($item, 'setLabel')) {
+            continue;
+        }
+
+        $label = trim($item->getLabel());
+        if (stripos($label, 'hello') === 0) {
+            $item->setLabel(preg_replace('/^hello,?\s*/i', 'Profile ', $label));
+            return;
+        }
+    }
+}
 
 /**
  * First top-level child of $navbar whose label matches, case-insensitive.
