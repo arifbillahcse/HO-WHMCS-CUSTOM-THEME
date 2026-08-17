@@ -2774,6 +2774,212 @@ a[id$="-order-button"]:active {
 
 
 /* ===========================================================
+   6b. DYNAMIC STORE — pricing cards
+
+   The grid_of_cards block on Dynamic Store landing pages
+   (/store/<category>), brought in line with the pricing cards on
+   hostorio.com. Markup: store/dynamic/partial/grid_of_cards.tpl.
+
+   EVERY RULE HERE IS PREFIXED .dynamic-landing-page ON PURPOSE.
+   WHMCS's own store/dynamic/assets/dynamic-store.css defines these
+   same classes and is linked from inside the page body (see
+   store/dynamic/index.tpl), so it loads AFTER this file and would win
+   any tie on source order. The prefix raises specificity to (0,2,0)
+   against its (0,1,0), which wins regardless of load order and
+   without !important. It is also the wrapper those cards always sit
+   inside, so it costs nothing in reach.
+
+   Not written into dynamic-store.css itself, even though that would
+   avoid the specificity question: that file is WHMCS's, and a WHMCS
+   upgrade replaces it and would silently take these changes with it.
+   Living here means one file to bump and one file to diff after an
+   upgrade.
+
+   Colors are literals rather than this theme's var(--...) tokens.
+   Dynamic Store pages set their own --primary-color / --accent-color
+   etc. per page from the branding configured in admin (the inline
+   style block on .dynamic-landing-page), so those variable names
+   already mean something else in this subtree — reusing them would
+   read as the admin's branding while silently resolving to it.
+   =========================================================== */
+
+/* Stock is minmax(320px, 1fr), which yields three across in the
+   width this theme's content column gives it; hostorio.com shows
+   four. 240px is the floor that fits four in the same measure and
+   still collapses to two, then one, on narrower screens — auto-fit
+   handles every step, so no breakpoint of its own is needed. */
+.dynamic-landing-page .pricing-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    align-items: stretch;
+}
+
+.dynamic-landing-page .pricing-card {
+    padding: 32px 24px;
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    overflow: hidden;
+}
+
+.dynamic-landing-page .pricing-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+}
+
+/* Featured plan: orange edge plus a full-width ribbon across the top,
+   matching hostorio.com — which singles the card out by colour, not
+   by scaling it larger than its neighbours.
+
+   48px of top padding clears the ~37px ribbon and leaves this card's
+   content only ~16px lower than the others, the same small offset the
+   marketing site has. More than that and the card reads as out of
+   step with the row rather than as the one being highlighted. */
+.dynamic-landing-page .pricing-card-featured {
+    padding-top: 48px;
+    border-color: var(--secondary);
+}
+
+.dynamic-landing-page .pricing-ribbon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    padding: 8px 12px;
+    background-color: var(--secondary);
+    color: var(--text-inverted);
+    font-size: 0.8125rem;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+}
+
+/* Header: icon, name, tagline, price — separated from the feature
+   list by the same rule hostorio.com draws under the price. */
+.dynamic-landing-page .pricing-header {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-muted);
+}
+
+.dynamic-landing-page .plan-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    border-radius: var(--rounding-md);
+    background-color: var(--primary-50);
+    color: var(--primary-accented);
+    font-size: 1.5rem;
+}
+
+.dynamic-landing-page .pricing-card-featured .plan-icon {
+    background-color: rgba(255, 120, 0, 0.12);
+    color: var(--secondary);
+}
+
+.dynamic-landing-page .plan-name {
+    margin: 0 0 6px;
+    font-size: 1.375rem;
+    font-weight: var(--font-weight-bold);
+}
+
+/* min-height reserves two lines whether or not the text fills them.
+   Without it a one-line tagline lifts that card's price, rule and
+   entire feature list ~22px above its neighbours', and the row reads
+   as misaligned even though the cards themselves are equal height —
+   grid stretches the cards, but nothing aligns their internals. Two
+   lines is the common case at four-across; a longer tagline wraps
+   past it rather than being clipped. */
+.dynamic-landing-page .plan-description {
+    min-height: 2.8125rem;
+    margin: 0 0 20px;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+.dynamic-landing-page .plan-price {
+    margin-bottom: 0;
+}
+
+.dynamic-landing-page .price-amount {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+/* Left-aligned against the centred header, as on hostorio.com: a
+   centred list of differing-length lines gives the eye no common
+   edge to follow when comparing one plan against the next. */
+.dynamic-landing-page .plan-features {
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.dynamic-landing-page .feature-item {
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+}
+
+/* flex-basis 0 / no shrink so the tick keeps its own width and stays
+   put when the feature text wraps to a second line. */
+.dynamic-landing-page .feature-item .feature-check,
+.dynamic-landing-page .feature-item .feature-cross {
+    flex: 0 0 auto;
+    margin-top: 3px;
+}
+
+.dynamic-landing-page .feature-item .feature-check {
+    color: var(--primary-accented);
+}
+
+.dynamic-landing-page .feature-item .feature-cross {
+    color: var(--text-muted);
+}
+
+.dynamic-landing-page .pricing-card-featured .feature-item .feature-check {
+    color: var(--secondary);
+}
+
+/* Orange, per this theme's standing rule that a purchase CTA is
+   always orange. Stock paints this with the page's --primary-color,
+   which on a Hostorio-branded store page is the navy this theme
+   reserves for chrome. */
+.dynamic-landing-page .plan-button {
+    padding: 14px 24px;
+    background: var(--secondary);
+    border-color: var(--secondary);
+    border-radius: 10px;
+}
+
+.dynamic-landing-page .plan-button:hover {
+    background: var(--secondary-lifted);
+    border-color: var(--secondary-lifted);
+    box-shadow: 0 4px 12px rgba(255, 120, 0, 0.32);
+}
+
+@media (max-width: 480px) {
+    .dynamic-landing-page .pricing-card {
+        padding: 24px 20px;
+    }
+
+    .dynamic-landing-page .pricing-card-featured {
+        padding-top: 44px;
+    }
+
+    .dynamic-landing-page .price-amount {
+        font-size: 2.125rem;
+    }
+}
+
+
+/* ===========================================================
    7. RESPONSIVE
 
    992px is the shell's breakpoint: at or above it the rail is a
