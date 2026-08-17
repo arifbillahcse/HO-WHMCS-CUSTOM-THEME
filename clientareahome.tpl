@@ -5,20 +5,31 @@
 {*
     Redesigned from one connected strip of tiles into four separate
     cards, each carrying an accent color end-to-end (icon, count,
-    underline) plus its own "+ Order..." action — a second, distinct
-    link to a different destination than the tile's own click-through
-    (e.g. "view my services" vs. "order a new one"), not a duplicate
-    of it. Since the outer .tile div still carries the stock onclick
-    that navigates the whole card, the inner action link needs
-    event.stopPropagation() or clicking it would fire both — and the
-    outer onclick, being a plain assignment, would win the race and
-    send the customer to the tile's own link instead of the action's.
+    underline) plus its own action link along the bottom edge.
 
-    Only $clientsstats fields already used by the stock template
-    appear here — WHMCS does not expose ready-made invoice amount
-    totals (overdue/unpaid in currency) to this template, so the
-    Invoices tile intentionally has no "+" action rather than
-    guessing at an unverified field.
+    On the first three the action is a "+ Order..." / "+ Open..." that
+    leads somewhere different from the card's own click-through ("view
+    my services" vs. "order a new one"). Invoices is the exception: a
+    customer cannot raise an invoice, so there is no "create" companion
+    to point at and its action repeats the card's own destination. It
+    is carried anyway, and takes fa-arrow-right rather than the fa-plus
+    the others use — a plus would advertise an action the customer does
+    not have. Without it that card renders visibly shorter than its
+    three neighbours, since the action row is what sets their height.
+
+    Since the outer .ho-stat-tile div carries an onclick that navigates
+    the whole card, each inner action link needs event.stopPropagation()
+    or clicking it fires both — and the outer onclick, being a plain
+    assignment, would win the race and send the customer to the card's
+    own link instead of the action's. That is moot on Invoices while
+    the two point at the same page, but is kept so every card follows
+    one pattern and a future change of destination is safe.
+
+    Only $clientsstats fields already used by the stock template appear
+    here — WHMCS does not expose ready-made invoice amount totals
+    (overdue/unpaid in currency) to this template, so the Invoices card
+    counts unpaid invoices rather than showing a currency total, which
+    would mean guessing at an unverified field.
 *}
 <div class="ho-stat-tiles">
     <div class="row">
@@ -93,6 +104,9 @@
                     <span class="ho-stat-tile-num">{$clientsstats.numunpaidinvoices}</span>
                 </a>
                 <div class="ho-stat-tile-underline"></div>
+                <a href="clientarea.php?action=invoices" class="ho-stat-tile-action" onclick="event.stopPropagation()">
+                    <i class="fas fa-arrow-right"></i> Open Invoice
+                </a>
             </div>
         </div>
     </div>
