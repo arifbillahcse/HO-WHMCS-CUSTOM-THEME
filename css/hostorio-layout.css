@@ -672,8 +672,9 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
 }
 
 /* Product-category links hooks/services-menu-categories.php appends
-   after the stock Services children (My Services, Order New Services,
-   View Available Addons). They are appended, not swapped in, so there
+   after the stock Services children — just "My Services" now that the
+   same hook removes "Order New Services" and "View Available Addons"
+   entirely. They are appended, not swapped in, so there
    is no fixed position to key a :first-child rule off — the adjacent-
    sibling combinator draws a line only where a stock item is
    immediately followed by the first category item, reading as the

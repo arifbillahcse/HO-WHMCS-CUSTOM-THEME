@@ -18,11 +18,13 @@
  *    Appends it, reading tblproductgroups directly so a category added
  *    in Admin -> Products/Services -> Product Groups appears here
  *    automatically, with no further edits. pinServicesTopItems() pins
- *    "My Services" (order=1) and "Order New Services" (order=2) above
- *    these, and each category gets its own setOrder() (3, 4, 5, ...)
+ *    "My Services" (order=1) above these and removes "Order New
+ *    Services" entirely (the category links below already cover
+ *    ordering; nothing in the finished menu leaves an order=2 gap
+ *    behind), and each category gets its own setOrder() (3, 4, 5, ...)
  *    in the same sequence as tblproductgroups.order (the admin-
- *    configured order) — without that, everything after the two
- *    pinned items rendered alphabetically instead.
+ *    configured order) — without that, everything after "My Services"
+ *    rendered alphabetically instead.
  *
  * 2. Applies a small set of per-item tweaks to the Services and
  *    Support dropdowns — see $navTweaks below. Hides "View Available
@@ -182,14 +184,18 @@ function renameAccountGreeting($navbar)
 }
 
 /**
- * Forces "My Services" and "Order New Services" to the very top of the
- * Services dropdown.
+ * Forces "My Services" to the very top of the Services dropdown, and
+ * drops "Order New Services" ("Order/Add Services", after this file's
+ * own rename) from the dropdown entirely — a direct request: the
+ * client only wants a way to see what they already have, not a menu
+ * entry for buying more, once the category links below already cover
+ * ordering.
  *
  * REVISION: the first version of this function called setOrder(1) /
  * setOrder(2) directly on the two EXISTING stock items and left it at
  * that — setOrder() is real and documented
  * (developers.whmcs.com/themes/navigation/), but confirmed live
- * against an actual install (see the screenshot behind this commit),
+ * against an actual install (see the screenshot behind that commit),
  * it had no visible effect: both items still rendered AFTER every
  * category, in whatever position WHMCS's own core menu-building gave
  * them before this hook ever ran. The categories addProductCategories()
@@ -201,14 +207,14 @@ function renameAccountGreeting($navbar)
  * parent, not re-sorting the collection when an already-present
  * item's order is changed later.
  *
- * This version acts on that: rather than reordering "My Services" and
- * "Order New Services" in place, it removes each one and re-adds it
- * as a fresh child — the same addChild()-then-setOrder() sequence
- * already proven to work for the categories — carrying over its own
- * uri/label/icon so nothing about the link itself changes, only its
- * position and (for "Order New Services") giving moveChildToFront()
- * an explicit new label so the separate rename in $navTweaks has
- * nothing left to do for it.
+ * "My Services" acts on that: rather than reordering it in place, it
+ * is removed and re-added as a fresh child — the same
+ * addChild()-then-setOrder() sequence already proven to work for the
+ * categories — carrying over its own uri/label/icon so nothing about
+ * the link itself changes, only its position.
+ *
+ * "Order New Services" needs none of that, since removing it has no
+ * position to get right — see removeChildByLabel() below.
  */
 function pinServicesTopItems($servicesItem)
 {
@@ -217,7 +223,7 @@ function pinServicesTopItems($servicesItem)
     }
 
     moveChildToFront($servicesItem, 'my services', null, 1);
-    moveChildToFront($servicesItem, 'order new services', 'Order/Add Services', 2);
+    removeChildByLabel($servicesItem, 'order new services');
 }
 
 /**
@@ -287,6 +293,54 @@ function moveChildToFront($parentItem, $originalLabel, $newLabel, $order)
     } catch (\Throwable $e) {
         if (function_exists('logActivity')) {
             logActivity("services-menu-categories: moveChildToFront('$originalLabel') failed: " . $e->getMessage());
+        }
+    }
+}
+
+/**
+ * Removes $parentItem's child labeled $label (case-insensitive) —
+ * matched by getLabel(), the same convention every lookup in this
+ * file uses, not a guessed internal name.
+ *
+ * Logs every branch for the same reason moveChildToFront() does: a
+ * silent no-op here would look identical to "already removed" the
+ * next time someone checks the live menu, with nothing in the
+ * Activity Log to tell the two apart.
+ */
+function removeChildByLabel($parentItem, $label)
+{
+    if (!method_exists($parentItem, 'getChildren') || !method_exists($parentItem, 'removeChild')) {
+        if (function_exists('logActivity')) {
+            logActivity("services-menu-categories: removeChildByLabel('$label') skipped — parent item missing getChildren/removeChild");
+        }
+        return;
+    }
+
+    $child = findChildByLabel($parentItem, $label);
+    if (!$child) {
+        if (function_exists('logActivity')) {
+            logActivity("services-menu-categories: removeChildByLabel('$label') — no child matched this label, nothing to remove");
+        }
+        return;
+    }
+
+    $name = method_exists($child, 'getName') ? $child->getName() : null;
+    if (!$name) {
+        if (function_exists('logActivity')) {
+            logActivity("services-menu-categories: removeChildByLabel('$label') — matched child but getName() came back empty, leaving it in place rather than guess at an identifier to remove");
+        }
+        return;
+    }
+
+    try {
+        $parentItem->removeChild($name);
+
+        if (function_exists('logActivity')) {
+            logActivity("services-menu-categories: removeChildByLabel('$label') — removed");
+        }
+    } catch (\Throwable $e) {
+        if (function_exists('logActivity')) {
+            logActivity("services-menu-categories: removeChildByLabel('$label') failed: " . $e->getMessage());
         }
     }
 }
@@ -367,14 +421,19 @@ function addProductCategories($servicesItem)
     // which could never have worked — it never had a factory to give
     // the class it was trying to construct.
     $added = 0;
-    // 1 and 2 are reserved for "My Services" / "Order New Services",
-    // pinned by pinServicesTopItems() before this function runs.
-    // Assigning 3, 4, 5, ... here — in the same order this query
-    // already sorted the groups (tblproductgroups.order ascending,
-    // the admin-configured order) — is what fixes categories
-    // rendering alphabetically instead of matching that order: see
-    // the comment on pinServicesTopItems() for why setOrder() is
-    // needed at all rather than relying on insertion order.
+    // Starts at 3, not 2: order=1 is "My Services", pinned by
+    // pinServicesTopItems() before this function runs. There is no
+    // order=2 item any more — "Order New Services" used to hold that
+    // slot before pinServicesTopItems() started removing it outright
+    // — but categories still start one past "My Services" rather than
+    // filling the gap, so a later change that brings order=2 back
+    // does not have to touch this number too. Assigning 3, 4, 5, ...
+    // here — in the same order this query already sorted the groups
+    // (tblproductgroups.order ascending, the admin-configured order)
+    // — is what fixes categories rendering alphabetically instead of
+    // matching that order: see the comment on pinServicesTopItems()
+    // for why setOrder() is needed at all rather than relying on
+    // insertion order.
     $order = 3;
     foreach ($groups as $group) {
         if (empty($group->name) || empty($group->id)) {
