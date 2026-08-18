@@ -2883,10 +2883,11 @@ a[id$="-order-button"]:active {
     font-size: 1.5rem;
 }
 
-.dynamic-landing-page .pricing-card-featured .plan-icon {
-    background-color: rgba(255, 120, 0, 0.12);
-    color: var(--secondary);
-}
+/* The featured card is singled out by its ribbon and border ONLY.
+   Its icon badge and feature ticks stay the same blue as every other
+   card's, as on hostorio.com — recolouring those too made the card
+   read as a different kind of product rather than as the same set of
+   plans with one highlighted. */
 
 .dynamic-landing-page .plan-name {
     margin: 0 0 6px;
@@ -2928,30 +2929,55 @@ a[id$="-order-button"]:active {
 
 .dynamic-landing-page .feature-item {
     align-items: flex-start;
-    gap: 10px;
-    padding: 6px 0;
+    gap: 12px;
+    padding: 7px 0;
     font-size: 0.9375rem;
-    line-height: 1.45;
+    line-height: 1.5;
 }
 
-/* flex-basis 0 / no shrink so the tick keeps its own width and stays
-   put when the feature text wraps to a second line. */
+/* Value carries the weight, the label does not — "5GB NVMe Storage"
+   reads at a glance when the number is the bold part. Applies to the
+   name: value form; a feature entered as name => true renders as
+   plain text with no <b> to catch this. */
+.dynamic-landing-page .feature-item b {
+    font-weight: var(--font-weight-bold);
+    color: var(--text-heading);
+}
+
+/* Tick rendered as a filled rounded badge rather than a bare glyph,
+   matching hostorio.com. The element is Font Awesome's own <i>, so
+   the glyph arrives via its ::before — inline-flex with centred
+   alignment centres that glyph inside the box without needing any
+   extra markup. Sized in px, not em: it should stay a fixed chip
+   against the feature text beside it rather than scaling with it.
+
+   flex: 0 0 auto stops the badge being squeezed when a long feature
+   wraps to a second line; margin-top nudges it onto the first line's
+   optical centre rather than its box top. */
 .dynamic-landing-page .feature-item .feature-check,
 .dynamic-landing-page .feature-item .feature-cross {
+    display: inline-flex;
     flex: 0 0 auto;
-    margin-top: 3px;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    border-radius: 5px;
+    font-size: 9px;
+    line-height: 1;
 }
 
 .dynamic-landing-page .feature-item .feature-check {
-    color: var(--primary-accented);
+    background-color: var(--primary-accented);
+    color: var(--text-inverted);
 }
 
+/* Muted rather than a red "error" tone: a feature a plan does not
+   include is an absence, not a fault. */
 .dynamic-landing-page .feature-item .feature-cross {
-    color: var(--text-muted);
-}
-
-.dynamic-landing-page .pricing-card-featured .feature-item .feature-check {
-    color: var(--secondary);
+    background-color: var(--bg-accented);
+    color: var(--text-lifted);
 }
 
 /* Orange, per this theme's standing rule that a purchase CTA is
