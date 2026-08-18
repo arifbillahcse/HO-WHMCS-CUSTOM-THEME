@@ -22,14 +22,14 @@
     previous copy and the change appears not to have deployed at all.
 
     BUMP THIS STRING on every deploy that touches css/custom.css,
-    css/hostorio-layout.css, js/hostorio-sidebar.js, or
-    js/hostorio-product-overview.js.
+    css/hostorio-layout.css, js/hostorio-sidebar.js,
+    js/hostorio-product-overview.js, or js/hostorio-store-cards.js.
 
     A literal rather than filemtime() because WHMCS's Smarty security
     policy may refuse unregistered PHP calls, and a stale stylesheet is
     a better failure than a fatal template error.
 *}
-{assign var="hoAssetVersion" value="ho-16"}
+{assign var="hoAssetVersion" value="ho-17"}
 {*
     custom.css previously rendered as bare {$__assetPath__}, with no
     version query at all — so an edit to the token layer could never
@@ -75,6 +75,14 @@
      headings are not present, and gating it on $templatefile would
      need to name every action value that page can be reached under. -->
 <script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-product-overview.js?v={$hoAssetVersion}" defer></script>
+<!-- Reshapes the order form's product cards on /store/<category> and
+     cart.php?gid=N: turns each product's <br>-separated description
+     into a real ticked list, and lifts the products out of WHMCS's
+     two-per-row Bootstrap rows into one grid. That markup comes from
+     templates/orderforms/, not this theme, and neither change is
+     reachable from CSS — see the file header. No-op on every other
+     page, since it keys off #order-standard_cart. -->
+<script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-store-cards.js?v={$hoAssetVersion}" defer></script>
 
 {if $templatefile == "viewticket" && !$loggedin}
   <meta name="robots" content="noindex" />

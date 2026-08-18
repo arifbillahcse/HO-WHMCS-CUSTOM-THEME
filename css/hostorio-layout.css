@@ -3219,6 +3219,327 @@ a[id$="-order-button"]:active {
 
 
 /* ===========================================================
+   6d. ORDER FORM — product cards and domain pricing
+
+   /store/<category>, cart.php?gid=N and the cart's Register Domain
+   page. All three render through WHMCS's Order Form Template
+   (templates/orderforms/standard_cart/), NOT through this theme —
+   confirmed from those pages' own rendered HTML, pasted in full,
+   not guessed.
+
+   THIS IS NOT THE DYNAMIC STORE. Section 6b above styles
+   store/dynamic/partial/grid_of_cards.tpl (.pricing-card,
+   .plan-features), which is a different, newer WHMCS subsystem that
+   only renders once Dynamic Store landing pages are configured in
+   admin. On this install /store/<category> currently resolves to the
+   order form instead, so none of section 6b reaches these pages and
+   the two sections do not overlap.
+
+   EVERY RULE IS SCOPED UNDER #order-standard_cart. That template set
+   links its own stylesheet from inside the page body, so it loads
+   after this file and wins any tie on source order. The id is (1,0,0)
+   and settles it outright — the same problem the Checkout button and
+   Order Summary heading further up had to use !important for, solved
+   here without it because this markup gives us an id to hang on.
+
+   Markup for the product cards is reshaped first by
+   js/hostorio-store-cards.js — see that file for why CSS alone cannot
+   do it. The rules below assume its .ho-product-grid /
+   .ho-product-features output, and fall back harmlessly to WHMCS's own
+   two-per-row Bootstrap layout if that script has not run.
+   =========================================================== */
+
+/* --- Product cards ---------------------------------------- */
+
+.ho-product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-3);
+    align-items: stretch;
+    margin-bottom: var(--space-4);
+}
+
+#order-standard_cart .ho-product-grid .product.ho-product-card {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    margin: 0;
+    padding: var(--space-4) var(--space-3);
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: box-shadow var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+#order-standard_cart .ho-product-grid .product.ho-product-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+}
+
+#order-standard_cart .product.ho-product-card header {
+    padding: 0 0 var(--space-3);
+    background: none;
+    border: 0;
+    color: var(--text-heading);
+    font-family: var(--font-family-heading);
+    font-size: 1.375rem;
+    font-weight: var(--font-weight-bold);
+}
+
+/* Price sits directly under the name, above the feature list,
+   separated by a rule — the order hostorio.com uses. Stock leaves it
+   in the footer BELOW the features, so the one number a customer
+   compares across cards was the last thing on each one.
+
+   The node is moved by js/hostorio-store-cards.js, not ordered here:
+   .product-pricing is a child of <footer>, so `order` would only
+   reposition it within the footer, which it already leads. */
+#order-standard_cart .product.ho-product-card .product-pricing {
+    padding: 0 0 var(--space-3);
+    margin-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-muted);
+    color: var(--text-lifted);
+    font-size: var(--text-md);
+}
+
+#order-standard_cart .product.ho-product-card .product-pricing .price {
+    display: block;
+    color: var(--text-heading);
+    font-family: var(--font-family-heading);
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+#order-standard_cart .product.ho-product-card .product-desc {
+    flex: 1 1 auto;
+    padding: 0;
+    text-align: left;
+}
+
+/* Built by js/hostorio-store-cards.js from the <br>-separated
+   description. Left-aligned against the centred header for the same
+   reason as the Dynamic Store cards: a centred list of
+   differing-length lines gives the eye no common edge to compare
+   plans down. */
+.ho-product-features {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+
+.ho-product-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: var(--text);
+}
+
+.ho-product-feature-check {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    border-radius: 5px;
+    background-color: var(--primary-accented);
+    color: var(--text-inverted);
+    font-size: 9px;
+    line-height: 1;
+}
+
+/* footer holds the Order Now button. margin-top:auto pins it to the
+   card's bottom edge so the buttons line up across a row whose
+   feature lists are different lengths. */
+#order-standard_cart .product.ho-product-card footer {
+    margin-top: auto;
+    padding: var(--space-3) 0 0;
+    background: none;
+    border: 0;
+}
+
+/* The button itself is already orange sitewide via the
+   a[id$="-order-button"] rule in section 6 — only its shape and width
+   are set here, so the two rules do not restate the same colour. */
+#order-standard_cart .product.ho-product-card footer a[id$="-order-button"] {
+    display: block;
+    width: 100%;
+    padding: 12px var(--space-3);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: var(--font-weight-bold);
+}
+
+
+/* --- Domain pricing (cart Register Domain page) ------------ */
+
+/* NOTE: this is NOT the same markup as domain-pricing.tpl in this
+   theme, which section 6c styles. That template renders WHMCS's
+   standalone Domain Pricing page; the cart's own Register Domain step
+   builds its own version of the same information — .featured-tld in
+   col-lg-4, filters as a.badge rather than a.label, and the price
+   table as div rows rather than a <table>. Both exist, so both are
+   styled, separately, against their own real markup. */
+
+#order-standard_cart .featured-tlds-container .featured-tld {
+    margin-bottom: var(--space-3);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+#order-standard_cart .featured-tlds-container .featured-tld:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Retires the per-TLD rainbow (.price.com blue, .price.shop orange,
+   .price.net yellow, ...) for one brand fill, same reasoning as
+   section 6c. The id prefix puts this at (1,2,0) against those rules'
+   (0,3,0), so it wins on specificity regardless of which stylesheet
+   carries them or in what order. */
+#order-standard_cart .featured-tld .price {
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--primary-50);
+    border-radius: 0;
+    color: var(--primary);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.4;
+}
+
+#order-standard_cart .featured-tld:hover .price {
+    background-color: var(--secondary);
+    color: var(--text-inverted);
+}
+
+/* Category filters. This page renders them as a.badge.badge-secondary
+   (Bootstrap 4) rather than the a.label of the theme's own template,
+   and marks the active one with .badge-success. */
+#order-standard_cart .tld-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+#order-standard_cart .tld-filters a.badge {
+    margin: 0;
+    padding: var(--space-1) var(--space-3);
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text);
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.6;
+    transition: background-color var(--transition-fast),
+                border-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+#order-standard_cart .tld-filters a.badge:hover,
+#order-standard_cart .tld-filters a.badge:focus {
+    border-color: var(--primary-accented);
+    color: var(--primary-accented);
+    text-decoration: none;
+}
+
+#order-standard_cart .tld-filters a.badge-success,
+#order-standard_cart .tld-filters a.badge-success:hover,
+#order-standard_cart .tld-filters a.badge-success:focus {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--text-inverted);
+}
+
+/* Price table header. Stock is a #efefef fill under a 6px #97b5d2
+   rule, with every other cell shifted to #f5f5f5 / #336699 — two
+   blues from outside this palette, applied alternately, so the header
+   read as striped rather than as one bar. */
+#order-standard_cart .tld-pricing-header,
+#order-standard_cart .tld-pricing-header div {
+    background-color: var(--primary);
+    border: 0;
+    border-radius: 0;
+    color: var(--text-inverted);
+    font-family: var(--font-family-heading);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+#order-standard_cart .tld-pricing-header {
+    border-radius: var(--rounding-md) var(--rounding-md) 0 0;
+    overflow: hidden;
+}
+
+#order-standard_cart .tld-row {
+    padding-top: var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--border-muted);
+}
+
+#order-standard_cart .tld-row.highlighted,
+#order-standard_cart .tld-row:hover {
+    background-color: var(--bg-muted);
+}
+
+#order-standard_cart .tld-row strong {
+    color: var(--text-heading);
+    font-weight: var(--font-weight-bold);
+}
+
+#order-standard_cart .tld-row small {
+    color: var(--text-muted);
+}
+
+/* The two promo boxes under the table ("Add Web Hosting" / "Transfer
+   your domain to us"). Stock leaves them as bare text blocks with a
+   Bootstrap .btn-warning and .btn-primary. */
+#order-standard_cart .domain-promo-box {
+    height: 100%;
+    padding: var(--space-4);
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+#order-standard_cart .domain-promo-box i {
+    color: var(--primary-accented);
+}
+
+#order-standard_cart .domain-promo-box .btn-warning,
+#order-standard_cart .domain-promo-box .btn-primary {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+    color: var(--text-inverted);
+    border-radius: var(--rounding-md);
+    font-weight: var(--font-weight-medium);
+}
+
+#order-standard_cart .domain-promo-box .btn-warning:hover,
+#order-standard_cart .domain-promo-box .btn-primary:hover {
+    background-color: var(--secondary-lifted);
+    border-color: var(--secondary-lifted);
+    color: var(--text-inverted);
+}
+
+
+/* ===========================================================
    7. RESPONSIVE
 
    992px is the shell's breakpoint: at or above it the rail is a
