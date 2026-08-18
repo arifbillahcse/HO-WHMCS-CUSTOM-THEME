@@ -977,7 +977,7 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
 
 
 /* ===========================================================
-   3c. STICKY SECONDARY SIDEBAR (IDEA 5)
+   3c. STICKY SECONDARY SIDEBAR
 
    Store page Categories/Actions sidebar converted to horizontal
    sticky bar at the top of the page. Stays visible while user
@@ -2815,6 +2815,13 @@ a[id$="-order-button"]:active {
 }
 
 .dynamic-landing-page .pricing-card {
+    /* Restated, not inherited from dynamic-store.css, even though that
+       file sets it too: the ribbon below is absolutely positioned
+       against this box, so if a WHMCS upgrade ever drops the property
+       there the ribbon would escape to the nearest positioned ancestor
+       and land somewhere arbitrary on the page. Declaring it here keeps
+       that dependency inside the file that relies on it. */
+    position: relative;
     padding: 32px 24px;
     border: 1px solid var(--border-muted);
     border-radius: var(--rounding-lg);

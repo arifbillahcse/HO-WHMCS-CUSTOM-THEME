@@ -18,15 +18,17 @@
                 "Most Popular" ribbon, plan icon and the tagline-above-price
                 order below are Hostorio changes to this stock partial, to
                 match the pricing cards on hostorio.com. Styling lives in
-                store/dynamic/assets/hostorio-store.css (this theme's own
-                file), not in dynamic-store.css, which is WHMCS's and gets
-                replaced on upgrade.
+                css/hostorio-layout.css, section "6b. DYNAMIC STORE" — not
+                in dynamic-store.css, which is WHMCS's and gets replaced on
+                upgrade.
 
                 The ribbon is driven by a FEATURE KEY, not by a WHMCS API:
                 give one plan a feature named "Most Popular" in the Dynamic
                 Store page builder (any value) and that card gets the
                 ribbon. The key is then skipped when the feature list is
-                rendered, so it never shows up as a bullet.
+                rendered, so it never shows up as a bullet, and the key
+                itself is reused as the ribbon's text so its casing is
+                whatever was typed in admin.
 
                 Deliberately a naming convention rather than a property on
                 $service or $plan: $service is admin-supplied page config
@@ -41,16 +43,16 @@
                 {$plan = $products[$service['slug']]}
                 {if !$plan}{continue}{/if}
 
-                {$isMostPopular = false}
+                {$ribbonLabel = ''}
                 {foreach $service['features'] as $feature => $value}
                     {if $feature|lower == 'most popular'}
-                        {$isMostPopular = true}
+                        {$ribbonLabel = $feature}
                     {/if}
                 {/foreach}
 
-                <div class="pricing-card{if $isMostPopular} pricing-card-featured{/if}">
-                    {if $isMostPopular}
-                        <div class="pricing-ribbon">{$config->ribbonLabel|default:'Most Popular'}</div>
+                <div class="pricing-card{if $ribbonLabel} pricing-card-featured{/if}">
+                    {if $ribbonLabel}
+                        <div class="pricing-ribbon">{$ribbonLabel}</div>
                     {/if}
 
                     <div class="pricing-header">
