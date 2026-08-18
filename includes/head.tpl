@@ -29,7 +29,7 @@
     policy may refuse unregistered PHP calls, and a stale stylesheet is
     a better failure than a fatal template error.
 *}
-{assign var="hoAssetVersion" value="ho-17"}
+{assign var="hoAssetVersion" value="ho-18"}
 {*
     custom.css previously rendered as bare {$__assetPath__}, with no
     version query at all — so an edit to the token layer could never

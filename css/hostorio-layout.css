@@ -3316,7 +3316,10 @@ a[id$="-order-button"]:active {
 
 #order-standard_cart .product.ho-product-card .product-desc {
     flex: 1 1 auto;
-    padding: 0;
+    float: left;
+    width: 100%;
+    padding: 0 10px;
+    font-size: 0.8em;
     text-align: left;
 }
 
@@ -3336,8 +3339,8 @@ a[id$="-order-button"]:active {
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    padding: 6px 0;
-    font-size: 0.9375rem;
+    padding: 1px 0;
+    font-size: 0.8375rem;
     line-height: 1.45;
     color: var(--text);
 }
@@ -3357,14 +3360,19 @@ a[id$="-order-button"]:active {
     line-height: 1;
 }
 
-/* footer holds the Order Now button. margin-top:auto pins it to the
-   card's bottom edge so the buttons line up across a row whose
-   feature lists are different lengths. */
+/* footer holds the Order Now button. Values below are the user's own
+   inspect-mode tuning, applied verbatim in place of the earlier
+   margin-top:auto pin (float is a no-op on this flex child, but is
+   kept to match what was tested live). */
 #order-standard_cart .product.ho-product-card footer {
-    margin-top: auto;
+    float: right;
+    width: 100%;
+    margin: 0;
     padding: var(--space-3) 0 0;
     background: none;
     border: 0;
+    font-size: .9em;
+    text-align: center;
 }
 
 /* The button itself is already orange sitewide via the
@@ -3536,6 +3544,190 @@ a[id$="-order-button"]:active {
     background-color: var(--secondary-lifted);
     border-color: var(--secondary-lifted);
     color: var(--text-inverted);
+}
+
+
+/* ===========================================================
+   6e. ORDER FORM — domain configuration (addons, nameservers)
+
+   cart.php?a=confdomains ("Domains Configuration": addon selection
+   and nameservers, reached right after a domain is added to the
+   cart). Same #order-standard_cart subsystem as section 6d above —
+   confirmed against this page's own rendered HTML, pasted in full,
+   not guessed — but no JS is needed here the way section 6d needed
+   one: the addon cards are already three real
+   <div class="col-sm-4"> columns, not two Bootstrap rows to reflow,
+   and the nameserver fields are five plain inputs with no
+   <br>-separated text to rebuild into anything. CSS alone reaches
+   everything this page needs.
+
+   Selectors chain onto a class or type the real markup already
+   carries — .addon-products, .primary-bg-color, the `input` type on
+   .form-control — the same reason section 6d had to chain
+   .product.ho-product-card: this template's own stylesheet loads
+   after this file on this page only, and a rule at the same
+   specificity ties and loses to it on source order. Nothing here is
+   invented to win that fight; every chained class or type is one the
+   pasted markup already shows present.
+
+   UNVERIFIED, called out at the rule it affects: the "Add to Cart"
+   bar is a plain <div>, not a <button>, so WHMCS's own JS almost
+   certainly swaps its text/class once a customer actually clicks it
+   (to "Remove", or similar) — that state was not visible in this
+   page's static HTML and is not guessed at here.
+   =========================================================== */
+
+/* Domain-name banner ("example.com") and the "Nameservers" divider.
+   Stock draws a plain rule with grayish text floating over it;
+   recoloured navy and bold so it reads as a section title rather
+   than a stray line. */
+#order-standard_cart .sub-heading {
+    position: relative;
+    height: 0;
+    margin: var(--space-5) 0 var(--space-4);
+    border-top: 1px solid var(--border-muted);
+    text-align: center;
+}
+
+#order-standard_cart .sub-heading span.primary-bg-color {
+    position: relative;
+    top: -13px;
+    padding: 0 var(--space-3);
+    background-color: var(--bg);
+    color: var(--primary);
+    font-family: var(--font-family-heading);
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-bold);
+}
+
+/* "Registration Period" / "Hosting" labels above the addon cards. */
+#order-standard_cart .cart-body form > .row > .col-sm-6 .form-group label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text-lifted);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+/* Addon cards (DNS Management / ID Protection / Email Forwarding).
+   Stock is a flat bordered box, a gray price footer, and a solid
+   green "+ Add to Cart" bar — unbranded, and once three sit in a row
+   indistinguishable from an unstyled HTML default. */
+#order-standard_cart .addon-products .panel-addon {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin: 0;
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+#order-standard_cart .addon-products .panel-addon:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+#order-standard_cart .addon-products .panel-addon .panel-body {
+    flex: 1 1 auto;
+    padding: var(--space-4) var(--space-3) var(--space-3);
+}
+
+#order-standard_cart .addon-products .panel-addon .panel-body label {
+    display: block;
+    margin-bottom: var(--space-2);
+    color: var(--text-heading);
+    font-family: var(--font-family-heading);
+    font-size: 1.0625rem;
+    font-weight: var(--font-weight-bold);
+}
+
+#order-standard_cart .addon-products .panel-addon .panel-body input[type="checkbox"] {
+    margin-right: 6px;
+    accent-color: var(--secondary);
+}
+
+#order-standard_cart .addon-products .panel-addon .panel-price {
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--bg-muted);
+    border-top: 1px solid var(--border-muted);
+    color: var(--text-lifted);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    text-align: center;
+}
+
+/* The clickable "add" bar — a plain div in the stock markup, not a
+   <button>, so :hover is the only interactive state CSS can style
+   with confidence. Orange, per this theme's standing rule that every
+   purchase CTA is orange rather than the Bootstrap-default green
+   used everywhere on this page's siblings this session (Order Now,
+   Checkout, View More).
+
+   See the section header: the state this bar is in AFTER a customer
+   clicks it (WHMCS's own JS almost certainly swaps its text, and
+   quite possibly its class, to something like "Remove") was not
+   visible in the static HTML this section was built from, so that
+   state is not styled here and may still show stock green. If so,
+   the fix is the same as everywhere else in this section: send that
+   state's rendered HTML. */
+#order-standard_cart .addon-products .panel-addon .panel-add {
+    padding: var(--space-3);
+    background-color: var(--secondary);
+    color: var(--text-inverted);
+    font-weight: var(--font-weight-bold);
+    text-align: center;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+#order-standard_cart .addon-products .panel-addon .panel-add:hover {
+    background-color: var(--secondary-lifted);
+}
+
+/* --- Nameservers ----------------------------------------------
+   The one thing on this page called out directly: five plain,
+   unstyled Bootstrap inputs. Given this theme's own input treatment —
+   border, radius, focus ring — which otherwise loses to the order
+   form's own stylesheet on this one page; see the section header for
+   why `input.form-control` is chained rather than the bare class. */
+
+#order-standard_cart label[for^="inputNs"] {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-lifted);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+#order-standard_cart input.form-control[id^="inputNs"] {
+    padding: 10px 14px;
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--rounding-md);
+    box-shadow: none;
+    color: var(--text);
+    font-size: var(--text-md);
+    transition: border-color var(--transition-fast),
+                box-shadow var(--transition-fast);
+}
+
+#order-standard_cart input.form-control[id^="inputNs"]:focus {
+    border-color: var(--primary-accented);
+    box-shadow: 0 0 0 3px rgba(1, 37, 125, 0.12);
+    outline: 0;
+}
+
+#order-standard_cart input.form-control[id^="inputNs"]::placeholder {
+    color: var(--text-muted);
 }
 
 
