@@ -3014,6 +3014,211 @@ a[id$="-order-button"]:active {
 
 
 /* ===========================================================
+   6c. DOMAIN PRICING — Register Domain page
+
+   The featured-TLD cards, category filter and price table below the
+   search box. Markup: domain-pricing.tpl (this theme's own).
+
+   The search box ABOVE them is not covered here: it is WHMCS's stock
+   domainchecker.tpl, which this theme does not override, so it still
+   renders as the blue gradient banner. Styling it needs its rendered
+   markup — see the note in that template.
+   =========================================================== */
+
+/* Stock lays these out as Bootstrap columns (col-md-3 col-sm-4
+   col-xs-6), which left a lone card stranded on its own row whenever
+   the count was not a multiple of the column span — the .LIVE card
+   sitting by itself under three others. auto-fit tracks fill the row
+   with whatever is there instead, at any count. */
+.ho-tld-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-3);
+    margin: var(--space-4) 0 var(--space-5);
+}
+
+.ho-tld-card {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+.ho-tld-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+/* Fixed height keeps every logo on the same baseline whatever its own
+   aspect ratio; the stock rule used line-height for that, which only
+   works for a single line of inline content. */
+.ho-tld-card-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 92px;
+    padding: var(--space-3);
+    line-height: 1;
+}
+
+.ho-tld-card-logo img {
+    max-width: 72%;
+    max-height: 44px;
+}
+
+/* Stock gave each TLD its own fill keyed to the extension
+   (.price.com blue, .price.shop orange, .price.net yellow, .price.live
+   amber, and a dozen more in styles.css) — Twenty-One's palette, not
+   this brand's, and a different accent per card, so the row read as
+   unrelated tiles rather than one set of options.
+
+   Written as .ho-domain-pricing .featured-tld .price, three classes,
+   to match `.featured-tld .price.com`'s own three — a tie, which this
+   file wins on load order since it comes after the bundle carrying
+   those rules. Matching on .price rather than on the per-TLD class
+   also means it covers every extension at once, including any this
+   theme has never seen. */
+.ho-domain-pricing .featured-tld .price {
+    margin-top: auto;
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--primary-50);
+    border-radius: 0;
+    color: var(--primary);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.4;
+    text-align: center;
+}
+
+.ho-domain-pricing .featured-tld:hover .price {
+    background-color: var(--secondary);
+    color: var(--text-inverted);
+}
+
+/* Section heading + currency picker on one line. Stock floated the
+   currency select right, which put it above the heading in source
+   order and dropped it onto its own line on narrow screens. */
+.ho-tld-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+.ho-tld-toolbar-title {
+    margin: 0;
+    color: var(--text-heading);
+    font-size: 1.0625rem;
+    font-weight: var(--font-weight-bold);
+}
+
+.ho-tld-currency {
+    margin: 0;
+}
+
+.ho-tld-currency .form-control {
+    width: auto;
+    min-width: 180px;
+}
+
+/* Category filters as pills, matching .ho-filterbar-item elsewhere in
+   the theme. Stock rendered them as Bootstrap .label badges — small
+   grey rectangles that read as status tags rather than as controls,
+   with the active one turning Bootstrap green. */
+.ho-tld-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-4);
+}
+
+.ho-domain-pricing .tld-filters a.label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: var(--space-1) var(--space-3);
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text);
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.6;
+    transition: background-color var(--transition-fast),
+                border-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+.ho-domain-pricing .tld-filters a.label:hover,
+.ho-domain-pricing .tld-filters a.label:focus {
+    border-color: var(--primary-accented);
+    color: var(--primary-accented);
+    text-decoration: none;
+}
+
+/* .label-success is what the page's own script toggles to mark the
+   active filter — restyled rather than renamed so that script keeps
+   working untouched. */
+.ho-domain-pricing .tld-filters a.label-success,
+.ho-domain-pricing .tld-filters a.label-success:hover,
+.ho-domain-pricing .tld-filters a.label-success:focus {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--text-inverted);
+}
+
+.ho-tld-filter-count {
+    padding: 0 6px;
+    border-radius: 999px;
+    background-color: var(--bg-accented);
+    color: var(--text-lifted);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-bold);
+}
+
+.ho-domain-pricing .tld-filters a.label-success .ho-tld-filter-count {
+    background-color: rgba(255, 255, 255, 0.22);
+    color: var(--text-inverted);
+}
+
+/* Price table. .table-list is already branded in section 6; these
+   only handle this page's own two-line price cells, where the amount
+   and its term were previously the same weight and colour and read as
+   one run-on string. */
+.ho-tld-name {
+    font-weight: var(--font-weight-bold);
+    color: var(--text-heading);
+}
+
+.ho-tld-price {
+    display: block;
+    color: var(--text-heading);
+    font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+}
+
+.ho-tld-term {
+    display: block;
+    margin-top: 1px;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+.ho-tld-unavailable {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+
+/* ===========================================================
    7. RESPONSIVE
 
    992px is the shell's breakpoint: at or above it the rail is a
