@@ -3398,38 +3398,15 @@ a[id$="-order-button"]:active {
    table as div rows rather than a <table>. Both exist, so both are
    styled, separately, against their own real markup. */
 
-#order-standard_cart .featured-tlds-container .featured-tld {
-    margin-bottom: var(--space-3);
-    border: 1px solid var(--border-muted);
-    border-radius: var(--rounding-lg);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: box-shadow var(--transition-fast),
-                transform var(--transition-fast);
-}
-
-#order-standard_cart .featured-tlds-container .featured-tld:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-}
-
-/* Retires the per-TLD rainbow (.price.com blue, .price.shop orange,
-   .price.net yellow, ...) for one brand fill, same reasoning as
-   section 6c. The id prefix puts this at (1,2,0) against those rules'
-   (0,3,0), so it wins on specificity regardless of which stylesheet
-   carries them or in what order. */
-#order-standard_cart .featured-tld .price {
-    padding: var(--space-2) var(--space-3);
-    background-color: var(--primary-50);
-    border-radius: 0;
-    color: var(--primary);
-    font-weight: var(--font-weight-bold);
-    line-height: 1.4;
-}
-
-#order-standard_cart .featured-tld:hover .price {
-    background-color: var(--secondary);
-    color: var(--text-inverted);
+/* Hidden outright, at the user's request: this grid of logo+price
+   cards (.com / .shop / .net / .live, each its own colour) duplicated
+   the TLD pricing already available below on this same step, and
+   read as a stray block of ads above it. Replaces the card styling
+   that used to live here — kept as display:none rather than deleted
+   because the markup itself belongs to templates/orderforms/, not
+   this repo, so there is no .tpl to remove it from. */
+#order-standard_cart .featured-tlds-container {
+    display: none;
 }
 
 /* Category filters. This page renders them as a.badge.badge-secondary
