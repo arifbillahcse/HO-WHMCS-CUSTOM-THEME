@@ -34,10 +34,30 @@
     css/hostorio-layout.css (section 3d). Both are loaded from here
     so this partial is self-contained and can be dropped onto any
     other page as-is.
+
+    data-chat-token: identity, for account-specific answers ("your
+    domains expire on..."). Deliberately NOT generated here — that
+    would mean either a {php} block (unsupported by the Smarty version
+    WHMCS ships, and blocked outright even where it isn't, for the
+    obvious reason a theme file becoming able to run arbitrary PHP
+    would be) or embedding IDENTITY_BRIDGE_SECRET in a template file
+    this repo's normal workflow would commit to git. Both are real
+    ways to leak that secret.
+
+    Minted instead by a WHMCS hook — includes/hooks/hostorio_chatbot.php,
+    shipped in the chatbot's own repo at
+    integrations/whmcs/hostorio_chatbot.php — installed directly on the
+    WHMCS server, outside this theme and outside version control. Its
+    ClientAreaPage hook return value becomes {$hostorio_chat_token}
+    automatically on every client area page; this line just forwards
+    it. Empty/undefined (hook not installed yet, or customer is a
+    guest) is not an error — hostorio-ai-search.js already treats a
+    missing token as "ask anonymously" rather than failing.
 *}
 <section class="ho-ai-search"
          data-send-endpoint="https://chat.hostorio.com/api/chat"
-         data-history-endpoint="https://chat.hostorio.com/api/chat/history">
+         data-history-endpoint="https://chat.hostorio.com/api/chat/history"
+         data-chat-token="{$hostorio_chat_token|default:''}">
 
     <h2 class="ho-ai-search-greeting">
         {if $loggedin && $clientsdetails.firstname}
