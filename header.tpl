@@ -10,8 +10,17 @@
 
     {$headoutput}
 
-    {* Hostorio Chatbot Widget *}
-    <script src="https://chat.hostorio.com/api/widget/widget.js"
+    {*
+        Hostorio Chatbot Widget
+
+        src had an extra /api/ segment (.../api/widget/widget.js),
+        which 404s — confirmed directly, and confirmed against the
+        working tag on hostorio.com's own homepage, which loads the
+        same widget from .../widget/widget.js with no /api/. That
+        prefix belongs only on data-endpoint (the chat API itself),
+        not on the widget script's own path.
+    *}
+    <script src="https://chat.hostorio.com/widget/widget.js"
             data-endpoint="https://chat.hostorio.com/api/chat"
             data-accent="#2563eb"
             defer></script>
