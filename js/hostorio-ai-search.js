@@ -17,11 +17,16 @@
  *   BroadcastChannel does not cross devices or even reach the tab
  *   that sent the message (the sender already rendered its own turn).
  *
- * API contract (see includes/ai-search.tpl for the full shapes):
+ * API contract (see includes/ai-search.tpl for the full shapes,
+ * and its header comment for how these were verified — read from
+ * the chatbot's own PHP source, not taken on a secondhand description
+ * that turned out not to match what was actually deployed):
  *   POST data-send-endpoint    {message, conversation_id}
- *     -> {ok:true, conversation_id, reply} | {ok:false, error}
+ *     -> {ok:true, conversation_id, answer, sources, actions, truncated}
+ *      | {ok:false, error:{code, message}}
  *   GET  data-history-endpoint?conversation_id=...
- *     -> {ok:true, messages:[{role:"user"|"bot", content}]} | {ok:false, messages:[]}
+ *     -> {ok:true, messages:[{role:"user"|"assistant", content}]}
+ *      | {ok:false, error:{code, message}}
  *
  * Answer text is written with textContent, never innerHTML — it comes
  * back from a model (or, for history, from storage) and must not be
@@ -184,9 +189,9 @@
                     return null;
                 });
             }).then(function (data) {
-                if (!data || data.ok === false || !data.reply) {
-                    var message = (data && typeof data.error === 'string' && data.error)
-                        ? data.error
+                if (!data || data.ok === false || !data.answer) {
+                    var message = (data && data.error && typeof data.error.message === 'string' && data.error.message)
+                        ? data.error.message
                         : 'Something went wrong. Please try again.';
                     failMessage(pendingBubble, message);
                     return;
@@ -197,11 +202,11 @@
                     writeStoredConversationId(conversationId);
                 }
 
-                fillMessage(pendingBubble, data.reply);
+                fillMessage(pendingBubble, data.answer, data);
                 broadcast(channel, {
                     conversationId: conversationId,
                     userText: question,
-                    botText: data.reply
+                    botText: data.answer
                 });
             }).catch(function () {
                 failMessage(
@@ -259,10 +264,11 @@
 
             for (var i = 0; i < data.messages.length; i++) {
                 var turn = data.messages[i];
-                if (!turn || (turn.role !== 'user' && turn.role !== 'bot')) {
+                if (!turn || (turn.role !== 'user' && turn.role !== 'assistant')) {
                     continue;
                 }
-                appendMessage(panel, turn.role, String(turn.content || ''));
+                var bubbleRole = turn.role === 'assistant' ? 'bot' : 'user';
+                appendMessage(panel, bubbleRole, String(turn.content || ''));
             }
             onLoaded();
         }).catch(function () {
@@ -314,10 +320,38 @@
         return msg;
     }
 
-    function fillMessage(msg, text) {
+    /**
+     * data carries the full send response (sources/actions/truncated)
+     * so a fresh answer can show them; history replay has none of
+     * these per turn (displayHistory() returns only role/content) and
+     * simply omits them by passing no third argument.
+     */
+    function fillMessage(msg, text, data) {
         clear(msg);
         msg.classList.remove('ho-ai-search-msg-pending');
         msg.appendChild(renderAnswer(text));
+
+        if (data) {
+            var sources = sourceList(data.sources);
+            if (sources) {
+                msg.appendChild(el('h4', 'ho-ai-search-subhead', 'Related'));
+                msg.appendChild(sources);
+            }
+
+            var actions = actionList(data.actions);
+            if (actions) {
+                msg.appendChild(actions);
+            }
+
+            if (data.truncated) {
+                msg.appendChild(el(
+                    'p',
+                    'ho-ai-search-status',
+                    'This answer was shortened. Ask a follow-up for more detail.'
+                ));
+            }
+        }
+
         if (msg.parentNode) {
             msg.parentNode.scrollTop = msg.parentNode.scrollHeight;
         }
@@ -362,6 +396,53 @@
         }
 
         return wrap;
+    }
+
+    /**
+     * `sources` is `array<int, string>` — citation labels, not links
+     * (ChatReply::$sources in the chatbot's own source: "citations
+     * that survived context trimming"). Rendered as plain text, same
+     * reasoning as everything else here: nothing from the model
+     * becomes a live link or markup.
+     */
+    function sourceList(sources) {
+        if (!sources || !sources.length) {
+            return null;
+        }
+
+        var list = el('ul', 'ho-ai-search-list ho-ai-search-sources');
+        for (var i = 0; i < sources.length; i++) {
+            if (typeof sources[i] === 'string' && sources[i]) {
+                list.appendChild(el('li', null, sources[i]));
+            }
+        }
+        return list.childNodes.length ? list : null;
+    }
+
+    /**
+     * `actions` is `array<{name, outcome}>` — a record of tools the
+     * assistant ran (e.g. a password reset), not links to follow.
+     * outcome is one of ok/denied/needs_confirmation/error (see
+     * ToolResult.php); shown as a small status line per action.
+     */
+    function actionList(actions) {
+        if (!actions || !actions.length) {
+            return null;
+        }
+
+        var list = el('ul', 'ho-ai-search-actions');
+        for (var i = 0; i < actions.length; i++) {
+            var action = actions[i];
+            if (!action || typeof action.name !== 'string') {
+                continue;
+            }
+            var label = action.name.replace(/_/g, ' ');
+            var outcome = typeof action.outcome === 'string' ? action.outcome.replace(/_/g, ' ') : 'done';
+            var li = el('li', 'ho-ai-search-action ho-ai-search-action-' + (action.outcome || 'ok'));
+            li.appendChild(el('span', null, label + ': ' + outcome));
+            list.appendChild(li);
+        }
+        return list.childNodes.length ? list : null;
     }
 
     if (document.readyState === 'loading') {

@@ -11,18 +11,24 @@
     load) and stays in sync across tabs open on the same browser via
     BroadcastChannel — see js/hostorio-ai-search.js for both.
 
-    API contract, as specified by the chatbot developer (two
-    endpoints, not one — this replaced an earlier single-endpoint
-    design before either was ever wired up live):
+    API contract — read directly from the chatbot's own source
+    (arifbillahcse/hostorio-ai-chatboot: public/index.php's router,
+    ChatController.php, ChatReply::toPublicArray(), Response::error())
+    rather than from a description of it, after a description given
+    secondhand turned out not to match what was actually deployed —
+    it named a POST /api/chat/send that no route in that codebase
+    defines, a "reply" field the code never emits, and a plain-string
+    error where the code always sends an {code,message} object:
 
-        POST {data-send-endpoint}
+        POST {data-send-endpoint}    (this IS /api/chat — no /send)
         {"message": "...", "conversation_id": "..."}   <- "" if new
-      → 200 {"ok":true, "conversation_id":"...", "reply":"..."}
-      → 4xx {"ok":false, "error":"..."}
+      → 200 {"ok":true, "conversation_id":"...", "answer":"...",
+              "sources":[...], "actions":[...], "truncated":false}
+      → 4xx {"ok":false, "error":{"code":"...","message":"..."}}
 
         GET {data-history-endpoint}?conversation_id=...
-      → 200 {"ok":true, "messages":[{"role":"user"|"bot","content":"..."}, ...]}
-      → 4xx {"ok":false, "messages":[]}
+      → 200 {"ok":true, "messages":[{"role":"user"|"assistant","content":"..."}, ...]}
+      → 4xx {"ok":false, "error":{"code":"not_found","message":"..."}}
 
     Behaviour lives in js/hostorio-ai-search.js, styling in
     css/hostorio-layout.css (section 3d). Both are loaded from here
@@ -30,7 +36,7 @@
     other page as-is.
 *}
 <section class="ho-ai-search"
-         data-send-endpoint="https://chat.hostorio.com/api/chat/send"
+         data-send-endpoint="https://chat.hostorio.com/api/chat"
          data-history-endpoint="https://chat.hostorio.com/api/chat/history">
 
     <h2 class="ho-ai-search-greeting">
