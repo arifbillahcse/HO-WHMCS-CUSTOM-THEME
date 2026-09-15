@@ -19,10 +19,20 @@
         same widget from .../widget/widget.js with no /api/. That
         prefix belongs only on data-endpoint (the chat API itself),
         not on the widget script's own path.
+
+        data-token: same $hostorio_chat_token the dashboard box reads
+        in includes/ai-search.tpl — see that file's comment for where
+        it comes from (a WHMCS hook installed outside this theme, not
+        generated here). widget.js documents this exact attribute name
+        itself (public/widget/widget.js: "data-token=<signed identity
+        token, optional>"), and the theme's own script tag had never
+        set it, so the widget could not have shown account-specific
+        answers regardless of whether that hook was configured.
     *}
     <script src="https://chat.hostorio.com/widget/widget.js"
             data-endpoint="https://chat.hostorio.com/api/chat"
             data-accent="#2563eb"
+            data-token="{$hostorio_chat_token|default:''}"
             defer></script>
 
 </head>
