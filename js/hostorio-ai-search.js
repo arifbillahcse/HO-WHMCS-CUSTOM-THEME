@@ -1,18 +1,33 @@
 /**
  * Hostorio — client area AI search
  *
- * Drives the box rendered by includes/ai-search.tpl: takes the
- * question, POSTs it to the chat API named in the element's
- * data-endpoint, and renders the answer inline underneath.
+ * Drives the box rendered by includes/ai-search.tpl. Grown from a
+ * single-turn "ask a question, read the answer" box into a small
+ * persistent chat log:
  *
- * The reply's conversation_id is kept for the life of the page, so a
- * follow-up question continues the same thread instead of starting a
- * cold one.
+ * - Each turn appends a user bubble and a bot bubble to
+ *   .ho-ai-search-answer, rather than replacing it — so a reload
+ *   restores that log has content across the request lifetime.
+ * - conversation_id is kept in localStorage (key: hoai_conversation_id)
+ *   so a page reload can re-fetch history and keep talking to the
+ *   same conversation instead of starting cold.
+ * - Tabs on the same browser stay in sync via a BroadcastChannel
+ *   (channel: hoai_chat_sync): a message sent in one tab is echoed
+ *   into every other open tab's log. This is same-browser sync only —
+ *   BroadcastChannel does not cross devices or even reach the tab
+ *   that sent the message (the sender already rendered its own turn).
+ *
+ * API contract (see includes/ai-search.tpl for the full shapes):
+ *   POST data-send-endpoint    {message, conversation_id}
+ *     -> {ok:true, conversation_id, reply} | {ok:false, error}
+ *   GET  data-history-endpoint?conversation_id=...
+ *     -> {ok:true, messages:[{role:"user"|"bot", content}]} | {ok:false, messages:[]}
  *
  * Answer text is written with textContent, never innerHTML — it comes
- * back from a model and must not be able to inject markup into the
- * dashboard. The only structure built from it is the bullet list
- * below, and that reads the text as data too.
+ * back from a model (or, for history, from storage) and must not be
+ * able to inject markup into the dashboard. The only structure built
+ * from it is the bullet list in renderAnswer(), and that reads the
+ * text as data too.
  *
  * Dependency-free, same as js/hostorio-sidebar.js: it runs from a
  * deferred <script> and cannot assume jQuery or Bootstrap are ready.
@@ -23,6 +38,63 @@
     var ROOT_SELECTOR = '.ho-ai-search';
     var BUSY_CLASS = 'ho-ai-search-busy';
     var ANSWERED_CLASS = 'ho-ai-search-answered';
+    var STORAGE_KEY = 'hoai_conversation_id';
+    var CHANNEL_NAME = 'hoai_chat_sync';
+
+    /* ---------- storage & cross-tab sync ----------
+       Both are conveniences, not requirements: a box that can't read
+       or write localStorage (private browsing, storage disabled) or
+       whose browser lacks BroadcastChannel (older Safari) still works
+       for the current tab — it just won't survive a reload or sync
+       elsewhere. Every access is guarded so a throw here never breaks
+       asking a question. */
+
+    function readStoredConversationId() {
+        try {
+            return window.localStorage.getItem(STORAGE_KEY) || null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function writeStoredConversationId(id) {
+        if (!id) {
+            return;
+        }
+        try {
+            window.localStorage.setItem(STORAGE_KEY, id);
+        } catch (e) {
+            // Ignored — see the file header.
+        }
+    }
+
+    function openChannel(onMessage) {
+        try {
+            if (typeof BroadcastChannel === 'undefined') {
+                return null;
+            }
+            var channel = new BroadcastChannel(CHANNEL_NAME);
+            channel.onmessage = function (event) {
+                if (event && event.data) {
+                    onMessage(event.data);
+                }
+            };
+            return channel;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function broadcast(channel, payload) {
+        if (!channel) {
+            return;
+        }
+        try {
+            channel.postMessage(payload);
+        } catch (e) {
+            // Ignored — see the file header.
+        }
+    }
 
     function init() {
         var roots = document.querySelectorAll(ROOT_SELECTOR);
@@ -32,19 +104,54 @@
     }
 
     function wire(root) {
-        var endpoint = root.getAttribute('data-endpoint');
+        var sendEndpoint = root.getAttribute('data-send-endpoint');
+        var historyEndpoint = root.getAttribute('data-history-endpoint');
         var form = root.querySelector('.ho-ai-search-form');
         var input = root.querySelector('.ho-ai-search-input');
         var panel = root.querySelector('.ho-ai-search-answer');
 
         // Missing any of these means the markup changed; do nothing
-        // rather than half-wire the box.
-        if (!endpoint || !form || !input || !panel) {
+        // rather than half-wire the box. historyEndpoint alone is not
+        // required — without it the box just can't restore a prior
+        // conversation, which is a smaller failure than not working
+        // at all.
+        if (!sendEndpoint || !form || !input || !panel) {
             return;
         }
 
-        var conversationId = null;
+        var conversationId = readStoredConversationId();
         var pending = false;
+
+        function showAnswered() {
+            root.classList.add(ANSWERED_CLASS);
+        }
+
+        var channel = openChannel(function (msg) {
+            // A message from another tab. Adopt its conversation if
+            // this tab has none yet; otherwise only render turns that
+            // belong to the conversation already open here, so two
+            // unrelated conversations in two tabs can't interleave.
+            if (!conversationId) {
+                conversationId = msg.conversationId || null;
+                writeStoredConversationId(conversationId);
+            } else if (msg.conversationId && msg.conversationId !== conversationId) {
+                return;
+            }
+
+            if (msg.userText) {
+                appendMessage(panel, 'user', msg.userText);
+            }
+            if (msg.botText) {
+                appendMessage(panel, 'bot', msg.botText);
+            }
+            if (msg.userText || msg.botText) {
+                showAnswered();
+            }
+        });
+
+        if (conversationId && historyEndpoint) {
+            loadHistory(panel, historyEndpoint, conversationId, showAnswered);
+        }
 
         function ask(question) {
             if (pending || !question) {
@@ -52,13 +159,10 @@
             }
             pending = true;
             root.classList.add(BUSY_CLASS);
-            root.classList.add(ANSWERED_CLASS);
-            showStatus(panel, 'Thinking…', true);
+            showAnswered();
 
-            var body = { message: question };
-            if (conversationId) {
-                body.conversation_id = conversationId;
-            }
+            appendMessage(panel, 'user', question);
+            var pendingBubble = appendMessage(panel, 'bot', 'Thinking…', { pending: true });
 
             var headers = { 'Content-Type': 'application/json' };
             var token = root.getAttribute('data-chat-token');
@@ -66,10 +170,13 @@
                 headers['X-Chat-Token'] = token;
             }
 
-            fetch(endpoint, {
+            fetch(sendEndpoint, {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify(body)
+                body: JSON.stringify({
+                    message: question,
+                    conversation_id: conversationId || ''
+                })
             }).then(function (response) {
                 // The API answers with JSON on success and on error
                 // alike, so parse either way and branch on ok.
@@ -77,25 +184,29 @@
                     return null;
                 });
             }).then(function (data) {
-                if (!data) {
-                    throw new Error('unreadable');
-                }
-                if (data.ok === false || !data.answer) {
-                    var message = data.error && data.error.message
-                        ? data.error.message
+                if (!data || data.ok === false || !data.reply) {
+                    var message = (data && typeof data.error === 'string' && data.error)
+                        ? data.error
                         : 'Something went wrong. Please try again.';
-                    showStatus(panel, message, false);
+                    failMessage(pendingBubble, message);
                     return;
                 }
+
                 if (data.conversation_id) {
                     conversationId = data.conversation_id;
+                    writeStoredConversationId(conversationId);
                 }
-                render(panel, data, question);
+
+                fillMessage(pendingBubble, data.reply);
+                broadcast(channel, {
+                    conversationId: conversationId,
+                    userText: question,
+                    botText: data.reply
+                });
             }).catch(function () {
-                showStatus(
-                    panel,
-                    'Could not reach the assistant. Please check your connection and try again.',
-                    false
+                failMessage(
+                    pendingBubble,
+                    'Could not reach the assistant. Please check your connection and try again.'
                 );
             }).then(function () {
                 pending = false;
@@ -122,6 +233,43 @@
         }
     }
 
+    /* ---------- history ---------- */
+
+    /**
+     * Fetches a conversation's prior turns and renders them in order.
+     * Silent on any failure — a conversation that can't be restored
+     * just starts the panel empty, the same as a first-time visitor,
+     * rather than surfacing an error for something the user didn't
+     * explicitly ask to happen.
+     */
+    function loadHistory(panel, historyEndpoint, conversationId, onLoaded) {
+        var joiner = historyEndpoint.indexOf('?') === -1 ? '?' : '&';
+        var url = historyEndpoint + joiner + 'conversation_id=' + encodeURIComponent(conversationId);
+
+        fetch(url, {
+            headers: { 'Content-Type': 'application/json' }
+        }).then(function (response) {
+            return response.json().catch(function () {
+                return null;
+            });
+        }).then(function (data) {
+            if (!data || data.ok === false || !data.messages || !data.messages.length) {
+                return;
+            }
+
+            for (var i = 0; i < data.messages.length; i++) {
+                var turn = data.messages[i];
+                if (!turn || (turn.role !== 'user' && turn.role !== 'bot')) {
+                    continue;
+                }
+                appendMessage(panel, turn.role, String(turn.content || ''));
+            }
+            onLoaded();
+        }).catch(function () {
+            // Ignored — see the function header.
+        });
+    }
+
     /* ---------- rendering ---------- */
 
     function clear(node) {
@@ -141,38 +289,45 @@
         return node;
     }
 
-    function showStatus(panel, message, busy) {
-        clear(panel);
-        panel.setAttribute('aria-busy', busy ? 'true' : 'false');
-        panel.appendChild(el('p', 'ho-ai-search-status', message));
+    /**
+     * Appends one chat bubble (user or bot) to the log and returns it,
+     * so a bot bubble created as a "Thinking…" placeholder can later
+     * be filled in or turned into an error in place — the transcript
+     * keeps its turn order either way, rather than the answer jumping
+     * to wherever the panel happens to append next.
+     */
+    function appendMessage(panel, role, text, opts) {
+        opts = opts || {};
+        var msg = el('div', 'ho-ai-search-msg ho-ai-search-msg-' + role);
+        if (opts.pending) {
+            msg.classList.add('ho-ai-search-msg-pending');
+        }
+
+        if (role === 'bot') {
+            msg.appendChild(renderAnswer(text));
+        } else {
+            msg.appendChild(el('p', null, text));
+        }
+
+        panel.appendChild(msg);
+        panel.scrollTop = panel.scrollHeight;
+        return msg;
     }
 
-    function render(panel, data, question) {
-        clear(panel);
-        panel.setAttribute('aria-busy', 'false');
-
-        panel.appendChild(el('p', 'ho-ai-search-question', question));
-        panel.appendChild(renderAnswer(data.answer));
-
-        var sources = linkList(data.sources, 'ho-ai-search-source');
-        if (sources) {
-            panel.appendChild(el('h4', 'ho-ai-search-subhead', 'Related'));
-            panel.appendChild(sources);
+    function fillMessage(msg, text) {
+        clear(msg);
+        msg.classList.remove('ho-ai-search-msg-pending');
+        msg.appendChild(renderAnswer(text));
+        if (msg.parentNode) {
+            msg.parentNode.scrollTop = msg.parentNode.scrollHeight;
         }
+    }
 
-        var actions = linkList(data.actions, 'ho-ai-search-action');
-        if (actions) {
-            actions.className = 'ho-ai-search-actions';
-            panel.appendChild(actions);
-        }
-
-        if (data.truncated) {
-            panel.appendChild(el(
-                'p',
-                'ho-ai-search-status',
-                'This answer was shortened. Ask a follow-up for more detail.'
-            ));
-        }
+    function failMessage(msg, text) {
+        clear(msg);
+        msg.classList.remove('ho-ai-search-msg-pending');
+        msg.classList.add('ho-ai-search-msg-error');
+        msg.appendChild(el('p', null, text));
     }
 
     /**
@@ -207,45 +362,6 @@
         }
 
         return wrap;
-    }
-
-    /**
-     * `sources` and `actions` are documented as arrays but their item
-     * shape is not guaranteed, so only entries carrying both a label
-     * and an http(s) link are rendered — anything else is skipped
-     * rather than printed as "[object Object]".
-     */
-    function linkList(items, itemClass) {
-        if (!items || !items.length) {
-            return null;
-        }
-
-        var list = el('ul', 'ho-ai-search-links');
-        var count = 0;
-
-        for (var i = 0; i < items.length; i++) {
-            var item = items[i];
-            if (!item || typeof item !== 'object') {
-                continue;
-            }
-
-            var href = item.url || item.href || item.link;
-            var label = item.title || item.label || item.name || href;
-            if (!href || !/^https?:\/\//i.test(href)) {
-                continue;
-            }
-
-            var link = el('a', itemClass, String(label));
-            link.href = href;
-            link.rel = 'noopener';
-
-            var li = el('li');
-            li.appendChild(link);
-            list.appendChild(li);
-            count++;
-        }
-
-        return count ? list : null;
     }
 
     if (document.readyState === 'loading') {

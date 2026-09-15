@@ -6,19 +6,32 @@
     the "ask a question, read the answer here" pattern, not a chat
     bubble the user has to open first.
 
-    API contract (verified against the live endpoint):
-        POST {data-endpoint}
-        {"message": "...", "conversation_id": "..."}   <- id optional
-      → 200 {"ok":true, "answer":"...", "conversation_id":"...",
-              "sources":[], "actions":[], "truncated":false}
-      → 4xx {"ok":false, "error":{"code":"...","message":"..."}}
+    Grown into a small persistent chat log: the conversation survives
+    a reload (conversation_id in localStorage, history re-fetched on
+    load) and stays in sync across tabs open on the same browser via
+    BroadcastChannel — see js/hostorio-ai-search.js for both.
+
+    API contract, as specified by the chatbot developer (two
+    endpoints, not one — this replaced an earlier single-endpoint
+    design before either was ever wired up live):
+
+        POST {data-send-endpoint}
+        {"message": "...", "conversation_id": "..."}   <- "" if new
+      → 200 {"ok":true, "conversation_id":"...", "reply":"..."}
+      → 4xx {"ok":false, "error":"..."}
+
+        GET {data-history-endpoint}?conversation_id=...
+      → 200 {"ok":true, "messages":[{"role":"user"|"bot","content":"..."}, ...]}
+      → 4xx {"ok":false, "messages":[]}
 
     Behaviour lives in js/hostorio-ai-search.js, styling in
     css/hostorio-layout.css (section 3d). Both are loaded from here
     so this partial is self-contained and can be dropped onto any
     other page as-is.
 *}
-<section class="ho-ai-search" data-endpoint="https://chat.hostorio.com/api/chat">
+<section class="ho-ai-search"
+         data-send-endpoint="https://chat.hostorio.com/api/chat/send"
+         data-history-endpoint="https://chat.hostorio.com/api/chat/history">
 
     <h2 class="ho-ai-search-greeting">
         {if $loggedin && $clientsdetails.firstname}
@@ -48,7 +61,9 @@
         <button type="button" class="ho-ai-search-chip">Where can I find my invoices?</button>
     </div>
 
-    {* Filled in by the script; stays empty (and hidden) until asked. *}
+    {* Filled in by the script with one bubble per turn; stays empty
+       (and hidden) until there is a question asked or history to
+       show. *}
     <div class="ho-ai-search-answer" aria-live="polite"></div>
 
     <p class="ho-ai-search-foot">
@@ -57,4 +72,12 @@
     </p>
 
 </section>
-<script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-ai-search.js?v={$versionHash}" defer></script>
+{*
+    versionHash (WHMCS's own cache-buster) only changes on a WHMCS
+    upgrade, never when this file is edited — see the long comment on
+    hoAssetVersion in includes/head.tpl. Using it here meant an edit
+    to this script could never reach a returning visitor; switched to
+    this theme's own buster so it cache-busts the same way every other
+    hostorio-*.js file does.
+*}
+<script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-ai-search.js?v={$hoAssetVersion}" defer></script>

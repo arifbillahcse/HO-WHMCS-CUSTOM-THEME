@@ -23,13 +23,20 @@
 
     BUMP THIS STRING on every deploy that touches css/custom.css,
     css/hostorio-layout.css, js/hostorio-sidebar.js,
-    js/hostorio-product-overview.js, or js/hostorio-store-cards.js.
+    js/hostorio-product-overview.js, js/hostorio-store-cards.js, or
+    js/hostorio-ai-search.js.
 
     A literal rather than filemtime() because WHMCS's Smarty security
     policy may refuse unregistered PHP calls, and a stale stylesheet is
     a better failure than a fatal template error.
+
+    scope="global": default {assign} scope only reaches templates
+    head.tpl itself includes. includes/ai-search.tpl needs this same
+    value too, but it's included from clientareahome.tpl — a sibling
+    branch under the master layout, not a descendant of head.tpl — so
+    without global scope it would render as empty there.
 *}
-{assign var="hoAssetVersion" value="ho-19"}
+{assign var="hoAssetVersion" value="ho-20" scope="global"}
 {*
     custom.css previously rendered as bare {$__assetPath__}, with no
     version query at all — so an edit to the token layer could never
