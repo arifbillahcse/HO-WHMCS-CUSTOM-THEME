@@ -233,11 +233,15 @@ function pinServicesTopItems($servicesItem)
  * original label untouched — used for "My Services", which nothing
  * else in this file renames).
  *
- * Logs every branch, including success, the same way
- * addProductCategories() already does: the first version of this
- * pinning logic failed silently and left nothing in the Activity Log
- * to show whether it had even found its target, which is exactly the
- * gap this function closes for its own replacement.
+ * Logged every branch, including success, while this hook was
+ * unverified — the first version of this pinning logic failed
+ * silently and left nothing in the Activity Log to show whether it
+ * had even found its target. Now confirmed working on every page
+ * load (that same log filled with nothing but "re-added as..."
+ * successes), so the success line is gone: on a client area with any
+ * real traffic it drowned out everything else in the log, this
+ * checkout-flow report included. The anomaly branches below still log
+ * — those are the ones worth seeing again if this ever breaks.
  */
 function moveChildToFront($parentItem, $originalLabel, $newLabel, $order)
 {
@@ -286,10 +290,6 @@ function moveChildToFront($parentItem, $originalLabel, $newLabel, $order)
         if ($newChild && method_exists($newChild, 'setOrder')) {
             $newChild->setOrder($order);
         }
-
-        if (function_exists('logActivity')) {
-            logActivity("services-menu-categories: moveChildToFront('$originalLabel') — re-added as '$label' at order $order");
-        }
     } catch (\Throwable $e) {
         if (function_exists('logActivity')) {
             logActivity("services-menu-categories: moveChildToFront('$originalLabel') failed: " . $e->getMessage());
@@ -302,10 +302,9 @@ function moveChildToFront($parentItem, $originalLabel, $newLabel, $order)
  * matched by getLabel(), the same convention every lookup in this
  * file uses, not a guessed internal name.
  *
- * Logs every branch for the same reason moveChildToFront() does: a
- * silent no-op here would look identical to "already removed" the
- * next time someone checks the live menu, with nothing in the
- * Activity Log to tell the two apart.
+ * Logged every branch for the same reason moveChildToFront() did,
+ * and dropped its success line for the same reason too — see that
+ * function's docblock.
  */
 function removeChildByLabel($parentItem, $label)
 {
@@ -334,10 +333,6 @@ function removeChildByLabel($parentItem, $label)
 
     try {
         $parentItem->removeChild($name);
-
-        if (function_exists('logActivity')) {
-            logActivity("services-menu-categories: removeChildByLabel('$label') — removed");
-        }
     } catch (\Throwable $e) {
         if (function_exists('logActivity')) {
             logActivity("services-menu-categories: removeChildByLabel('$label') failed: " . $e->getMessage());
@@ -420,7 +415,6 @@ function addProductCategories($servicesItem)
     // itemClass::create()->setLabel()->setUri()->setClass() chain,
     // which could never have worked — it never had a factory to give
     // the class it was trying to construct.
-    $added = 0;
     // Starts at 3, not 2: order=1 is "My Services", pinned by
     // pinServicesTopItems() before this function runs. There is no
     // order=2 item any more — "Order New Services" used to hold that
@@ -460,17 +454,11 @@ function addProductCategories($servicesItem)
                 $child->setOrder($order);
             }
             $order++;
-
-            $added++;
         } catch (\Throwable $e) {
             if (function_exists('logActivity')) {
                 logActivity('services-menu-categories: addChild("' . $group->name . '", ...) failed: ' . $e->getMessage());
             }
         }
-    }
-
-    if (function_exists('logActivity')) {
-        logActivity("services-menu-categories: added $added categor" . ($added === 1 ? 'y' : 'ies') . ' under Services');
     }
 }
 
