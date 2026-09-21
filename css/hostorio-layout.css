@@ -2501,11 +2501,24 @@ a[id$="-order-button"]:active {
 /* Widens every column in the affected row, including the hidden one
    — setting a width on a display:none element costs nothing, and
    skipping it would need a :not(:has(...)) that only adds a way to
-   get this wrong. */
+   get this wrong.
+
+   .cart-body added alongside [class*="col-"]: on /store/<category>
+   (confirmed against this page's own rendered HTML) .cart-sidebar and
+   .cart-body are plain siblings of .row with no col-* class on
+   either — a different shape than the confdomains page this block
+   was first written against. Without naming .cart-body directly it
+   keeps whatever width/flex-basis the order form's own stylesheet
+   gave it (roughly 70%) even after .cart-sidebar is hidden, leaving
+   the freed space as a blank gap rather than letting the product
+   grid use it — exactly what widening only [class*="col-"] elements
+   would miss on this page. */
 .row:has(> [class*="col-"] > .cart-sidebar > [menuitemname="Categories"]) > [class*="col-"],
 .row:has(> [class*="col-"] > .cart-sidebar > [menuitemname="Actions"]) > [class*="col-"],
 .row:has(> .cart-sidebar > [menuitemname="Categories"]) > [class*="col-"],
-.row:has(> .cart-sidebar > [menuitemname="Actions"]) > [class*="col-"] {
+.row:has(> .cart-sidebar > [menuitemname="Actions"]) > [class*="col-"],
+.row:has(> .cart-sidebar > [menuitemname="Categories"]) > .cart-body,
+.row:has(> .cart-sidebar > [menuitemname="Actions"]) > .cart-body {
     width: 100% !important;
     flex: 0 0 100% !important;
     max-width: 100% !important;
