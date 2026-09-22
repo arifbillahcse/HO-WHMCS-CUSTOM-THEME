@@ -99,11 +99,11 @@
 
 </section>
 {*
-    versionHash (WHMCS's own cache-buster) only changes on a WHMCS
-    upgrade, never when this file is edited — see the long comment on
-    hoAssetVersion in includes/head.tpl. Using it here meant an edit
-    to this script could never reach a returning visitor; switched to
-    this theme's own buster so it cache-busts the same way every other
-    hostorio-*.js file does.
+    DIAGNOSTIC — TEMPORARY. Disabled alongside this theme's other
+    custom scripts to isolate a checkout-flow report — see the
+    matching block in includes/head.tpl for the full explanation.
+    Restore this once that test is done, whichever way it comes out.
 *}
+{*
 <script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-ai-search.js?v={$hoAssetVersion}" defer></script>
+*}

@@ -28,12 +28,19 @@
         token, optional>"), and the theme's own script tag had never
         set it, so the widget could not have shown account-specific
         answers regardless of whether that hook was configured.
+
+        DIAGNOSTIC — TEMPORARY. Disabled alongside this theme's other
+        custom scripts to isolate a checkout-flow report — see the
+        matching block in includes/head.tpl for the full explanation.
+        Restore this once that test is done, whichever way it comes out.
     *}
+    {*
     <script src="https://chat.hostorio.com/widget/widget.js"
             data-endpoint="https://chat.hostorio.com/api/chat"
             data-accent="#2563eb"
             data-token="{$hostorio_chat_token|default:''}"
             defer></script>
+    *}
 
 </head>
 {*
