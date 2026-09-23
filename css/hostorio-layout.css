@@ -3432,10 +3432,18 @@ a[id$="-order-button"]:active {
 /* footer holds the Order Now button. Values below are the user's own
    inspect-mode tuning, applied verbatim in place of the earlier
    margin-top:auto pin (float is a no-op on this flex child, but is
-   kept to match what was tested live). */
+   kept to match what was tested live).
+
+   width: !important for the same reason as .product-desc just above:
+   the order form's own stylesheet sets
+   #order-standard_cart .products .product footer { width: 40% },
+   which ties this rule's specificity exactly ((1,2,1) apiece) — and
+   ties go to that stylesheet, since it loads after this one on this
+   page. That's what was actually capping the button/footer at well
+   under the card's full width. */
 #order-standard_cart .product.ho-product-card footer {
     float: right;
-    width: 100%;
+    width: 100% !important;
     margin: 0;
     padding: var(--space-3) 0 0;
     background: none;
