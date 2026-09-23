@@ -3373,11 +3373,21 @@ a[id$="-order-button"]:active {
     line-height: 1.15;
 }
 
+/* !important: the order form's own stylesheet sets
+   #order-standard_cart .products .product div.product-desc
+   { width: 60% }. That selector carries an extra element type (div)
+   ours doesn't, putting it at (1,3,1) against this rule's (1,3,0) —
+   higher specificity outright, so it won regardless of load order,
+   capping the description column (and the feature list built inside
+   it) at roughly half the card's width. Same class of fight as the
+   Order Now button and Order Summary heading above; !important is
+   this file's established way of settling it against that stylesheet
+   rather than chasing selector specificity further. */
 #order-standard_cart .product.ho-product-card .product-desc {
     flex: 1 1 auto;
     float: left;
-    width: 100%;
-    padding: 0 10px;
+    width: 100% !important;
+    padding: 0 10px !important;
     font-size: 0.8em;
     text-align: left;
 }
