@@ -71,33 +71,7 @@
     {if $captcha}{$captcha->getPageJs()}{/if}
 </script>
 <script src="{assetPath file='scripts.min.js'}?v={$versionHash}"></script>
-{*
-    DIAGNOSTIC — TEMPORARY. All four of this theme's own custom
-    scripts (the three below, plus hostorio-ai-search.js in
-    includes/ai-search.tpl) and the chat widget tag in header.tpl are
-    disabled here to isolate a report that the order-form checkout
-    flow (product -> domain choice -> configure -> checkout) breaks
-    under this theme but works on WHMCS's stock theme.
-
-    Root-cause mechanism, confirmed by reading the order form's own
-    JS: the "Use"/"Check"/"Continue" buttons on the domain-choice step
-    are plain <button type="submit"> inside a <form> with no action/
-    method attribute — it only works because JS intercepts the submit
-    and redirects manually. If that binding never attaches (jQuery not
-    ready, or an earlier script in the same tag throwing and halting
-    the rest of that file), the browser falls back to a native GET
-    submit of the current URL, which reads exactly like "redirected
-    back to the product page" for every domain option — matching the
-    report. Every other layer (the AJAX call, the pages it navigates
-    through) was verified working correctly independent of theme.
-
-    This commented block is the test: if disabling every JS file this
-    theme adds fixes the flow, the cause is confirmed to be one of
-    them, and they get re-enabled one at a time from here to find
-    which. If it does NOT fix it, the cause is elsewhere and none of
-    this should stay commented — restore it immediately either way.
-*}
-{* <!-- Off-canvas behaviour for the sidebar rail below 992px. Same
+<!-- Off-canvas behaviour for the sidebar rail below 992px. Same
      $WEB_ROOT + $template path as hostorio-layout.css. -->
 <script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-sidebar.js?v={$hoAssetVersion}" defer></script>
 <!-- Removes the "Quick Shortcuts" / "Quick Create Email Account"
@@ -115,7 +89,7 @@
      templates/orderforms/, not this theme, and neither change is
      reachable from CSS — see the file header. No-op on every other
      page, since it keys off #order-standard_cart. -->
-<script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-store-cards.js?v={$hoAssetVersion}" defer></script> *}
+<script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-store-cards.js?v={$hoAssetVersion}" defer></script>
 
 {if $templatefile == "viewticket" && !$loggedin}
   <meta name="robots" content="noindex" />
