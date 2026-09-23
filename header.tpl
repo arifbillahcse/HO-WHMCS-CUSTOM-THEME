@@ -1,6 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {*
+        Forces every relative URL on the page to resolve against the
+        site root, no matter how deep the current URL is nested.
+
+        Root-caused against this exact site, via the browser's own
+        Network panel: the order form's own bundled JS
+        (templates/orderforms/standard_cart/js/scripts.min.js) builds
+        several of its own navigations as bare relative strings —
+        window.location="cart.php?a=confproduct&i="+t.num,
+        <form action="cart.php?a=add&pid=...&domainselect=1">, and a
+        few WHMCS.http.jqClient.post("cart.php", ...) calls. That
+        resolves correctly only from a flat cart.php?... URL. With SEO-
+        friendly URLs on, the domain-choice step instead runs from a
+        nested pretty URL (/store/<category>/<product-slug>), so the
+        SAME relative "cart.php" resolves against THAT path instead —
+        producing /store/<category>/cart.php?..., which doesn't exist,
+        gets redirected, and loses every query parameter on the way,
+        landing back on the category listing. Reproduced identically
+        on WHMCS's own Six theme with every custom script and both
+        hooks this theme/install adds disabled, so the bug is in that
+        bundled script, not anything of ours — this is a workaround,
+        not a patch to a WHMCS core file this repo doesn't own and
+        that would be overwritten on the next WHMCS update anyway.
+
+        Placed as the very first thing in <head>, before any relative
+        reference (there should not be any in this theme's own markup
+        — everything else already uses $WEB_ROOT/absolute paths — but
+        <base> only affects resolution for what follows it, so it
+        cannot be too early).
+
+        No trailing-slash concat bug: $WEB_ROOT is used the same
+        unslashed way everywhere else in this theme
+        ($WEB_ROOT/templates/...), so the "/" here is added the same
+        way, not doubled.
+    *}
+    <base href="{$WEB_ROOT}/">
     <meta charset="{$charset}" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
