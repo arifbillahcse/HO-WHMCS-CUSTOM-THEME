@@ -3444,6 +3444,12 @@ a[id$="-order-button"]:active {
     border-radius: 10px;
     font-size: 1rem;
     font-weight: var(--font-weight-bold);
+    /* Bootstrap's .btn sets white-space:nowrap; at 4-up grid widths
+       "🛒 Order Now" doesn't fit that button box, so nowrap clipped
+       the last letter instead of the browser wrapping it — confirmed
+       against screenshots at that width showing "Order Nov". Higher
+       specificity than .btn here, so no !important needed. */
+    white-space: normal;
 }
 
 
