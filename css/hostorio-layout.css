@@ -3423,8 +3423,12 @@ a[id$="-order-button"]:active {
     height: 18px;
     margin-top: 2px;
     border-radius: 5px;
-    background-color: var(--primary-accented);
-    color: var(--text-inverted);
+    /* Light tint + coloured check, matching the reference design
+       (hostorio.com's own SVG: #E3F2FD fill / #1976D2 stroke) rather
+       than a solid-fill box with a white check. --primary-50 /
+       --primary-accented are this theme's tokens for that same pair. */
+    background-color: var(--primary-50);
+    color: var(--primary-accented);
     font-size: 9px;
     line-height: 1;
 }
