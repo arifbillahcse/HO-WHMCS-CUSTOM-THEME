@@ -54,6 +54,18 @@ html {
     --ho-gray-light: #F5F5F5;    /* Section backgrounds, disabled */
     --ho-gray-text: #4B4F58;     /* Body text */
     --ho-gray-dark: #3A3A3A;     /* Headings, strong emphasis */
+    /* Muted/secondary text on hostorio.com's own stylesheet
+       (--color-gray there). --text-muted below already points at
+       --neutral-400, a cooler blue-tinted gray picked for this
+       theme's own scale — kept as-is rather than repointed, since
+       that would recolor every already-shipped "muted" label in the
+       client area. This is the exact hex for anything that needs to
+       match the marketing site's muted tone specifically. */
+    --ho-gray-muted: #808285;
+    /* hostorio.com's --color-border. --border below resolves to
+       --neutral-300 (#D0D5DD, this theme's own neutral ramp) rather
+       than this exact value, for the same reason as above. */
+    --ho-border-muted: #DDDDDD;
 
     /* Gradients */
     --ho-gradient-navy-blue: linear-gradient(135deg, #01257D 0%, #0170B9 100%);
@@ -340,7 +352,9 @@ section#header .logo-text {
     font-weight: var(--font-weight-medium);
     transition: background-color var(--transition-fast),
                 border-color var(--transition-fast),
-                color var(--transition-fast);
+                color var(--transition-fast),
+                transform var(--transition-fast),
+                box-shadow var(--transition-fast);
 }
 
 /* Primary CTA — orange */
@@ -350,15 +364,30 @@ section#header .logo-text {
     color: var(--text-inverted);
 }
 
+/* Lift + orange glow on hover, not just a color swap — the same
+   interaction hostorio.com's own CTAs use everywhere (.cta-button,
+   .account-btn, .card-button, .faq-cta-button, .countdown-cta all
+   do `translateY(-2px)` plus a tinted box-shadow on :hover). :active
+   drops back to flat rather than lifting further, matching how a
+   press should read against a hover. */
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary.focus,
-.btn-primary:active,
-.btn-primary.active,
 .open > .dropdown-toggle.btn-primary {
     background-color: var(--secondary-lifted);
     border-color: var(--secondary-lifted);
     color: var(--text-inverted);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 120, 0, 0.3);
+}
+
+.btn-primary:active,
+.btn-primary.active {
+    background-color: var(--secondary-lifted);
+    border-color: var(--secondary-lifted);
+    color: var(--text-inverted);
+    transform: translateY(0);
+    box-shadow: none;
 }
 
 .btn-primary.disabled,

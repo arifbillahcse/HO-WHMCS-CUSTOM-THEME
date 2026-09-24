@@ -1985,11 +1985,19 @@ table.table-list tbody td {
     border: 1px solid var(--border-muted);
     border-radius: var(--rounding-lg);
     box-shadow: var(--shadow-sm);
-    transition: box-shadow var(--transition-base);
+    transition: box-shadow var(--transition-base),
+                transform var(--transition-base);
 }
 
+/* Small lift to match hostorio.com's own card hover feel
+   (.cloud-card, .support-card, .vps-card all translateY on
+   hover alongside a bigger shadow) rather than a shadow-only
+   change. Kept to 2px — these panels hold live account data in a
+   dense list, not a marketing grid, so a 6-12px card lift would
+   read as jumpy rather than inviting. */
 .panel:hover {
     box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
 }
 
 /* Bootstrap ships `.panel-default > .panel-heading` with a
