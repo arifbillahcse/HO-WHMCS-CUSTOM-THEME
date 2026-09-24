@@ -71,21 +71,59 @@
 
         lines.forEach(function (line) {
             var li = document.createElement('li');
-
-            var icon = document.createElement('i');
-            icon.className = 'fas fa-check ho-product-feature-check';
-            icon.setAttribute('aria-hidden', 'true');
+            li.appendChild(buildFeatureCheckIcon());
 
             var text = document.createElement('span');
             text.textContent = line;
 
-            li.appendChild(icon);
             li.appendChild(text);
             list.appendChild(li);
         });
 
         desc.parentNode.replaceChild(list, desc);
         list.dataset.hoFeaturesBuilt = '1';
+    }
+
+    /**
+     * The check badge beside each feature line — an inline SVG rather
+     * than the Font Awesome fa-check glyph this used to render as.
+     * fa-check (and icon-font glyphs generally) bake uneven side- and
+     * baseline-padding into their own character cell, so centring the
+     * *box* around the glyph with flex still leaves the visible ink
+     * looking off-centre — confirmed against a live screenshot showing
+     * exactly that. An SVG path has no such hidden padding: it is
+     * drawn exactly on the coordinates given, so centring the box
+     * centres what is actually visible. Same construction (rounded
+     * square + tick path) as hostorio.com's own .cloud-icon-check.
+     *
+     * SVG_NS: document.createElement builds an <svg> as an opaque
+     * HTMLUnknownElement that never renders — SVG's own namespace is
+     * required, for the <svg> root and every child inside it.
+     */
+    var SVG_NS = 'http://www.w3.org/2000/svg';
+
+    function buildFeatureCheckIcon() {
+        var icon = document.createElementNS(SVG_NS, 'svg');
+        icon.setAttribute('class', 'ho-product-feature-check');
+        icon.setAttribute('viewBox', '0 0 16 16');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.setAttribute('focusable', 'false');
+
+        var box = document.createElementNS(SVG_NS, 'rect');
+        box.setAttribute('width', '16');
+        box.setAttribute('height', '16');
+        box.setAttribute('rx', '3');
+        icon.appendChild(box);
+
+        var tick = document.createElementNS(SVG_NS, 'path');
+        tick.setAttribute('d', 'M4 8.3L6.6 10.8L12 5.3');
+        tick.setAttribute('fill', 'none');
+        tick.setAttribute('stroke-width', '2');
+        tick.setAttribute('stroke-linecap', 'round');
+        tick.setAttribute('stroke-linejoin', 'round');
+        icon.appendChild(tick);
+
+        return icon;
     }
 
     /**

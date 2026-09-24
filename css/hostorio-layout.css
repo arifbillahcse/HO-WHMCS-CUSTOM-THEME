@@ -3422,23 +3422,30 @@ a[id$="-order-button"]:active {
     color: var(--text);
 }
 
+/* Inline SVG (built by js/hostorio-store-cards.js's
+   buildFeatureCheckIcon) rather than a Font Awesome glyph — see that
+   function's docblock for why: an icon font bakes uneven padding
+   into its own glyph cell, which left the tick looking off-centre
+   inside this box even though the box itself was correctly centred.
+   An SVG path has no such hidden padding, so it is centred by
+   construction instead of by eye. */
 .ho-product-feature-check {
-    display: inline-flex;
+    display: block;
     flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
     width: 18px;
     height: 18px;
     margin-top: 2px;
-    border-radius: 5px;
-    /* Light tint + coloured check, matching the reference design
-       (hostorio.com's own SVG: #E3F2FD fill / #1976D2 stroke) rather
-       than a solid-fill box with a white check. --primary-50 /
-       --primary-accented are this theme's tokens for that same pair. */
-    background-color: var(--primary-50);
-    color: var(--primary-accented);
-    font-size: 9px;
-    line-height: 1;
+}
+
+/* Light tint + coloured check, matching the reference design
+   (hostorio.com's own SVG: #E3F2FD fill / #1976D2 stroke). --primary-50
+   / --primary-accented are this theme's tokens for that same pair. */
+.ho-product-feature-check rect {
+    fill: var(--primary-50);
+}
+
+.ho-product-feature-check path {
+    stroke: var(--primary-accented);
 }
 
 /* footer holds the Order Now button. Values below are the user's own

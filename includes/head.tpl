@@ -36,7 +36,7 @@
     branch under the master layout, not a descendant of head.tpl — so
     without global scope it would render as empty there.
 *}
-{assign var="hoAssetVersion" value="ho-27" scope="global"}
+{assign var="hoAssetVersion" value="ho-28" scope="global"}
 {*
     custom.css previously rendered as bare {$__assetPath__}, with no
     version query at all — so an edit to the token layer could never
