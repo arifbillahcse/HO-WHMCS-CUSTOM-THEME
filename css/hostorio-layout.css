@@ -1909,34 +1909,23 @@ table.table-list tbody td {
     background-color: currentColor;
 }
 
-/* Search box (top-right of the navy info bar). Stock paints a
-   magnifying-glass sprite in as a background-image on the input
-   itself (background: url(...) no-repeat 8px 5px) with 45px of
-   left padding to clear it — swapped for a Font Awesome glyph
-   positioned on the wrapping <label>, which lines up correctly
-   regardless of the input's actual rendered height instead of a
-   sprite offset tuned to one fixed size. */
+/* Search box (top-right of the navy info bar). This used to paint a
+   Font Awesome magnifying-glass glyph via label::before (replacing
+   stock's own background-image sprite on the input), positioned to
+   line up regardless of the input's rendered height — removed at the
+   user's request after it rendered as a broken/garbled glyph box live
+   (the loaded Font Awesome version does not expose "\f002" under the
+   "Font Awesome 5 Free" family this rule names). The field's own
+   left padding, sized to clear that glyph, drops back down with it
+   rather than leaving a dead gap in an otherwise icon-less input. */
 .dataTables_wrapper .dataTables_filter label {
     position: relative;
     padding: var(--space-3);
 }
 
-.dataTables_wrapper .dataTables_filter label::before {
-    content: "\f002";
-    position: absolute;
-    top: 50%;
-    left: calc(var(--space-3) + 12px);
-    color: var(--text-muted);
-    font-family: "Font Awesome 5 Free";
-    font-size: 0.85em;
-    font-weight: 900;
-    transform: translateY(-50%);
-    pointer-events: none;
-}
-
 .dataTables_wrapper .dataTables_filter label .form-control {
     background: var(--bg) !important;
-    padding: 8px 14px 8px 34px !important;
+    padding: 8px 14px !important;
     border: 1px solid var(--border-muted) !important;
     border-radius: 999px !important;
     color: var(--text);
