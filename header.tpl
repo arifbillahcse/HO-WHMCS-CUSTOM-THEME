@@ -183,18 +183,15 @@
         </ul>
 
         {*
-            $assetLogoPath is WHMCS's own logo, set in Admin > Setup >
-            General Settings > General > Company Logo; if one is
-            uploaded there it takes priority automatically. Until
-            then, the marketing site's own logo is the fallback rather
-            than the plain wordmark text, so the client area matches
-            hostorio.com without depending on that admin step.
+            Hardcoded to /assets/img/logo.jpg rather than
+            $assetLogoPath (WHMCS's admin-configured logo, Admin >
+            Setup > General Settings > General > Company Logo) at the
+            user's request — that setting was pointing at the old
+            /assets/img/logo.png upload; this always renders the .jpg
+            at the same WHMCS-root assets/img/ location instead,
+            independent of whatever is or isn't set in admin.
         *}
-        {if $assetLogoPath}
-            <a href="{$WEB_ROOT}/index.php" class="logo"><img src="{$assetLogoPath}" alt="{$companyname}"></a>
-        {else}
-            <a href="{$WEB_ROOT}/index.php" class="logo"><img src="https://hostorio.com/wp-content/themes/Hostorio/assets/images/logo/hostorio-logo.png" alt="{$companyname}"></a>
-        {/if}
+        <a href="{$WEB_ROOT}/index.php" class="logo"><img src="{$WEB_ROOT}/assets/img/logo.jpg" alt="{$companyname}"></a>
 
     </div>
 </section>
