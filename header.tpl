@@ -183,15 +183,14 @@
         </ul>
 
         {*
-            Hardcoded to /assets/img/logo.jpg rather than
+            Hardcoded to /assets/img/hostorio-com-logo.png rather than
             $assetLogoPath (WHMCS's admin-configured logo, Admin >
             Setup > General Settings > General > Company Logo) at the
-            user's request — that setting was pointing at the old
-            /assets/img/logo.png upload; this always renders the .jpg
-            at the same WHMCS-root assets/img/ location instead,
-            independent of whatever is or isn't set in admin.
+            user's request; this always renders that file from the
+            WHMCS-root assets/img/ location, independent of whatever
+            is or isn't set in admin.
         *}
-        <a href="{$WEB_ROOT}/index.php" class="logo"><img src="{$WEB_ROOT}/assets/img/logo.jpg" alt="{$companyname}"></a>
+        <a href="{$WEB_ROOT}/index.php" class="logo"><img src="{$WEB_ROOT}/assets/img/hostorio-com-logo.png" alt="{$companyname}"></a>
 
     </div>
 </section>
