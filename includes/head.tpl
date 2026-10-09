@@ -36,7 +36,7 @@
     branch under the master layout, not a descendant of head.tpl — so
     without global scope it would render as empty there.
 *}
-{assign var="hoAssetVersion" value="ho-35" scope="global"}
+{assign var="hoAssetVersion" value="ho-36" scope="global"}
 {*
     custom.css previously rendered as bare {$__assetPath__}, with no
     version query at all — so an edit to the token layer could never
@@ -90,6 +90,12 @@
      reachable from CSS — see the file header. No-op on every other
      page, since it keys off #order-standard_cart. -->
 <script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-store-cards.js?v={$hoAssetVersion}" defer></script>
+<!-- Merges cart.php's Review (a=view) step into Checkout (a=checkout)
+     so they read as one page — deliberately narrower than the earlier
+     one-page-checkout attempt (reverted): never touches domain choice
+     or configuration, only clones read-only review content onto the
+     untouched native payment form. See the file's own docblock. -->
+<script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-review-checkout.js?v={$hoAssetVersion}" defer></script>
 
 {if $templatefile == "viewticket" && !$loggedin}
   <meta name="robots" content="noindex" />
