@@ -3798,40 +3798,6 @@ a[id$="-order-button"]:active {
     color: var(--text-muted);
 }
 
-
-/* ===========================================================
-   6f. REVIEW + CHECKOUT MERGE
-
-   Built by js/hostorio-review-checkout.js. a=view's own content
-   (.view-cart-items, .order-summary — both real classes, confirmed
-   from this site's rendered HTML) is cloned in above the untouched
-   a=checkout payment form, so a customer lands on one page carrying
-   both instead of two. Only a wrapper and spacing here — the cloned
-   fragments keep whatever styling they already have from elsewhere in
-   this file / the order form's own stylesheet.
-   =========================================================== */
-
-.ho-review-panel {
-    margin-bottom: var(--space-4);
-    padding: var(--space-4);
-    background-color: var(--bg);
-    border: 1px solid var(--border-muted);
-    border-radius: var(--rounding-lg);
-    box-shadow: var(--shadow-sm);
-}
-
-.ho-review-panel .order-summary {
-    margin-top: var(--space-4);
-}
-
-.ho-review-loading {
-    padding: var(--space-2) 0;
-    color: var(--text-lifted);
-    font-size: var(--text-md);
-    font-style: italic;
-}
-
-
 /* ===========================================================
    7. RESPONSIVE
 
