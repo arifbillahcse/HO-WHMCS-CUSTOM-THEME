@@ -90,44 +90,46 @@
             return;
         }
 
-        // #frmDomainChecker is WHMCS's own real id on this exact page
-        // (confirmed: referenced directly in this site's bundled
-        // templates/orderforms/standard_cart/scripts.min.js). Its
-        // presence is what confirms both that this is genuinely the
-        // domain-choice step AND that this product needs one at all —
-        // a product that doesn't, or a direct hit on a=confdomains/
-        // a=view (back button, bookmark, reload mid-flow), leaves it
-        // absent, and this script exits having touched nothing.
+        // Real ids on this exact page, confirmed from its own rendered
+        // HTML (not from the bundled JS's generic references, which
+        // named a #frmDomainChecker this page never actually has —
+        // that was the original bug: this script looked for an id
+        // that simply isn't here, and exited before ever reaching the
+        // DOM it should have built against).
         //
-        // Deliberately NOT gated on window.location.search containing
-        // a=add: this site serves this exact page at a pretty URL
-        // (/store/<category>/<product>) with no query string at all,
+        //   #frmProductDomainPid        hidden input, value = pid
+        //   #frmProductDomain           the radio choice + sld/tld
+        //                               inputs (no action — its own
+        //                               "Check"/"Transfer"/"Use"
+        //                               buttons are handled by WHMCS's
+        //                               JS via AJAX, never submitted)
+        //   #frmProductDomainSelections the form that actually POSTs
+        //                               to cart.php?a=add&pid=N&
+        //                               domainselect=1 (confirmed —
+        //                               this is the real HAR-captured
+        //                               request), carrying the real
+        //                               token plus #resultDomainOption
+        //                               / #resultDomain hidden fields
+        //
+        // All three together confirm this is genuinely the domain-
+        // choice step for a product that needs one. A product that
+        // doesn't, or a direct hit on a=confdomains/a=view (back
+        // button, bookmark, reload mid-flow), leaves them absent, and
+        // this script exits having touched nothing.
+        //
+        // Deliberately not gated on window.location.search containing
+        // a=add, either: this page is served at a pretty URL
+        // (/store/<category>/<product>) with no query string at all —
         // the same SEO-friendly-URL shape that caused the checkout
-        // redirect bug fixed earlier in header.tpl — a URL-based check
-        // silently never matched here. The DOM is what's real
-        // regardless of which URL shape reached it.
-        var nativeChecker = document.getElementById('frmDomainChecker');
-        if (!nativeChecker) {
-            return;
-        }
-        var nativeForm = nativeChecker.closest('form');
-        if (!nativeForm) {
+        // redirect bug fixed earlier in header.tpl.
+        var pidField = document.getElementById('frmProductDomainPid');
+        var nativeOptionsForm = document.getElementById('frmProductDomain');
+        var nativeSelectionsForm = document.getElementById('frmProductDomainSelections');
+        if (!pidField || !nativeOptionsForm || !nativeSelectionsForm) {
             return;
         }
 
-        // pid has to come from the native form itself for the same
-        // reason — a pretty URL carries no ?pid= to read. WHMCS still
-        // resolves the real product internally when rendering this
-        // page, so the form's own action carries it even when the
-        // address bar doesn't. Resolved against <base href> (see
-        // header.tpl) so a relative action still parses correctly.
-        var actionUrl;
-        try {
-            actionUrl = new URL(nativeForm.getAttribute('action') || '', document.baseURI);
-        } catch (e) {
-            return;
-        }
-        var pid = actionUrl.searchParams.get('pid');
+        var pid = pidField.value;
         if (!pid) {
             return;
         }
@@ -138,14 +140,13 @@
         }
 
         try {
-            build(root, nativeForm, pid, token);
+            build(root, nativeOptionsForm, nativeSelectionsForm, pid, token);
         } catch (err) {
             // Something about this page didn't match what this script
-            // assumes — leave the native form exactly as it was
+            // assumes — leave the native forms exactly as they were
             // rather than leave a half-built custom UI on screen.
-            if (nativeForm.style.display === 'none') {
-                nativeForm.style.display = '';
-            }
+            nativeOptionsForm.style.display = '';
+            nativeSelectionsForm.style.display = '';
             var mount = document.getElementById('hoOnepageCheckout');
             if (mount) {
                 mount.remove();
@@ -153,13 +154,14 @@
         }
     }
 
-    function build(root, nativeForm, pid, token) {
-        nativeForm.style.display = 'none';
+    function build(root, nativeOptionsForm, nativeSelectionsForm, pid, token) {
+        nativeOptionsForm.style.display = 'none';
+        nativeSelectionsForm.style.display = 'none';
 
         var mount = document.createElement('div');
         mount.id = 'hoOnepageCheckout';
         mount.className = 'ho-onepage';
-        nativeForm.parentNode.insertBefore(mount, nativeForm);
+        nativeOptionsForm.parentNode.insertBefore(mount, nativeOptionsForm);
 
         mount.innerHTML =
             '<div class="ho-onepage-steps">' +
@@ -373,7 +375,7 @@
                 .then(function (html) {
                     var doc = new DOMParser().parseFromString(html, 'text/html');
 
-                    if (doc.getElementById('frmDomainChecker')) {
+                    if (doc.getElementById('frmProductDomain')) {
                         // Still on the domain-choice page — WHMCS rejected
                         // it (most likely it was sniped between check and
                         // submit). Let the customer try again rather than
