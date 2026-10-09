@@ -397,8 +397,11 @@
                         // Nothing to configure for this product — WHMCS
                         // itself skipped straight to the review page
                         // (confirmed real behaviour, seen live for a
-                        // product with no addons).
-                        showReviewStep(doc);
+                        // product with no addons). The order summary
+                        // itself still needs a fresh, JS-executed load
+                        // (see loadFreshReview) rather than this
+                        // fetch's own static HTML.
+                        loadFreshReview();
                     }
                 })
                 .catch(function () {
@@ -451,17 +454,67 @@
                 body: body.toString(),
                 redirect: 'follow',
             })
-                .then(function (r) { return r.text(); })
-                .then(function (html) {
-                    var doc = new DOMParser().parseFromString(html, 'text/html');
+                .then(function () {
                     document.getElementById('hoStepConfigure').style.opacity = '0.6';
                     btn.style.display = 'none';
-                    showReviewStep(doc);
+                    loadFreshReview();
                 })
                 .catch(function () {
                     btn.disabled = false;
                     btn.textContent = 'Continue';
                 });
+        }
+
+        /**
+         * The order summary (.order-summary / #totalCartPrice) is not
+         * in cart.php?a=view's server-rendered HTML — it is filled in
+         * by WHMCS's own JS after the page loads (the little refresh
+         * icon on the real "Order Summary" header is the tell). A
+         * plain fetch()+DOMParser, used everywhere else in this file,
+         * never runs that JS, so it only ever sees an empty shell —
+         * confirmed live: the Review card rendered with a header and
+         * nothing under it.
+         *
+         * A hidden iframe actually loads the page for real — its own
+         * scripts run, including whatever AJAX call fills the summary
+         * in — so this loads cart.php?a=view there and waits for
+         * #totalCartPrice to actually have a value before reading
+         * anything out of it. Capped at ~6s: if the summary still
+         * hasn't appeared by then, the Review card falls back to a
+         * plain message rather than waiting forever.
+         */
+        function loadFreshReview() {
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.setAttribute('aria-hidden', 'true');
+            iframe.setAttribute('title', 'Order summary (loading)');
+            document.body.appendChild(iframe);
+
+            var attempts = 0;
+            var maxAttempts = 40; // ~6s at 150ms
+
+            function poll() {
+                attempts++;
+                var doc = null;
+                try {
+                    doc = iframe.contentDocument;
+                } catch (e) {
+                    doc = null;
+                }
+                var totalEl = doc && doc.getElementById('totalCartPrice');
+                if ((totalEl && totalEl.textContent.trim()) || attempts >= maxAttempts) {
+                    showReviewStep(doc || document);
+                    iframe.parentNode.removeChild(iframe);
+                    return;
+                }
+                setTimeout(poll, 150);
+            }
+
+            iframe.addEventListener('load', function () {
+                poll();
+            }, { once: true });
+
+            iframe.src = 'cart.php?a=view';
         }
 
         function showReviewStep(doc) {
