@@ -80,12 +80,40 @@
             panel.innerHTML = '';
             var items = doc && doc.querySelector('.view-cart-items');
             var summary = doc && doc.querySelector('.order-summary');
+            // The promo code field (confirmed real id, from this
+            // site's rendered HTML) sits outside both fragments above,
+            // as its own sibling block — not caught by cloning
+            // .view-cart-items/.order-summary alone, confirmed live
+            // (it was simply missing). Its nearest .row ancestor is
+            // the smallest reasonable unit that also carries its
+          // "Validate Code" button and label.
+            var promoInput = doc && doc.getElementById('inputPromotionCode');
+            var promo = promoInput && promoInput.closest('.row');
 
             if (items) {
-                panel.appendChild(items.cloneNode(true));
+                var itemsClone = items.cloneNode(true);
+                // .btn-checkout (confirmed real class, already styled
+                // orange sitewide via custom.css) is WHMCS's own
+                // "Checkout" link from the review page — meaningless
+                // once this content is sitting ON the checkout page
+                // already, confirmed live showing as a redundant
+                // second button right above the real payment form.
+                var staleCheckoutBtns = itemsClone.querySelectorAll('.btn-checkout');
+                for (var i = 0; i < staleCheckoutBtns.length; i++) {
+                    staleCheckoutBtns[i].remove();
+                }
+                panel.appendChild(itemsClone);
             }
             if (summary) {
-                panel.appendChild(summary.cloneNode(true));
+                var summaryClone = summary.cloneNode(true);
+                var staleCheckoutBtns2 = summaryClone.querySelectorAll('.btn-checkout');
+                for (var j = 0; j < staleCheckoutBtns2.length; j++) {
+                    staleCheckoutBtns2[j].remove();
+                }
+                panel.appendChild(summaryClone);
+            }
+            if (promo) {
+                panel.appendChild(promo.cloneNode(true));
             }
             if (!items && !summary) {
                 panel.innerHTML = '<p>Your order details will show on your receipt after payment.</p>';
