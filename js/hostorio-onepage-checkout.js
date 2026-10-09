@@ -90,34 +90,45 @@
             return;
         }
 
-        var params = new URLSearchParams(window.location.search);
-        if (params.get('a') !== 'add') {
-            // Only take over the moment a customer lands here fresh
-            // from "Order Now". A direct hit on a=confdomains/a=view
-            // (back button, bookmark, reload mid-flow) is left to
-            // render natively rather than trying to resume a one-page
-            // session this script never saved any state for.
-            return;
-        }
-
-        var pid = params.get('pid');
-        if (!pid) {
-            return;
-        }
-
-        // #frmDomainChecker / #inputDomain are WHMCS's own real ids on
-        // this exact page (confirmed: referenced directly in this
-        // site's bundled templates/orderforms/standard_cart/scripts.min.js).
-        // Their presence is what confirms this product actually needs
-        // a domain choice at all — a product that doesn't (or a
-        // reload that landed somewhere else) leaves them absent, and
-        // this script exits having touched nothing.
+        // #frmDomainChecker is WHMCS's own real id on this exact page
+        // (confirmed: referenced directly in this site's bundled
+        // templates/orderforms/standard_cart/scripts.min.js). Its
+        // presence is what confirms both that this is genuinely the
+        // domain-choice step AND that this product needs one at all —
+        // a product that doesn't, or a direct hit on a=confdomains/
+        // a=view (back button, bookmark, reload mid-flow), leaves it
+        // absent, and this script exits having touched nothing.
+        //
+        // Deliberately NOT gated on window.location.search containing
+        // a=add: this site serves this exact page at a pretty URL
+        // (/store/<category>/<product>) with no query string at all,
+        // the same SEO-friendly-URL shape that caused the checkout
+        // redirect bug fixed earlier in header.tpl — a URL-based check
+        // silently never matched here. The DOM is what's real
+        // regardless of which URL shape reached it.
         var nativeChecker = document.getElementById('frmDomainChecker');
         if (!nativeChecker) {
             return;
         }
         var nativeForm = nativeChecker.closest('form');
         if (!nativeForm) {
+            return;
+        }
+
+        // pid has to come from the native form itself for the same
+        // reason — a pretty URL carries no ?pid= to read. WHMCS still
+        // resolves the real product internally when rendering this
+        // page, so the form's own action carries it even when the
+        // address bar doesn't. Resolved against <base href> (see
+        // header.tpl) so a relative action still parses correctly.
+        var actionUrl;
+        try {
+            actionUrl = new URL(nativeForm.getAttribute('action') || '', document.baseURI);
+        } catch (e) {
+            return;
+        }
+        var pid = actionUrl.searchParams.get('pid');
+        if (!pid) {
             return;
         }
 
