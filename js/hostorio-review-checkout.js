@@ -117,6 +117,22 @@
     }
 
     function init() {
+        // Critical: this exact page (including this script) is what
+        // gets loaded inside injectReviewIntoCheckout's own hidden
+        // iframe. Without this guard, that iframe's copy of the script
+        // runs too: sees a=view, redirects itself to a=checkout, whose
+        // copy of the script then creates ANOTHER hidden iframe loading
+        // a=view, which redirects itself again — unbounded recursive
+        // iframes. Confirmed live: dozens of repeated cart.php?a=view
+        // requests and browser "unload not allowed" violations were
+        // exactly this loop running until the outer poll's timeout cut
+        // it off, which is also why the review content never actually
+        // rendered (the inner iframe kept navigating itself away from
+        // a=view before anything could be read from it).
+        if (window.self !== window.top) {
+            return;
+        }
+
         try {
             skipReviewPage();
         } catch (e) {
