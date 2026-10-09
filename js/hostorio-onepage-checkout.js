@@ -278,6 +278,22 @@
             if (!sld) {
                 return;
             }
+
+            // A customer typing the full domain ("yourbrand.com") into
+            // what's meant to be the name-only field, with the TLD
+            // dropdown still sitting on its own default, silently builds
+            // a malformed double-extension domain (yourbrand.com.com) —
+            // confirmed live: it passed this check, got submitted, and
+            // then broke every later cart recalculation (WHMCS's own
+            // calcCartTotals() throws InvalidDomain trying to punycode-
+            // decode it), including the final checkout page itself.
+            // Caught here, before it ever reaches a real request.
+            if (sld.indexOf('.') !== -1) {
+                resultBox.innerHTML = '<div class="ho-onepage-note ho-onepage-note-error">Enter just the name here — choose the extension from the dropdown beside it (e.g. type "yourbrand", not "yourbrand.com").</div>';
+                continueBtn.disabled = true;
+                return;
+            }
+
             resultBox.innerHTML = '<div class="ho-onepage-note">Checking…</div>';
             continueBtn.disabled = true;
 
@@ -387,8 +403,7 @@
                         return;
                     }
 
-                    document.getElementById('hoStepDomain').style.opacity = '0.6';
-                    continueBtn.style.display = 'none';
+                    lockDomainStep();
 
                     var addons = doc.querySelector('.addon-products');
                     if (addons) {
@@ -484,6 +499,16 @@
          * plain message rather than waiting forever.
          */
         function loadFreshReview() {
+            // Shown immediately — the poll below can take up to ~6s,
+            // and an empty page with nothing happening reads as frozen
+            // rather than working, which is exactly what was reported
+            // live even on a run that was (slowly) still succeeding.
+            var card = document.getElementById('hoStepReview');
+            document.getElementById('hoReviewMount').innerHTML =
+                '<div class="ho-onepage-note">Loading your order summary…</div>';
+            card.style.display = '';
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
             var iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.setAttribute('aria-hidden', 'true');
@@ -521,6 +546,7 @@
             var summary = doc.querySelector('.order-summary');
             var card = document.getElementById('hoStepReview');
             var reviewMount = document.getElementById('hoReviewMount');
+            reviewMount.innerHTML = ''; // clear the "Loading…" placeholder
 
             if (summary) {
                 reviewMount.appendChild(summary.cloneNode(true));
@@ -536,6 +562,23 @@
                 document.getElementById('hoBarAmount').textContent = totalEl.textContent.trim();
             }
             document.getElementById('hoPayLink').style.display = '';
+        }
+
+        // Dims AND disables the Domain card's own inputs/buttons once
+        // its choice has actually been submitted to the cart. Opacity
+        // alone left it fully interactive — confirmed live: a customer
+        // checked a second, different domain in the already-"done"
+        // card after continuing, which cannot change what was already
+        // committed and only reads as confusing (or, worse, as if it
+        // might silently replace the order).
+        function lockDomainStep() {
+            var card = document.getElementById('hoStepDomain');
+            card.style.opacity = '0.6';
+            continueBtn.style.display = 'none';
+            var controls = card.querySelectorAll('input, select, button');
+            for (var i = 0; i < controls.length; i++) {
+                controls[i].disabled = true;
+            }
         }
 
         function escapeHtml(str) {
