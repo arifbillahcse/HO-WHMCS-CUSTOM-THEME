@@ -40,98 +40,13 @@
     </div>
 </section>
 
-{*
-    No footer at all on login and registration, for the same reason
-    header.tpl drops the nav rail there: every link in it leads
-    somewhere that requires a session, so the whole block is noise
-    around the one control those pages exist for.
-
-    Wraps the section rather than its contents so nothing is left
-    behind — an empty navy bar reads as a rendering fault, not as a
-    deliberate choice. The back-to-top button goes with it; jQuery
-    binds it by class and no-ops on an empty selection.
-*}
-{if !$showingLoginPage && $templatefile != 'clientregister'}
-<section id="footer">
-    <div class="container">
-
-        {*
-            Footer link labels and contact details below are plain text so
-            they always render. To translate them, swap the text for the
-            matching {$LANG.key} or {lang key='...'} tag.
-
-            EDIT BEFORE GOING LIVE: the address, phone, email and social
-            profile URLs in the "Contact" and "Follow us" blocks are
-            placeholders.
-        *}
-
-        <div class="row">
-
-            <div class="col-md-4 col-sm-12 footer-col">
-                <span class="footer-brand-name">{$companyname}</span>
-                <p class="footer-about">
-                    Reliable web hosting, domain registration and business email,
-                    backed by round-the-clock support.
-                </p>
-            </div>
-
-            <div class="col-md-2 col-sm-4 footer-col">
-                <h5 class="footer-col-title">Account</h5>
-                <ul class="footer-links">
-                    <li><a href="{$WEB_ROOT}/clientarea.php">Client Area</a></li>
-                    <li><a href="{$WEB_ROOT}/clientarea.php?action=services">My Services</a></li>
-                    <li><a href="{$WEB_ROOT}/clientarea.php?action=domains">My Domains</a></li>
-                    <li><a href="{$WEB_ROOT}/clientarea.php?action=invoices">Invoices</a></li>
-                </ul>
-            </div>
-
-            <div class="col-md-3 col-sm-4 footer-col">
-                <h5 class="footer-col-title">Services</h5>
-                <ul class="footer-links">
-                    <li><a href="{$WEB_ROOT}/cart.php">{$LANG.orderhosting}</a></li>
-                    <li><a href="{$WEB_ROOT}/domainchecker.php">{$LANG.buyadomain}</a></li>
-                    <li><a href="{$WEB_ROOT}/announcements.php">Announcements</a></li>
-                    <li><a href="{$WEB_ROOT}/serverstatus.php">Network Status</a></li>
-                </ul>
-            </div>
-
-            <div class="col-md-3 col-sm-4 footer-col">
-                <h5 class="footer-col-title">Support</h5>
-                <ul class="footer-contact">
-                    <li>
-                        <i class="fas fa-life-ring"></i>
-                        <a href="{$WEB_ROOT}/submitticket.php">{$LANG.getsupport}</a>
-                    </li>
-                    <li>
-                        <i class="fas fa-book"></i>
-                        <a href="{$WEB_ROOT}/knowledgebase.php">Knowledgebase</a>
-                    </li>
-                    <li>
-                        <i class="fas fa-envelope"></i>
-                        <a href="{$WEB_ROOT}/contact.php">Contact Us</a>
-                    </li>
-                    <li>
-                        <i class="fas fa-phone"></i>
-                        <a href="tel:+8801779440297">+880 1779-440297</a>
-                    </li>
-                </ul>
-            </div>
-
-        </div>
-
-        <div class="footer-bottom">
-            <p>{lang key="copyrightFooterNotice" year=$date_year company=$companyname}</p>
-            <ul class="footer-legal">
-                <li><a href="https://hostorio.com/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a></li>
-                <li><a href="https://hostorio.com/terms-and-conditions/" target="_blank" rel="noopener">Terms of Service</a></li>
-            </ul>
-        </div>
-
-    </div>
-
-    <a href="#" class="back-to-top" title="Back to top"><i class="fas fa-chevron-up"></i></a>
-</section>
-{/if}
+{* Footer removed sitewide at the user's request — it previously
+   rendered on every page except login/register (those already had
+   it dropped). The markup (brand column, Account/Services/Support
+   link lists, copyright bar, back-to-top button) is gone, not just
+   hidden; section 4 of hostorio-layout.css styles it and is now
+   unused dead CSS, left in place rather than torn out in case the
+   footer comes back later. *}
 
     </div><!-- /.ho-content -->
 </div><!-- /.ho-shell — opened in header.tpl -->
