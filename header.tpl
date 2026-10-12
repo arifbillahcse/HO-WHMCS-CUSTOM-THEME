@@ -416,22 +416,19 @@
             no core/PHP changes; see includes/sidebar-horizontal.tpl.
         *}
         {*
-            Login and registration take the middle six columns of the
-            grid, so the row reads col-3 | col-6 | col-3 — the offset
-            supplies the empty quarter on the left, the column's own
-            width the one on the right. Both are md classes, so the
-            split only applies from 992px up and the form stays
-            full-bleed on phones and tablets.
-
-            Stock the form is full width. That was survivable while the
-            nav rail took its width off the left, but these two pages
-            drop the rail, so without this a field runs the whole
-            window and the paired rows on the registration form drift
-            too far apart to read as pairs.
+            Login and registration used to take the middle six columns
+            here (col-3 | col-6 | col-3), back when their form sat bare
+            on the page needing a narrower measure to stay readable.
+            Both now build their own full-width split-screen shell
+            (login.tpl / clientregister.tpl, .ho-auth in
+            hostorio-layout.css) that manages its own width and
+            centring, so they take the plain col-xs-12 every other page
+            gets instead — a narrower Bootstrap column here would just
+            fight that shell for width.
         *}
         <!-- Container for main page display content -->
-        <div class="col-xs-12{if $showingLoginPage || $templatefile == 'clientregister'} col-md-6 col-md-offset-3{/if} main-content">
-            {if !$showingLoginPage && !$inShoppingCart && $templatefile != 'homepage' && !$skipMainBodyContainer}
+        <div class="col-xs-12 main-content">
+            {if !$showingLoginPage && $templatefile != 'clientregister' && !$inShoppingCart && $templatefile != 'homepage' && !$skipMainBodyContainer}
                 {include file="$template/includes/pageheader.tpl" title=$displayTitle desc=$tagline showbreadcrumb=true}
             {/if}
             {*
@@ -453,8 +450,14 @@
                 Matched on getName(), read directly off this page's
                 own rendered menuItemName="..." attribute rather than
                 guessed.
+
+                'Already Registered' (register.php's "already have an
+                account? log in" panel) is filtered the same way: its
+                content now lives inside clientregister.tpl's own
+                .ho-auth shell instead, written directly rather than
+                relocated from this panel.
             *}
-            {assign var="hiddenSidebarPanelNames" value=['Client Details', 'Client Contacts', 'Client Shortcuts']}
+            {assign var="hiddenSidebarPanelNames" value=['Client Details', 'Client Contacts', 'Client Shortcuts', 'Already Registered']}
             {foreach $primarySidebar as $sidebarItem}
                 {if in_array($sidebarItem->getName(), $hiddenSidebarPanelNames)}
                     {assign var="primarySidebar" value=$primarySidebar->removeChild($sidebarItem->getName())}
