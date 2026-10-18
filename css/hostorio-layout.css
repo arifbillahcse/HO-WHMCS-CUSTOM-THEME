@@ -3345,12 +3345,100 @@ a[id$="-order-button"]:active {
 
    The featured-TLD cards, category filter and price table below the
    search box. Markup: domain-pricing.tpl (this theme's own).
-
-   The search box ABOVE them is not covered here: it is WHMCS's stock
-   domainchecker.tpl, which this theme does not override, so it still
-   renders as the blue gradient banner. Styling it needs its rendered
-   markup — see the note in that template.
    =========================================================== */
+
+/* --- Search box -------------------------------------------- */
+/* WHMCS's own stock domainchecker.tpl, which this theme does not
+   override — no .tpl exists to change its markup, only its rendered
+   classes (.domain-checker-container / .domain-checker-bg /
+   .input-group-box), captured from this page's actual HTML output.
+
+   Stock wraps the pill in a full-bleed navy/blue gradient banner —
+   heavier than anything else this theme uses. Replaced with the same
+   light panel + white pill treatment as the AI search box
+   (.ho-ai-search, clientareahome.tpl) so this reads as one more
+   instance of an established pattern rather than its own one-off
+   design, per request to keep this page consistent with the rest of
+   the theme. */
+.domain-checker-container {
+    margin: 0 0 var(--space-5);
+}
+
+.domain-checker-bg {
+    padding: var(--space-5) var(--space-4);
+    background: linear-gradient(180deg, var(--primary-50) 0%, var(--bg) 100%);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+}
+
+/* Stock's Bootstrap offset columns (col-md-8 col-md-offset-2, …)
+   already centre and cap the pill's width, so only the pill itself
+   needs restyling, not its wrapper. */
+.domain-checker-bg .input-group-box {
+    display: flex;
+    align-items: center;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color var(--transition-fast),
+                box-shadow var(--transition-fast);
+}
+
+.domain-checker-bg .input-group-box:focus-within {
+    border-color: var(--primary-accented);
+    box-shadow: var(--shadow-md);
+}
+
+/* Search icon ahead of the field — stock markup has no element to
+   hang one on, so it is drawn as a ::before on the pill itself rather
+   than reaching into core output for a hook. \f002 is fa-search,
+   confirmed against this theme's own bundled fontawesome.min.css. */
+.domain-checker-bg .input-group-box::before {
+    content: "\f002";
+    flex: 0 0 auto;
+    margin-right: var(--space-3);
+    color: var(--text-muted);
+    font: normal 900 1rem/1 "Font Awesome 6 Pro";
+}
+
+.domain-checker-bg #inputDomain {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: auto;
+    padding: var(--space-2) 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    color: var(--text);
+    font-size: var(--text-lg);
+}
+
+.domain-checker-bg #inputDomain:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.domain-checker-bg #btnCheckAvailability {
+    flex: 0 0 auto;
+    padding: var(--space-2) var(--space-5);
+    background-color: var(--secondary);
+    border: 0;
+    border-radius: 999px;
+    color: var(--text-inverted);
+    font-weight: var(--font-weight-bold);
+    transition: background-color var(--transition-fast),
+                transform var(--transition-fast);
+}
+
+.domain-checker-bg #btnCheckAvailability:hover,
+.domain-checker-bg #btnCheckAvailability:focus {
+    background-color: var(--secondary-lifted);
+    transform: translateY(-1px);
+}
 
 /* Stock lays these out as Bootstrap columns (col-md-3 col-sm-4
    col-xs-6), which left a lone card stranded on its own row whenever
