@@ -1503,7 +1503,21 @@ body.ho-page-chromeless section#main-body {
     line-height: 1.6;
 }
 
-.ho-auth-features {
+/* ---------------------------------------------------------------
+   Feature list (login.tpl / clientregister.tpl, via the shared
+   includes/ho-auth-features.tpl).
+
+   Rebuilt with every rule keyed to its own unique class, and nothing
+   selected by bare tag name. The previous build used .ho-auth-features
+   span for the description line's colour/size — but the icon wrapper
+   is ALSO a <span>, so that one rule silently reached both the text
+   it was meant for and the icon box beside it, and at a higher
+   specificity than the icon's own single-class rule it won regardless
+   of source order. That class of bug can't recur here: no selector
+   below is anything less specific than exactly one dedicated class.
+   ------------------------------------------------------------- */
+
+#hoAuthFeatureList.ho-auth-feat-list {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
@@ -1512,13 +1526,13 @@ body.ho-page-chromeless section#main-body {
     list-style: none;
 }
 
-.ho-auth-features li {
+.ho-auth-feat-row {
     display: flex;
     align-items: center;
     gap: var(--space-3);
 }
 
-.ho-auth-feature-icon {
+.ho-auth-feat-iconbox {
     display: flex;
     flex: 0 0 auto;
     align-items: center;
@@ -1527,34 +1541,28 @@ body.ho-page-chromeless section#main-body {
     height: 40px;
     border-radius: var(--rounding-md);
     background-color: rgba(255, 255, 255, 0.10);
-}
-
-/* Root cause of the washed-out icon colour: .ho-auth-feature-icon IS
-   itself a <span>, so the generic ".ho-auth-features span" rule below
-   (it targets each feature's description text) matches it too — and
-   at (0,1,1) it outranks the single-class (0,1,0) selector above,
-   overriding this orange with that rule's pale white regardless of
-   source order. Qualified with the parent class to outrank it
-   properly instead of fighting it with specificity tricks. */
-.ho-auth-features .ho-auth-feature-icon {
     color: var(--ho-orange-light);
 }
 
-.ho-auth-feature-svg {
+.ho-auth-feat-icon {
     display: block;
     width: 22px;
     height: 22px;
 }
 
-.ho-auth-features strong {
-    display: block;
+.ho-auth-feat-copy {
+    display: flex;
+    flex-direction: column;
+}
+
+.ho-auth-feat-title {
     margin-bottom: 2px;
     color: var(--text-inverted);
     font-size: var(--text-md);
+    font-weight: var(--font-weight-medium);
 }
 
-.ho-auth-features span {
-    display: block;
+.ho-auth-feat-desc {
     color: rgba(255, 255, 255, 0.68);
     font-size: var(--text-sm);
 }
