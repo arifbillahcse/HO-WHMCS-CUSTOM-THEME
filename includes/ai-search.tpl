@@ -92,11 +92,6 @@
        show. *}
     <div class="ho-ai-search-answer" aria-live="polite"></div>
 
-    <p class="ho-ai-search-foot">
-        Prefer to browse? <a href="{$WEB_ROOT}/knowledgebase.php">Search the knowledgebase</a>
-        or <a href="{$WEB_ROOT}/submitticket.php">open a ticket</a>.
-    </p>
-
 </section>
 {*
     versionHash (WHMCS's own cache-buster) only changes on a WHMCS
