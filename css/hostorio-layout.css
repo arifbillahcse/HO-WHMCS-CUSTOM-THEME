@@ -902,23 +902,48 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
 }
 
 /* "Your Recent Tickets" panel (client area home, and above Open
-   Ticket) — the one .ho-filterbar-item this theme does not want as a
-   pill. Elsewhere a pill holds one short label; here WHMCS packs two
-   lines — the subject, then a status word and a relative time — into
-   the same rounded chip, which reads as a stadium-shaped button
-   rather than as ticket information, and stretches into an oval on
-   any subject longer than a few words (WHMCS truncates it, but not
-   until several hundred pixels in).
+   Ticket). Rebuilt as its own card-style activity list rather than
+   either WHMCS's stock pill or this theme's earlier plain-line-list
+   pass: each ticket is now a bordered row with a message-icon badge,
+   a hover lift and a reveal-on-hover arrow, matching the support
+   department cards (.ho-dept-card) that sit above this panel on the
+   Open Ticket page rather than reading as a bare list beside them.
+   The markup (.recent-ticket, .truncate, the two spans in <small>) is
+   WHMCS core's own sidebar widget, not template output in this repo,
+   so only its rendering is touched here, not its structure. */
 
-   Restyled as a plain list: each ticket is a full-width row —
-   subject, status, relative time, left to right on one line — with a
-   hairline rule between rows instead of a pill boundary. The markup
-   (.recent-ticket, .truncate, the two spans in <small>) is WHMCS
-   core's own sidebar widget, not template output in this repo, so
-   only its rendering is touched here, not its structure. */
+[menuitemname="Recent Tickets" i] {
+    display: block;
+    padding: var(--space-4);
+}
+
+[menuitemname="Recent Tickets" i] .ho-filterbar-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-3);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border-muted);
+    font-size: 1.0625rem;
+}
+
+[menuitemname="Recent Tickets" i] .ho-filterbar-label i {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--primary-50);
+    color: var(--primary);
+    font-size: 0.85rem;
+}
 
 [menuitemname="Recent Tickets" i] .ho-filterbar-items {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
     /* This is still a flex item of .ho-filterbar (flex-wrap: wrap).
        Its default auto min-width would otherwise take the widest
        ticket subject's full unwrapped text width — the min-content
@@ -932,40 +957,62 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
 
 [menuitemname="Recent Tickets" i] .ho-filterbar-item {
     display: flex;
+    align-items: center;
     width: 100%;
-    padding: var(--space-2) 0;
-    background-color: transparent;
-    border: 0;
-    border-bottom: 1px solid var(--border-muted);
-    border-radius: 0;
+    padding: var(--space-3);
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-md);
+    color: inherit;
     white-space: normal;
-}
-
-[menuitemname="Recent Tickets" i] .ho-filterbar-item:last-child {
-    border-bottom: 0;
+    transition: border-color var(--transition-fast),
+                box-shadow var(--transition-fast),
+                transform var(--transition-fast);
 }
 
 [menuitemname="Recent Tickets" i] .ho-filterbar-item:hover,
 [menuitemname="Recent Tickets" i] .ho-filterbar-item:focus {
-    border-color: var(--border-muted);
-    color: var(--primary-accented);
+    border-color: var(--secondary);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+    color: inherit;
+    text-decoration: none;
 }
 
 [menuitemname="Recent Tickets" i] .recent-ticket {
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    width: 100%;
     /* Same reasoning as .ho-filterbar-items above, one level down:
-       this is the flex item .ho-filterbar-item shrinks to fit the
-       row, and needs the same override to actually do so. */
+       this is a flex item sharing its row with the hover arrow below,
+       and needs the same override to actually shrink to fit. */
+    flex: 1 1 auto;
     min-width: 0;
+}
+
+/* Per-ticket icon badge. WHMCS's markup has no element here to hook
+   an <i> onto, so it is drawn as a ::before pseudo-element carrying
+   the icon font directly rather than reaching into core output for
+   one. \f075 is Font Awesome's fa-comment glyph, confirmed against
+   this theme's own bundled fontawesome.min.css rather than guessed. */
+[menuitemname="Recent Tickets" i] .recent-ticket::before {
+    content: "\f075";
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--primary-50);
+    color: var(--primary);
+    font: normal 900 0.95rem/1 "Font Awesome 6 Pro";
 }
 
 /* WHMCS renders the ticket number + subject as one string, so it
    cannot be split into two columns without parsing that string back
    apart. flex:1 with an ellipsis is what keeps a long subject from
-   pushing the status and time off the row instead. */
+   pushing the status/time column off the row instead. */
 [menuitemname="Recent Tickets" i] .recent-ticket .truncate {
     flex: 1 1 auto;
     min-width: 0;
@@ -979,8 +1026,9 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
 [menuitemname="Recent Tickets" i] .recent-ticket small {
     display: flex;
     flex: 0 0 auto;
-    align-items: center;
-    gap: var(--space-3);
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
     font-size: var(--text-sm);
 }
 
@@ -1008,10 +1056,33 @@ body.ho-sidebar-open .ho-sidebar-backdrop {
     order: 1;
     padding: 2px var(--space-2);
     background-color: var(--bg-muted);
-    border: 1px solid var(--border-muted);
-    border-radius: var(--rounding-sm);
+    border-radius: 999px;
+    font-size: 0.75rem;
     font-weight: var(--font-weight-medium);
     white-space: nowrap;
+}
+
+/* Reveal-on-hover arrow, the same treatment .ho-dept-card-go gives
+   the support department cards above this panel on Open Ticket.
+   \f061 is fa-arrow-right, confirmed the same way as \f075 above. */
+[menuitemname="Recent Tickets" i] .ho-filterbar-item::after {
+    content: "\f061";
+    flex: 0 0 auto;
+    margin-left: var(--space-2);
+    color: var(--text-muted);
+    font: normal 900 0.85rem/1 "Font Awesome 6 Pro";
+    opacity: 0;
+    transform: translateX(-3px);
+    transition: opacity var(--transition-fast),
+                transform var(--transition-fast),
+                color var(--transition-fast);
+}
+
+[menuitemname="Recent Tickets" i] .ho-filterbar-item:hover::after,
+[menuitemname="Recent Tickets" i] .ho-filterbar-item:focus::after {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--secondary);
 }
 
 .ho-filterbar-body,
