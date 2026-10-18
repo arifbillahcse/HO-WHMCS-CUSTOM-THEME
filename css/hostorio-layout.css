@@ -3364,18 +3364,24 @@ a[id$="-order-button"]:active {
     margin: 0 0 var(--space-5);
 }
 
-/* Qualified with #order-standard_cart (this page's stable wrapper id)
-   plus the parent class, rather than left as a bare .domain-checker-bg
-   — the pill restyle below took immediately, but this one didn't;
-   stock's own CSS apparently keys the navy gradient to a selector at
-   least this specific, and since that stylesheet is injected inside
-   #main-body (after hostorio-layout.css in the document, despite
-   loading from the <head> here), a same-specificity rule loses to it
-   on source order alone regardless of which file "should" win. Spelled
-   out this far rather than guessed at again. */
+/* Confirmed directly from the order form's own stylesheet
+   (templates/orderforms/standard_cart/css/all.min.css), not guessed:
+   stock's .domain-checker-bg sets its navy gradient with !important —
+
+       .domain-checker-bg{background: rgb(2,0,36)!important;
+       background:linear-gradient(199deg, …)!important; …}
+
+   No selector specificity, however high, beats an !important rule —
+   that was the wrong theory last round, and why qualifying the
+   selector alone had no effect. The only correct fix is to also use
+   !important here, on this one property stock flags, so the tie is
+   broken by specificity instead (this selector outranks stock's bare
+   .domain-checker-bg either way, so it wins once both sides carry the
+   same priority). Padding carries no !important in stock, so it needs
+   none here. */
 #order-standard_cart .domain-checker-container .domain-checker-bg {
     padding: var(--space-5) var(--space-4);
-    background: linear-gradient(180deg, var(--primary-50) 0%, var(--bg) 100%);
+    background: linear-gradient(180deg, var(--primary-50) 0%, var(--bg) 100%) !important;
     border: 1px solid var(--border-muted);
     border-radius: var(--rounding-lg);
 }
