@@ -3349,17 +3349,21 @@ a[id$="-order-button"]:active {
 
 /* --- Search box -------------------------------------------- */
 /* WHMCS's own stock domainchecker.tpl, which this theme does not
-   override — no .tpl exists to change its markup, only its rendered
-   classes (.domain-checker-container / .domain-checker-bg /
-   .input-group-box), captured from this page's actual HTML output.
+   override — no .tpl exists to change its markup. js/hostorio-
+   domain-search.js tags its elements with the ho-domain-search-*
+   classes used below on load, so these rules are keyed to classes
+   this theme owns rather than WHMCS's own ids (#inputDomain,
+   #btnCheckAvailability) or stock classes it could change on an
+   update. #order-standard_cart is kept as a belt-and-braces prefix —
+   not needed for uniqueness now, but free insurance against the
+   stylesheet load-order issue below recurring on some other property.
 
    Stock wraps the pill in a full-bleed navy/blue gradient banner —
    heavier than anything else this theme uses. Replaced with the same
    light panel + white pill treatment as the AI search box
    (.ho-ai-search, clientareahome.tpl) so this reads as one more
    instance of an established pattern rather than its own one-off
-   design, per request to keep this page consistent with the rest of
-   the theme. */
+   design. */
 .domain-checker-container {
     margin: 0 0 var(--space-5);
 }
@@ -3371,15 +3375,13 @@ a[id$="-order-button"]:active {
        .domain-checker-bg{background: rgb(2,0,36)!important;
        background:linear-gradient(199deg, …)!important; …}
 
-   No selector specificity, however high, beats an !important rule —
-   that was the wrong theory last round, and why qualifying the
-   selector alone had no effect. The only correct fix is to also use
-   !important here, on this one property stock flags, so the tie is
-   broken by specificity instead (this selector outranks stock's bare
-   .domain-checker-bg either way, so it wins once both sides carry the
-   same priority). Padding carries no !important in stock, so it needs
-   none here. */
-#order-standard_cart .domain-checker-container .domain-checker-bg {
+   No selector specificity, however high, beats an !important rule.
+   The only correct fix is to also use !important here, on this one
+   property stock flags, so the tie is broken by specificity instead
+   (this selector outranks stock's bare .domain-checker-bg either way,
+   so it wins once both sides carry the same priority). Padding
+   carries no !important in stock, so it needs none here. */
+#order-standard_cart .ho-domain-search {
     padding: var(--space-5) var(--space-4);
     background: linear-gradient(180deg, var(--primary-50) 0%, var(--bg) 100%) !important;
     border: 1px solid var(--border-muted);
@@ -3387,9 +3389,14 @@ a[id$="-order-button"]:active {
 }
 
 /* Stock's Bootstrap offset columns (col-md-8 col-md-offset-2, …)
-   already centre and cap the pill's width, so only the pill itself
-   needs restyling, not its wrapper. */
-.domain-checker-bg .input-group-box {
+   already centre and cap the pill's width, so only the bar itself
+   needs restyling, not its wrapper.
+
+   Square corners rather than the previous fully-rounded pill — the
+   fully-rounded version read as a floating oval rather than a search
+   field, per request to make the button (and, to match it, the bar it
+   sits in) square instead of round. */
+.ho-domain-search-bar {
     display: flex;
     align-items: center;
     max-width: 720px;
@@ -3397,22 +3404,22 @@ a[id$="-order-button"]:active {
     padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
     background-color: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 999px;
+    border-radius: var(--rounding-md);
     box-shadow: var(--shadow-sm);
     transition: border-color var(--transition-fast),
                 box-shadow var(--transition-fast);
 }
 
-.domain-checker-bg .input-group-box:focus-within {
+.ho-domain-search-bar:focus-within {
     border-color: var(--primary-accented);
     box-shadow: var(--shadow-md);
 }
 
 /* Search icon ahead of the field — stock markup has no element to
-   hang one on, so it is drawn as a ::before on the pill itself rather
+   hang one on, so it is drawn as a ::before on the bar itself rather
    than reaching into core output for a hook. \f002 is fa-search,
    confirmed against this theme's own bundled fontawesome.min.css. */
-.domain-checker-bg .input-group-box::before {
+.ho-domain-search-bar::before {
     content: "\f002";
     flex: 0 0 auto;
     margin-right: var(--space-3);
@@ -3420,7 +3427,7 @@ a[id$="-order-button"]:active {
     font: normal 900 1rem/1 "Font Awesome 6 Pro";
 }
 
-.domain-checker-bg #inputDomain {
+.ho-domain-search-input {
     flex: 1 1 auto;
     min-width: 0;
     height: auto;
@@ -3432,27 +3439,38 @@ a[id$="-order-button"]:active {
     font-size: var(--text-lg);
 }
 
-.domain-checker-bg #inputDomain:focus {
+.ho-domain-search-input:focus {
     outline: none;
     box-shadow: none;
 }
 
-.domain-checker-bg #btnCheckAvailability {
+.ho-domain-search-btn {
     flex: 0 0 auto;
     padding: var(--space-2) var(--space-5);
     background-color: var(--secondary);
     border: 0;
-    border-radius: 999px;
+    /* Bootstrap's own button reset (all.css) applies a generic
+       `outline: 5px auto -webkit-focus-ring-color` to every focused
+       button/link — the dark ring that was showing around this one
+       on click/tab. Swapped for a visible-but-on-brand focus ring
+       instead of dropping focus styling outright. */
+    outline: none;
+    border-radius: var(--rounding-sm);
     color: var(--text-inverted);
     font-weight: var(--font-weight-bold);
     transition: background-color var(--transition-fast),
+                box-shadow var(--transition-fast),
                 transform var(--transition-fast);
 }
 
-.domain-checker-bg #btnCheckAvailability:hover,
-.domain-checker-bg #btnCheckAvailability:focus {
+.ho-domain-search-btn:hover,
+.ho-domain-search-btn:focus {
     background-color: var(--secondary-lifted);
     transform: translateY(-1px);
+}
+
+.ho-domain-search-btn:focus {
+    box-shadow: 0 0 0 3px rgba(255, 120, 0, 0.35);
 }
 
 /* Stock lays these out as Bootstrap columns (col-md-3 col-sm-4

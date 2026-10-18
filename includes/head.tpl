@@ -36,7 +36,7 @@
     branch under the master layout, not a descendant of head.tpl — so
     without global scope it would render as empty there.
 *}
-{assign var="hoAssetVersion" value="ho-54" scope="global"}
+{assign var="hoAssetVersion" value="ho-55" scope="global"}
 {*
     custom.css previously rendered as bare {$__assetPath__}, with no
     version query at all — so an edit to the token layer could never
@@ -90,6 +90,12 @@
      reachable from CSS — see the file header. No-op on every other
      page, since it keys off #order-standard_cart. -->
 <script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-store-cards.js?v={$hoAssetVersion}" defer></script>
+<!-- Tags the Register Domain page's search box (WHMCS's own
+     domainchecker.tpl output, not a template in this theme) with
+     theme-owned classes so hostorio-layout.css has its own hooks
+     instead of leaning on WHMCS's ids/classes. No-op everywhere else,
+     since it keys off #order-standard_cart. -->
+<script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-domain-search.js?v={$hoAssetVersion}" defer></script>
 
 {if $templatefile == "viewticket" && !$loggedin}
   <meta name="robots" content="noindex" />
