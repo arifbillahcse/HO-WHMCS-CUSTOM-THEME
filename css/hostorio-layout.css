@@ -1425,10 +1425,19 @@ body.ho-page-chromeless section#main-body {
 
 /* --- Left panel — brand, tagline, feature list ------------- */
 
+/* Sticky + a fixed viewport height, not relative: .ho-auth stretches
+   both columns to match the taller one, and on Register that's the
+   long form — so centring this panel's content within its own height
+   centred it against that full form length instead, leaving the logo
+   and copy sitting far down the page on first load. Pinning the panel
+   itself to the viewport keeps its content centred in what's actually
+   on screen, and leaves it in view the whole time the form scrolls. */
 .ho-auth-panel {
     flex: 0 0 42%;
     max-width: 640px;
-    position: relative;
+    position: sticky;
+    top: 0;
+    height: 100vh;
     overflow: hidden;
     display: flex;
     align-items: center;
