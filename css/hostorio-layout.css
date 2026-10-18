@@ -1399,6 +1399,18 @@ body.ho-page-chromeless {
     overflow-x: hidden;
 }
 
+/* Stock Six theme CSS (section#main-body in styles.css) pads every
+   page 20px top/bottom on a white background — meant to separate a
+   normal page's content from the chrome around it. .ho-auth supplies
+   its own spacing and fills the full height itself, so that stock
+   padding only shows up here as a flat white strip between the navy
+   header and the panel below it. Zeroed for this page only; every
+   other page still gets the stock spacing. */
+body.ho-page-chromeless section#main-body {
+    padding: 0;
+    background-color: transparent;
+}
+
 .ho-auth {
     position: relative;
     left: 50%;
@@ -1507,7 +1519,11 @@ body.ho-page-chromeless {
     border-radius: var(--rounding-md);
     background-color: rgba(255, 255, 255, 0.10);
     color: var(--ho-orange-light);
-    font-size: 16px;
+}
+
+.ho-auth-feature-svg {
+    width: 20px;
+    height: 20px;
 }
 
 .ho-auth-features strong {

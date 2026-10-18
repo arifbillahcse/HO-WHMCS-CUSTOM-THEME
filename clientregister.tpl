@@ -36,20 +36,7 @@
             <div class="ho-auth-panel-tag">Create Account</div>
             <h2 class="ho-auth-panel-title">Join us &amp; <span>get started</span> today</h2>
             <p class="ho-auth-panel-desc">Create your account to manage domains, invoices, services and support — all in one place.</p>
-            <ul class="ho-auth-features">
-                <li>
-                    <span class="ho-auth-feature-icon"><i class="fas fa-globe"></i></span>
-                    <div><strong>Domain Management</strong><span>Register, transfer &amp; manage all TLDs</span></div>
-                </li>
-                <li>
-                    <span class="ho-auth-feature-icon"><i class="fas fa-file-invoice-dollar"></i></span>
-                    <div><strong>Invoice &amp; Billing</strong><span>View and pay invoices instantly</span></div>
-                </li>
-                <li>
-                    <span class="ho-auth-feature-icon"><i class="fas fa-shield-alt"></i></span>
-                    <div><strong>Secure &amp; Reliable</strong><span>Enterprise-grade security &amp; uptime</span></div>
-                </li>
-            </ul>
+            {include file="$template/includes/ho-auth-features.tpl"}
         </div>
     </div>
 
