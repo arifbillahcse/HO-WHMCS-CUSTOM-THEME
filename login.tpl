@@ -17,7 +17,7 @@
     </div>
 
     <div class="ho-auth-form-side">
-        <div class="ho-auth-card{if $linkableProviders} ho-auth-card-wide{/if}">
+        <div class="ho-auth-card">
             <h1 class="ho-auth-card-title">{$LANG.login}</h1>
             <p class="ho-auth-card-subtitle">Sign in to your account to continue</p>
 
@@ -31,41 +31,46 @@
             </div>
             {/if}
 
-            <div class="row">
-                <div class="col-sm-{if $linkableProviders}7{else}12{/if}">
-
-                    <form method="post" action="{routePath('login-validate')}" class="login-form ho-auth-form" role="form">
-                        <div class="form-group">
-                            <label for="inputEmail">{$LANG.clientareaemail}</label>
-                            <input type="email" name="username" class="form-control" id="inputEmail" placeholder="{$LANG.enteremail}" autofocus>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="inputPassword">{$LANG.clientareapassword}</label>
-                            <input type="password" name="password" class="form-control" id="inputPassword" placeholder="{$LANG.clientareapassword}" autocomplete="off" >
-                        </div>
-
-                        <div class="ho-auth-form-row">
-                            <label class="ho-auth-remember">
-                                <input type="checkbox" name="rememberme" /> {$LANG.loginrememberme}
-                            </label>
-                            <a href="{routePath('password-reset-begin')}" class="ho-auth-forgot">{$LANG.forgotpw}</a>
-                        </div>
-
-                        {if $captcha->isEnabled()}
-                            <div class="text-center margin-bottom">
-                                {include file="$template/includes/captcha.tpl"}
-                            </div>
-                        {/if}
-
-                        <button id="login" type="submit" class="ho-auth-submit{$captcha->getButtonClass($captchaForm)}">{$LANG.loginbutton}</button>
-                    </form>
-
+            <form method="post" action="{routePath('login-validate')}" class="login-form ho-auth-form" role="form">
+                <div class="form-group">
+                    <label for="inputEmail">{$LANG.clientareaemail}</label>
+                    <input type="email" name="username" class="form-control" id="inputEmail" placeholder="{$LANG.enteremail}" autofocus>
                 </div>
-                <div class="col-sm-5{if !$linkableProviders} hidden{/if}">
+
+                <div class="form-group">
+                    <label for="inputPassword">{$LANG.clientareapassword}</label>
+                    <input type="password" name="password" class="form-control" id="inputPassword" placeholder="{$LANG.clientareapassword}" autocomplete="off" >
+                </div>
+
+                <div class="ho-auth-form-row">
+                    <label class="ho-auth-remember">
+                        <input type="checkbox" name="rememberme" /> {$LANG.loginrememberme}
+                    </label>
+                    <a href="{routePath('password-reset-begin')}" class="ho-auth-forgot">{$LANG.forgotpw}</a>
+                </div>
+
+                {if $captcha->isEnabled()}
+                    <div class="text-center margin-bottom">
+                        {include file="$template/includes/captcha.tpl"}
+                    </div>
+                {/if}
+
+                <button id="login" type="submit" class="ho-auth-submit{$captcha->getButtonClass($captchaForm)}">{$LANG.loginbutton}</button>
+            </form>
+
+            {if $linkableProviders}
+                {* Was its own column beside the form (col-sm-7 / col-sm-5)
+                   — cramped the Google button into a narrow strip with
+                   nothing visually tying it to "sign in". Moved below the
+                   form instead, full width, behind an "or" divider — the
+                   standard place for a social sign-in option. Register's
+                   own copy of this include is untouched; only login's
+                   layout around it changed. *}
+                <div class="ho-auth-divider"><span>or</span></div>
+                <div class="ho-auth-social">
                     {include file="$template/includes/linkedaccounts.tpl" linkContext="login" customFeedback=true}
                 </div>
-            </div>
+            {/if}
 
             <p class="ho-auth-switch">Don't have an account? <a href="{$WEB_ROOT}/register.php">Create one</a></p>
         </div>

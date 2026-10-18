@@ -1727,6 +1727,41 @@ body.ho-page-chromeless section#main-body {
     box-shadow: 0 8px 20px rgba(255, 120, 0, 0.3);
 }
 
+/* "or" divider between the password form and the Google button below
+   it — login.tpl only; register.php's own linkedaccounts include is
+   untouched. A ::before/::after rule rather than hairlines either
+   side of literal text, so the line still centres correctly whatever
+   width "or" renders at in a given language. */
+.ho-auth-divider {
+    display: flex;
+    align-items: center;
+    margin: var(--space-5) 0;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
+
+.ho-auth-divider::before,
+.ho-auth-divider::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    background-color: var(--border-muted);
+}
+
+.ho-auth-divider span {
+    flex: 0 0 auto;
+    padding: 0 var(--space-3);
+}
+
+/* Google's own g_id_signin widget renders itself (an iframe WHMCS's
+   script injects into #btnGoogleSignin1), so this only centres the
+   container it lands in — the button's own look comes from Google,
+   not from CSS here. */
+.ho-auth-social {
+    display: flex;
+    justify-content: center;
+}
+
 .ho-auth-switch {
     margin: var(--space-5) 0 0;
     color: var(--text-lifted);
