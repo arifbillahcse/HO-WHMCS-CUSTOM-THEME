@@ -1527,6 +1527,16 @@ body.ho-page-chromeless section#main-body {
     height: 40px;
     border-radius: var(--rounding-md);
     background-color: rgba(255, 255, 255, 0.10);
+}
+
+/* Root cause of the washed-out icon colour: .ho-auth-feature-icon IS
+   itself a <span>, so the generic ".ho-auth-features span" rule below
+   (it targets each feature's description text) matches it too — and
+   at (0,1,1) it outranks the single-class (0,1,0) selector above,
+   overriding this orange with that rule's pale white regardless of
+   source order. Qualified with the parent class to outrank it
+   properly instead of fighting it with specificity tricks. */
+.ho-auth-features .ho-auth-feature-icon {
     color: var(--ho-orange-light);
 }
 
