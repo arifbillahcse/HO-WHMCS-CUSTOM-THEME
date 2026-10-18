@@ -3364,7 +3364,16 @@ a[id$="-order-button"]:active {
     margin: 0 0 var(--space-5);
 }
 
-.domain-checker-bg {
+/* Qualified with #order-standard_cart (this page's stable wrapper id)
+   plus the parent class, rather than left as a bare .domain-checker-bg
+   — the pill restyle below took immediately, but this one didn't;
+   stock's own CSS apparently keys the navy gradient to a selector at
+   least this specific, and since that stylesheet is injected inside
+   #main-body (after hostorio-layout.css in the document, despite
+   loading from the <head> here), a same-specificity rule loses to it
+   on source order alone regardless of which file "should" win. Spelled
+   out this far rather than guessed at again. */
+#order-standard_cart .domain-checker-container .domain-checker-bg {
     padding: var(--space-5) var(--space-4);
     background: linear-gradient(180deg, var(--primary-50) 0%, var(--bg) 100%);
     border: 1px solid var(--border-muted);
