@@ -245,6 +245,105 @@ ul.top-nav > li.language-nav-item {
     font-weight: var(--font-weight-medium);
 }
 
+/* Currency switcher — same structure and behaviour as the language
+   selector above, styled identically. The one difference is markup, not
+   appearance: options are <button> elements inside a POST <form>
+   (WHMCS reads the chosen currency from a POSTed field, not a query
+   string), not <a> links, so there is no .flag-icon sizing to carry
+   over. */
+ul.top-nav > li.currency-nav-item {
+    position: relative;
+}
+
+.currency-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: var(--rounding-sm);
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 1em;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    user-select: none;
+    transition: color var(--transition-fast),
+                background-color var(--transition-fast);
+}
+
+.currency-selector:hover,
+.currency-selector.active {
+    background-color: rgba(255, 255, 255, 0.10);
+    color: var(--text-inverted);
+}
+
+.currency-selector > i.fa-chevron-down {
+    font-size: 0.72em;
+    transition: transform var(--transition-base);
+}
+
+.currency-selector.active > i.fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.currency-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1000;
+    min-width: 140px;
+    padding: 6px;
+    background-color: var(--bg);
+    border-radius: var(--rounding-md);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity var(--transition-fast),
+                transform var(--transition-fast),
+                visibility var(--transition-fast);
+}
+
+.currency-selector.active .currency-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Real <button>s styled to read as plain menu rows, same box model as
+   .language-option so the two dropdowns match pixel-for-pixel. */
+.currency-option {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    padding: 9px 12px;
+    border: none;
+    background: none;
+    border-radius: var(--rounding-sm);
+    color: var(--text);
+    font-size: 1em;
+    font-family: inherit;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--transition-fast),
+                color var(--transition-fast);
+}
+
+.currency-option:hover,
+.currency-option:focus {
+    background-color: var(--primary-50);
+    color: var(--text);
+}
+
+.currency-option.active,
+.currency-option.active:hover,
+.currency-option.active:focus {
+    background-color: var(--primary-50);
+    color: var(--secondary);
+    font-weight: var(--font-weight-medium);
+}
+
 /* Admin "return to admin area" button */
 ul.top-nav > li > a.btn-logged-in-admin {
     color: rgba(255, 255, 255, 0.82);

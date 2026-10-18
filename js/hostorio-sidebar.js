@@ -128,40 +128,65 @@
         });
     }
 
-    // Header language switcher (header.tpl). Kept out of init() above
-    // because that returns early when #main-menu is absent, and login
-    // and registration render without the rail but with the header.
-    function initLanguageSelector() {
-        var selector = document.querySelector('.language-selector');
-        if (!selector) {
+    // Header language + currency switchers (header.tpl). Kept out of
+    // init() above because that returns early when #main-menu is
+    // absent, and login and registration render without the rail but
+    // with the header.
+    function initHeaderSelectors() {
+        var selectors = document.querySelectorAll('.language-selector, .currency-selector');
+        if (!selectors.length) {
             return;
         }
 
-        // Bound on the document rather than the trigger so the same
-        // handler closes the panel on an outside click.
+        // Bound on the document rather than each trigger so the same
+        // handler closes every open panel on an outside click.
         document.addEventListener('click', function (event) {
-            if (selector.contains(event.target)) {
-                // Each option is a real link; let it navigate rather
-                // than collapsing the panel under the pointer first.
-                if (event.target.closest('.language-option')) {
-                    return;
+            Array.prototype.forEach.call(selectors, function (selector) {
+                if (selector.contains(event.target)) {
+                    // A language option is a real link and a currency
+                    // option submits its own form; let that action
+                    // happen rather than collapsing the panel under the
+                    // pointer first.
+                    if (event.target.closest('.language-option, .currency-option')) {
+                        return;
+                    }
+                    selector.classList.toggle('active');
+                } else {
+                    selector.classList.remove('active');
                 }
-                selector.classList.toggle('active');
-            } else {
-                selector.classList.remove('active');
-            }
+            });
         });
 
         document.addEventListener('keydown', function (event) {
             if (event.key === 'Escape' || event.keyCode === 27) {
-                selector.classList.remove('active');
+                Array.prototype.forEach.call(selectors, function (selector) {
+                    selector.classList.remove('active');
+                });
             }
+        });
+
+        // Currency options have no href to navigate to — WHMCS reads
+        // the choice from a POSTed field (confirmed from its own
+        // store/ssl/shared/currency-chooser.tpl), so the click has to
+        // fill that field and submit the form itself.
+        document.addEventListener('click', function (event) {
+            var option = event.target.closest('.currency-option');
+            if (!option) {
+                return;
+            }
+            var form = option.closest('form');
+            var input = form ? form.querySelector('#currencySwitcherInput') : null;
+            if (!form || !input) {
+                return;
+            }
+            input.value = option.getAttribute('data-currency-id') || '';
+            form.submit();
         });
     }
 
     function boot() {
         init();
-        initLanguageSelector();
+        initHeaderSelectors();
     }
 
     if (document.readyState === 'loading') {

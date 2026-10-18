@@ -145,6 +145,42 @@
                     </div>
                 </li>
             {/if}
+            {*
+                Currency switcher.
+
+                Confirmed from WHMCS's own stock partial
+                (store/ssl/shared/currency-chooser.tpl): currency has no
+                query-string hook like language does, so WHMCS reads the
+                choice from a POSTed "currency" field instead of a link.
+                Each option below is a <button>, not an <a>; clicking one
+                fills the hidden input and submits the form, which is the
+                same action that stock partial's <select onchange="submit()">
+                performs.
+
+                Gated exactly as WHMCS gates it there — $currencies only
+                appears, and only matters, for guests. A logged-in client's
+                currency is tied to their account/profile, not a header
+                toggle, so this control does not try to offer one.
+            *}
+            {if !$loggedin && $currencies}
+                <li class="currency-nav-item">
+                    <div class="currency-selector" id="currencyChooser">
+                        <span>{$activeCurrency.prefix} {$activeCurrency.code}</span>
+                        <i class="fas fa-chevron-down"></i>
+
+                        <div class="currency-dropdown-menu">
+                            <form method="post" action="" id="currencySwitcherForm">
+                                <input type="hidden" name="currency" id="currencySwitcherInput" value="">
+                                {foreach $currencies as $currency}
+                                    <button type="button" class="currency-option{if $currency.id == $activeCurrency.id} active{/if}" data-currency-id="{$currency.id}">
+                                        <span>{$currency.prefix} {$currency.code}</span>
+                                    </button>
+                                {/foreach}
+                            </form>
+                        </div>
+                    </div>
+                </li>
+            {/if}
             {if $loggedin}
                 <li class="cart-nav-item">
                     <a href="{$WEB_ROOT}/cart.php?a=view" title="{$LANG.viewcart}">
