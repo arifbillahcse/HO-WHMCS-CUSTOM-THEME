@@ -1514,7 +1514,7 @@ body.ho-page-chromeless section#main-body {
 
 .ho-auth-features li {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--space-3);
 }
 
@@ -1531,8 +1531,9 @@ body.ho-page-chromeless section#main-body {
 }
 
 .ho-auth-feature-svg {
-    width: 20px;
-    height: 20px;
+    display: block;
+    width: 22px;
+    height: 22px;
 }
 
 .ho-auth-features strong {

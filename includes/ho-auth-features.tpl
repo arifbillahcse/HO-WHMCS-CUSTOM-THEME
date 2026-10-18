@@ -1,42 +1,48 @@
 {*
     Shared feature list for the .ho-auth left panel (login.tpl and
-    clientregister.tpl show the same three lines). Icons are inline SVG,
-    not Font Awesome glyphs — the same fix used for the product-card
-    checkmarks in hostorio-store-cards.js: an icon font's glyph carries
-    its own uneven padding inside its character cell, so flex-centering
-    the box around it still leaves the visible ink looking off-centre.
-    An SVG path has no such hidden padding, so centring the box centres
-    what is actually drawn. stroke="currentColor" picks up
-    .ho-auth-feature-icon's own color so these inherit the same brand
-    orange the Font Awesome glyphs used.
+    clientregister.tpl show the same three lines).
+
+    Rebuilt as solid, filled shapes rather than 2px outline strokes —
+    outline icons at 20px on a translucent panel box read as too faint
+    to register as anything at a glance, which is what was reported
+    against the first SVG pass. Each icon is now a single bold
+    currentColor silhouette (orb / document / shield), with fine detail
+    picked out using a dark navy overlay fill at partial opacity rather
+    than a second stroke colour, so it stays crisp against the solid
+    shape instead of disappearing into it.
+
+    Still inline SVG rather than a Font Awesome glyph, for the same
+    reason as the product-card checkmarks in hostorio-store-cards.js:
+    an icon font's glyph carries its own uneven padding inside its
+    character cell, so flex-centring the box around it still leaves the
+    visible ink off-centre. A hand-drawn shape has no such padding.
 *}
 <ul class="ho-auth-features">
     <li>
         <span class="ho-auth-feature-icon">
-            <svg class="ho-auth-feature-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            <svg class="ho-auth-feature-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="12" r="9" fill="currentColor"></circle>
+                <circle cx="14.5" cy="9.5" r="4.5" fill="#01257D" fill-opacity="0.55"></circle>
             </svg>
         </span>
         <div><strong>Domain Management</strong><span>Register, transfer &amp; manage all TLDs</span></div>
     </li>
     <li>
         <span class="ho-auth-feature-icon">
-            <svg class="ho-auth-feature-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
+            <svg class="ho-auth-feature-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M5 3H15L19 7V21H5V3Z" fill="currentColor"></path>
+                <path d="M15 3V7H19Z" fill="#01257D" fill-opacity="0.4"></path>
+                <rect x="8" y="11" width="8" height="1.6" rx="0.8" fill="#01257D" fill-opacity="0.45"></rect>
+                <rect x="8" y="15" width="8" height="1.6" rx="0.8" fill="#01257D" fill-opacity="0.45"></rect>
             </svg>
         </span>
         <div><strong>Invoice &amp; Billing</strong><span>View and pay invoices instantly</span></div>
     </li>
     <li>
         <span class="ho-auth-feature-icon">
-            <svg class="ho-auth-feature-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                <polyline points="9 12 11 14 15 10"></polyline>
+            <svg class="ho-auth-feature-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 2L4 5v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V5l-8-3z" fill="currentColor"></path>
+                <path d="M8.5 12.2l2.3 2.3 4.2-4.6" fill="none" stroke="#01257D" stroke-opacity="0.55" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
         </span>
         <div><strong>Secure &amp; Reliable</strong><span>Enterprise-grade security &amp; uptime</span></div>
