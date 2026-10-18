@@ -415,8 +415,13 @@ ul.top-nav > li > a.btn-logged-in-admin:hover {
     min-width: 0;
 }
 
+/* Subtle same-family gradient instead of flat navy — top to bottom
+   rather than the bolder diagonal .ho-auth-panel gradient uses, since
+   this rail is tall and narrow and a strong diagonal would read busy
+   running the full page height. */
 .ho-sidebar {
     background-color: var(--ho-navy);
+    background-image: linear-gradient(180deg, var(--ho-navy) 0%, var(--ho-blue-dark) 100%);
 }
 
 /* Scoped scrollbar for a long menu, so it does not read as a
