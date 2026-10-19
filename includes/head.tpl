@@ -36,7 +36,7 @@
     branch under the master layout, not a descendant of head.tpl — so
     without global scope it would render as empty there.
 *}
-{assign var="hoAssetVersion" value="ho-62" scope="global"}
+{assign var="hoAssetVersion" value="ho-63" scope="global"}
 {*
     custom.css previously rendered as bare {$__assetPath__}, with no
     version query at all — so an edit to the token layer could never
@@ -96,6 +96,11 @@
      instead of leaning on WHMCS's ids/classes. No-op everywhere else,
      since it keys off #order-standard_cart. -->
 <script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-domain-search.js?v={$hoAssetVersion}" defer></script>
+<!-- Adds an icon + description to each option on the "Choose a
+     Domain" step (WHMCS's own domainoptions output on a product's
+     configure page, not a template in this theme). No-op everywhere
+     else, since it keys off .domain-selection-options. -->
+<script src="{$WEB_ROOT}/templates/{$template}/js/hostorio-domain-options.js?v={$hoAssetVersion}" defer></script>
 
 {if $templatefile == "viewticket" && !$loggedin}
   <meta name="robots" content="noindex" />

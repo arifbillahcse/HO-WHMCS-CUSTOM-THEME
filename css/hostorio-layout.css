@@ -3772,6 +3772,147 @@ a[id$="-order-button"]:active {
     display: none;
 }
 
+/* --- "Choose a Domain" step (product configure page) -------- */
+/* .domain-selection-options / .option / .domain-input-group are
+   WHMCS's own domainoptions output (standard_cart), confirmed from
+   this page's real rendered HTML, not guessed. js/hostorio-domain-
+   options.js adds the icon + description into each option's
+   <label>; everything here styles what it built plus WHMCS's own
+   existing structure — no DOM relocation, no logic changes, same
+   caution as the Register Domain search box.
+
+   iCheck's own radio dot (.iradio_square-blue) is hidden rather than
+   restyled — it's a fixed-colour sprite image (css/all.css), not
+   something CSS alone can recolour to match the brand — and this
+   theme draws its own selected-state ring + checkmark instead, keyed
+   off .option-selected (the class WHMCS's own script already
+   toggles). Confirmed safe from iCheck's own source (js/scripts.js):
+   it binds its click/toggle handler to the <label> element itself,
+   not to this dot, so hiding the dot cannot break selecting an
+   option — a click anywhere else in the label, including the content
+   added here, still reaches that handler. */
+#order-standard_cart .domain-selection-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-3);
+    margin: var(--space-4) 0;
+}
+
+#order-standard_cart .domain-selection-options .option.ho-domain-opt {
+    position: relative;
+    margin: 0;
+    padding: var(--space-4);
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+    transition: border-color var(--transition-fast),
+                box-shadow var(--transition-fast);
+}
+
+#order-standard_cart .domain-selection-options .option.ho-domain-opt:hover {
+    border-color: var(--primary-accented);
+}
+
+#order-standard_cart .domain-selection-options .option.ho-domain-opt.option-selected {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(255, 120, 0, 0.14), var(--shadow-md);
+}
+
+#order-standard_cart .domain-selection-options .option.ho-domain-opt.option-selected::after {
+    content: "\f00c";
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--secondary);
+    color: var(--text-inverted);
+    font: normal 900 11px/1 "Font Awesome 6 Pro";
+}
+
+#order-standard_cart .domain-selection-options .option.ho-domain-opt .iradio_square-blue {
+    display: none;
+}
+
+#order-standard_cart .domain-selection-options .option.ho-domain-opt label {
+    display: block;
+    margin: 0;
+    font-weight: var(--font-weight-normal);
+    cursor: pointer;
+}
+
+.ho-domain-opt-head {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+}
+
+.ho-domain-opt-iconbox {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--rounding-md);
+    background-color: var(--primary-50);
+    color: var(--primary);
+}
+
+.ho-domain-opt-icon {
+    display: block;
+    width: 22px;
+    height: 22px;
+}
+
+.ho-domain-opt-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding-top: 2px;
+}
+
+.ho-domain-opt-title {
+    color: var(--text-heading);
+    font-family: var(--font-family-heading);
+    font-size: 1.0625rem;
+    font-weight: var(--font-weight-bold);
+}
+
+.ho-domain-opt-desc {
+    color: var(--text-lifted);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+}
+
+/* Nested fields (www./SLD/TLD + Check/Transfer/Use) — left exactly
+   where WHMCS puts them, only separated visually from the card's
+   head with a rule, and the button brought onto the brand palette
+   (stock Bootstrap blue otherwise, since no sitewide .btn-primary
+   override exists in this theme). */
+#order-standard_cart .domain-selection-options .option.ho-domain-opt .domain-input-group {
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-muted);
+}
+
+#order-standard_cart .domain-selection-options .option.ho-domain-opt .domain-input-group .btn-primary {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+#order-standard_cart .domain-selection-options .option.ho-domain-opt .domain-input-group .btn-primary:hover,
+#order-standard_cart .domain-selection-options .option.ho-domain-opt .domain-input-group .btn-primary:focus {
+    background-color: var(--secondary-lifted);
+    border-color: var(--secondary-lifted);
+}
+
 /* --- Product cards ---------------------------------------- */
 
 .ho-product-grid {
