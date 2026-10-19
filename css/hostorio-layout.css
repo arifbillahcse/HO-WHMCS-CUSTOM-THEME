@@ -3751,6 +3751,27 @@ a[id$="-order-button"]:active {
    two-per-row Bootstrap layout if that script has not run.
    =========================================================== */
 
+/* --- "Jump to" dropdowns fallback ---------------------------- */
+/* Stock's own answer to a narrow screen losing the left Categories/
+   Actions sidebar: a plain <select name="gid"> (jump to a category or
+   action) and a second plain currency <select>, both shown below
+   1200px (stock keeps #order-standard_cart .sidebar-collapsed hidden
+   above that width with its own media query).
+
+   This theme already has an answer to the same problem — the
+   category/actions rail becomes the off-canvas drawer behind the
+   hamburger toggle at any width, not just above 1200px — so this
+   fallback is redundant everywhere in this theme, not just on a
+   phone: between 992–1199px it was rendering ALONGSIDE the still-
+   visible desktop rail, not replacing it, since this theme's own
+   collapse breakpoint (992px) and stock's (1200px) were never the
+   same number. Hidden outright rather than re-pointed at a matching
+   breakpoint, since the drawer already covers every width this would
+   have. */
+#order-standard_cart .sidebar-collapsed {
+    display: none;
+}
+
 /* --- Product cards ---------------------------------------- */
 
 .ho-product-grid {
