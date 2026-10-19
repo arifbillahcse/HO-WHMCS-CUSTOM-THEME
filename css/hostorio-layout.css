@@ -250,12 +250,23 @@ ul.top-nav > li.language-nav-item {
    appearance: options are <button> elements inside a POST <form>
    (WHMCS reads the chosen currency from a POSTed field, not a query
    string), not <a> links, so there is no .flag-icon sizing to carry
-   over. */
+   over.
+
+   Every rule below is qualified div.currency-selector, not bare
+   .currency-selector: WHMCS's own stock currency-chooser partial
+   (store/ssl/shared/currency-chooser.tpl, and copies of it embedded
+   directly in several store/*.tpl product pages plus this theme's own
+   domain-pricing.tpl) reuses that exact class name on a plain
+   <select class="form-control currency-selector">. A bare class rule
+   here would silently reach every one of those too — this selector's
+   trigger is a <div>, so the tag qualifier is what actually keeps the
+   two apart rather than the class name, which the two were never
+   going to agree on. */
 ul.top-nav > li.currency-nav-item {
     position: relative;
 }
 
-.currency-selector {
+div.currency-selector {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -270,18 +281,18 @@ ul.top-nav > li.currency-nav-item {
                 background-color var(--transition-fast);
 }
 
-.currency-selector:hover,
-.currency-selector.active {
+div.currency-selector:hover,
+div.currency-selector.active {
     background-color: rgba(255, 255, 255, 0.10);
     color: var(--text-inverted);
 }
 
-.currency-selector > i.fa-chevron-down {
+div.currency-selector > i.fa-chevron-down {
     font-size: 0.72em;
     transition: transform var(--transition-base);
 }
 
-.currency-selector.active > i.fa-chevron-down {
+div.currency-selector.active > i.fa-chevron-down {
     transform: rotate(180deg);
 }
 
@@ -303,7 +314,7 @@ ul.top-nav > li.currency-nav-item {
                 visibility var(--transition-fast);
 }
 
-.currency-selector.active .currency-dropdown-menu {
+div.currency-selector.active .currency-dropdown-menu {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
