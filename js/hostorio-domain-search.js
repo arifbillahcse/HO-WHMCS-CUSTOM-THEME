@@ -33,6 +33,21 @@
  * flat timeout stays as a last-resort safety net in case that element
  * is ever renamed in a WHMCS update.
  *
+ * Separately, the "Suggested Domains" box itself can sit on
+ * "Generating suggestions for you" for a long time — that request is
+ * one single server round trip (POST to WHMCS's own /domain/check
+ * endpoint, type=suggestions), not a client-side loop, so there is no
+ * script-side speed-up available for it; the delay is WHMCS/
+ * Namespinning's own response time, worth checking Setup > General
+ * Settings > Domains in admin if it is consistently slow. What this
+ * file does instead, per request, is cap how long a visitor is left
+ * looking at the spinner: if it is still showing after
+ * SUGGESTIONS_TIMEOUT_MS, its text is swapped for a quiet "try again
+ * shortly" message. The real request is left running — if it
+ * eventually succeeds, WHMCS's own script still hides this element
+ * and shows the real results as normal, same as if this file did not
+ * exist.
+ *
  * No-op anywhere this markup is absent — see
  * hostorio-store-cards.js's file header for why that matters on a
  * page this theme does not render itself.
@@ -46,6 +61,12 @@
     // future WHMCS update, so a visitor is never stuck longer than
     // this regardless.
     var STUCK_BUTTON_TIMEOUT_MS = 12000;
+
+    // How long "Generating suggestions for you" is allowed to sit
+    // before this swaps in a calmer message. Short enough that a
+    // visitor isn't left staring at a spinner for the full 12s above,
+    // long enough not to fire during a merely-average-speed response.
+    var SUGGESTIONS_TIMEOUT_MS = 7000;
 
     function tag(el, className) {
         if (el) {
@@ -84,6 +105,32 @@
         });
     }
 
+    function isVisible(el) {
+        return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+    }
+
+    function initSuggestionsFallback(btn, loader) {
+        if (!btn || !loader) {
+            return;
+        }
+
+        // Swapped for text, not removed/hidden: WHMCS's own script
+        // still owns showing/hiding this element once its request
+        // settles, so this only ever changes what it says while it is
+        // already visible, never its visibility.
+        var original = loader.innerHTML;
+
+        btn.addEventListener('click', function () {
+            loader.innerHTML = original;
+
+            window.setTimeout(function () {
+                if (isVisible(loader)) {
+                    loader.textContent = 'Suggestions are taking longer than usual. Try again shortly, or pick one of the extensions above.';
+                }
+            }, SUGGESTIONS_TIMEOUT_MS);
+        });
+    }
+
     function init() {
         var root = document.getElementById('order-standard_cart');
         if (!root) {
@@ -98,6 +145,7 @@
             var searchBtn = root.querySelector('#btnCheckAvailability');
             tag(searchBtn, 'ho-domain-search-btn');
             initSearchButtonFallback(searchBtn);
+            initSuggestionsFallback(searchBtn, root.querySelector('#suggestionsLoader'));
         } catch (e) {
             // Swallowed deliberately — see the file header.
         }
