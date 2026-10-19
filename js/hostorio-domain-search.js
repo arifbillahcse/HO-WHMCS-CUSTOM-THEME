@@ -14,17 +14,24 @@
  * re-enables it once a counter (domainLookupCallCount) reaches
  * exactly 3 — one tick per lookup it kicks off alongside the main
  * search (the spotlight TLDs, and the "Suggested Domains" /
- * Namespinning call). If any one of those three never completes or
- * errors — in practice, usually the Namespinning suggestions call,
- * which depends on a separate external API WHMCS calls out to — the
- * counter never reaches 3 and the button stays disabled until the
- * whole page is reloaded. That root cause lives in WHMCS's own
- * bundled JS and the Namespinning service's own availability, neither
- * of which a theme can fix — worth checking Setup > General Settings
- * > Domains > domain suggestions in WHMCS admin if this keeps
- * happening. This just stops a visitor from getting stuck on it: a
- * short fallback timer force-clears the disabled state if WHMCS's own
- * logic hasn't already cleared it first.
+ * Namespinning call). Confirmed against the stock WHMCS theme too
+ * (same behaviour there, so it isn't this theme's doing) and against
+ * a live search: the primary result (the actual availability/price
+ * the button exists for) renders almost immediately — it's
+ * specifically the Namespinning suggestions call that runs slow,
+ * sometimes for a long time, and the button sits disabled for all of
+ * it even though the search it was clicked for already has an answer
+ * on screen. That slowness is on WHMCS's/Namespinning's side, not
+ * fixable from here — worth checking Setup > General Settings >
+ * Domains > domain suggestions in WHMCS admin if it's consistently
+ * this slow.
+ *
+ * Rather than just waiting it out, this re-enables the button the
+ * moment the primary result (#primaryLookupResult) actually appears,
+ * via a MutationObserver on its class attribute — independent of
+ * whether or how long the slower suggestions call beside it takes. A
+ * flat timeout stays as a last-resort safety net in case that element
+ * is ever renamed in a WHMCS update.
  *
  * No-op anywhere this markup is absent — see
  * hostorio-store-cards.js's file header for why that matters on a
@@ -33,11 +40,11 @@
 (function () {
     'use strict';
 
-    // Longer than any legitimate search should take, short enough
-    // that a visitor isn't left stuck for long if the stock counter
-    // never reaches 3. If WHMCS's own script already re-enabled the
-    // button by the time this fires, the disabled check below makes
-    // it a no-op.
+    // Last-resort only — the MutationObserver below is what normally
+    // clears this, almost as soon as the real result is on screen.
+    // This just guards against that element ever being renamed in a
+    // future WHMCS update, so a visitor is never stuck longer than
+    // this regardless.
     var STUCK_BUTTON_TIMEOUT_MS = 12000;
 
     function tag(el, className) {
@@ -51,13 +58,29 @@
             return;
         }
 
-        btn.addEventListener('click', function () {
-            window.setTimeout(function () {
-                if (btn.disabled) {
-                    btn.disabled = false;
-                    btn.classList.remove('disabled');
+        function clearDisabled() {
+            if (btn.disabled) {
+                btn.disabled = false;
+                btn.classList.remove('disabled');
+            }
+        }
+
+        // #primaryLookupResult starts hidden (class "w-hidden") and
+        // WHMCS's own script drops that class once the real
+        // availability/price result is ready — the signal this reuses
+        // rather than waiting on the slower, unrelated suggestions
+        // call the button has no real reason to depend on.
+        var primaryResult = document.getElementById('primaryLookupResult');
+        if (primaryResult && window.MutationObserver) {
+            new MutationObserver(function () {
+                if (!primaryResult.classList.contains('w-hidden')) {
+                    clearDisabled();
                 }
-            }, STUCK_BUTTON_TIMEOUT_MS);
+            }).observe(primaryResult, { attributes: true, attributeFilter: ['class'] });
+        }
+
+        btn.addEventListener('click', function () {
+            window.setTimeout(clearDisabled, STUCK_BUTTON_TIMEOUT_MS);
         });
     }
 
