@@ -3473,6 +3473,38 @@ a[id$="-order-button"]:active {
     box-shadow: 0 0 0 3px rgba(255, 120, 0, 0.35);
 }
 
+/* Mobile: icon + field on their own row, Search dropped to a full-
+   width row below instead of squeezing beside the field — joined
+   side by side at this width, the field had almost no room left to
+   type into and the button's own label (+ its padding) was doing
+   most of the squeezing. flex-basis: 100% is what forces an item
+   onto its own line in a wrapping flex row regardless of the space
+   left beside it, so the search icon + input stay paired on row one
+   and the button reliably lands on row two, not just whenever it
+   happens not to fit. */
+@media (max-width: 480px) {
+    .ho-domain-search-bar {
+        flex-wrap: wrap;
+        padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+    }
+
+    .ho-domain-search-bar::before {
+        flex-basis: auto;
+    }
+
+    .ho-domain-search-input {
+        flex-basis: 0;
+        width: 100%;
+    }
+
+    .ho-domain-search-btn {
+        flex-basis: 100%;
+        width: 100%;
+        margin-top: var(--space-3);
+        text-align: center;
+    }
+}
+
 /* Stock lays these out as Bootstrap columns (col-md-3 col-sm-4
    col-xs-6), which left a lone card stranded on its own row whenever
    the count was not a multiple of the column span — the .LIVE card
