@@ -3852,6 +3852,13 @@ a[id$="-order-button"]:active {
     gap: var(--space-3);
 }
 
+/* Orange base, not navy: each icon's own accent detail (the highlight
+   circle / arrow / bars drawn inside it) is navy at partial opacity,
+   which only reads against an orange base — on navy-on-navy the two
+   blended into one flat, detail-less blob, reported as "a confusing
+   colourful circle" rather than a recognisable icon. Matches the
+   orange-base icon language already used on login/register
+   (includes/ho-auth-features.tpl). */
 .ho-domain-opt-iconbox {
     display: flex;
     flex: 0 0 auto;
@@ -3860,8 +3867,8 @@ a[id$="-order-button"]:active {
     width: 40px;
     height: 40px;
     border-radius: var(--rounding-md);
-    background-color: var(--primary-50);
-    color: var(--primary);
+    background-color: rgba(255, 120, 0, 0.12);
+    color: var(--secondary);
 }
 
 .ho-domain-opt-icon {
@@ -3891,24 +3898,35 @@ a[id$="-order-button"]:active {
     line-height: 1.5;
 }
 
-/* Nested fields (www./SLD/TLD + Check/Transfer/Use) — left exactly
-   where WHMCS puts them, only separated visually from the card's
-   head with a rule, and the button brought onto the brand palette
-   (stock Bootstrap blue otherwise, since no sitewide .btn-primary
-   override exists in this theme). */
-#order-standard_cart .domain-selection-options .option.ho-domain-opt .domain-input-group {
-    margin-top: var(--space-4);
-    padding-top: var(--space-4);
-    border-top: 1px solid var(--border-muted);
+/* Nested fields (www./SLD/TLD + Check/Transfer/Use) — js/hostorio-
+   domain-options.js moves each .domain-input-group out of its
+   one-third-width card into this one shared panel below the card
+   row, per request: nested inside a card, the fields' own Bootstrap
+   .row/.col-sm-* grid (built for a full-width row) had nowhere near
+   enough room and squeezed down unreadable. Only one is ever visible
+   here at a time — WHMCS's own script still shows/hides them purely
+   by id, unaffected by which parent they now sit under — so this
+   panel just needs to look like a normal full-width card itself. */
+#order-standard_cart .ho-domain-opt-details {
+    margin-bottom: var(--space-4);
 }
 
-#order-standard_cart .domain-selection-options .option.ho-domain-opt .domain-input-group .btn-primary {
+#order-standard_cart .ho-domain-opt-details .domain-input-group {
+    margin: 0;
+    padding: var(--space-4);
+    background-color: var(--bg);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--rounding-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+#order-standard_cart .ho-domain-opt-details .domain-input-group .btn-primary {
     background-color: var(--secondary);
     border-color: var(--secondary);
 }
 
-#order-standard_cart .domain-selection-options .option.ho-domain-opt .domain-input-group .btn-primary:hover,
-#order-standard_cart .domain-selection-options .option.ho-domain-opt .domain-input-group .btn-primary:focus {
+#order-standard_cart .ho-domain-opt-details .domain-input-group .btn-primary:hover,
+#order-standard_cart .ho-domain-opt-details .domain-input-group .btn-primary:focus {
     background-color: var(--secondary-lifted);
     border-color: var(--secondary-lifted);
 }

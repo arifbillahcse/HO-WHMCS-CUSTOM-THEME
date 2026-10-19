@@ -112,7 +112,7 @@
         return { icon: 'generic', desc: '' };
     }
 
-    function enhanceOption(option) {
+    function enhanceOption(option, detailsContainer) {
         if (option.dataset.hoDomainOptBuilt === '1') {
             return;
         }
@@ -170,6 +170,28 @@
         label.appendChild(head);
         option.classList.add('ho-domain-opt');
         option.dataset.hoDomainOptBuilt = '1';
+
+        // The nested www./SLD/TLD + Check/Transfer/Use fields
+        // (.domain-input-group) were designed for a full-width row,
+        // not a one-third-width card — nested here, Bootstrap's own
+        // .row/.col-sm-* grid inside them had nowhere near enough
+        // room and squeezed down unreadable, per the screenshot this
+        // was reported against. Moved into one shared panel below the
+        // card row instead, so each option's fields get the full
+        // width back once that option is selected.
+        //
+        // appendChild on a node already in the document MOVES it —
+        // nothing here is cloned or rebuilt, so the element, its id,
+        // and every input inside it (#registersld, #registertld, …)
+        // are the exact same nodes WHMCS's own script already knows
+        // about. That script shows/hides these purely by id
+        // (jQuery("#domain"+value)), which works identically
+        // regardless of which parent the id'd element currently sits
+        // under — so relocating the container here cannot affect it.
+        var group = option.querySelector('.domain-input-group');
+        if (group && detailsContainer) {
+            detailsContainer.appendChild(group);
+        }
     }
 
     function init() {
@@ -179,9 +201,15 @@
         }
 
         try {
+            var details = document.createElement('div');
+            details.className = 'ho-domain-opt-details';
+            container.parentNode.insertBefore(details, container.nextSibling);
+
             Array.prototype.forEach.call(
                 container.querySelectorAll(':scope > .option'),
-                enhanceOption
+                function (option) {
+                    enhanceOption(option, details);
+                }
             );
         } catch (e) {
             // Swallowed deliberately — see the file header. A thrown
