@@ -3483,9 +3483,20 @@ a[id$="-order-button"]:active {
    and the button reliably lands on row two, not just whenever it
    happens not to fit. */
 @media (max-width: 480px) {
+    /* Panel padding (var(--space-5) var(--space-4), 32px/24px) left a
+       wide band of plain gradient between the panel's own edge and
+       the search bar inside it — fine at desktop width, wasteful on a
+       narrow phone where every pixel the bar could use matters more.
+       Cut down on both axes rather than just the sides, so the panel
+       shrinks to fit its content instead of leaving the same amount
+       of visibly empty gradient on every edge. */
+    #order-standard_cart .ho-domain-search {
+        padding: var(--space-3);
+    }
+
     .ho-domain-search-bar {
         flex-wrap: wrap;
-        padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+        padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
     }
 
     .ho-domain-search-bar::before {
