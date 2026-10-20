@@ -3935,10 +3935,19 @@ a[id$="-order-button"]:active {
 #order-standard_cart .ho-domain-opt-details .domain-input-group {
     margin: 0;
     padding: var(--space-4);
-    background-color: var(--bg);
+    background-color: var(--ho-navy);
     border: 1px solid var(--border-muted);
     border-radius: var(--rounding-lg);
     box-shadow: var(--shadow-sm);
+}
+
+/* The "I will use my existing domain" option's www. prefix is bare
+   text (.form-control-static, no box of its own around it, unlike
+   the boxed input-group-addon the other two options use) — left at
+   its default dark colour it would be unreadable on the navy panel
+   above. */
+#order-standard_cart .ho-domain-opt-details .domain-input-group .form-control-static {
+    color: var(--text-inverted);
 }
 
 #order-standard_cart .ho-domain-opt-details .domain-input-group .btn-primary {
