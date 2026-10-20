@@ -107,7 +107,7 @@
             return { icon: 'nameservers', desc: "Point your current domain's nameservers to us." };
         }
         if (text.indexOf('subdomain') !== -1) {
-            return { icon: 'subdomain', desc: 'Get a free subdomain of ours instead of your own domain.' };
+            return { icon: 'subdomain', desc: 'Get a free subdomain of ours instead of your own domain.', badge: 'Free' };
         }
         return { icon: 'generic', desc: '' };
     }
@@ -150,10 +150,22 @@
         var copy = document.createElement('span');
         copy.className = 'ho-domain-opt-copy';
 
+        var titleRow = document.createElement('span');
+        titleRow.className = 'ho-domain-opt-title-row';
+
         var titleEl = document.createElement('strong');
         titleEl.className = 'ho-domain-opt-title';
         titleEl.textContent = title;
-        copy.appendChild(titleEl);
+        titleRow.appendChild(titleEl);
+
+        if (info.badge) {
+            var badgeEl = document.createElement('span');
+            badgeEl.className = 'ho-domain-opt-badge';
+            badgeEl.textContent = info.badge;
+            titleRow.appendChild(badgeEl);
+        }
+
+        copy.appendChild(titleRow);
 
         if (info.desc) {
             var descEl = document.createElement('span');

@@ -3885,11 +3885,32 @@ a[id$="-order-button"]:active {
     padding-top: 2px;
 }
 
+.ho-domain-opt-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
 .ho-domain-opt-title {
     color: var(--text-heading);
     font-family: var(--font-family-heading);
     font-size: 1.0625rem;
     font-weight: var(--font-weight-bold);
+}
+
+/* Set per-option by js/hostorio-domain-options.js's own describeOption()
+   — "Free" on the subdomain option only, nothing else requested one. */
+.ho-domain-opt-badge {
+    flex: 0 0 auto;
+    padding: 1px 9px;
+    background-color: var(--secondary);
+    border-radius: 999px;
+    color: var(--text-inverted);
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .ho-domain-opt-desc {
