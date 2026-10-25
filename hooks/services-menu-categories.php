@@ -74,6 +74,24 @@ add_hook('ClientAreaPrimaryNavbar', 1, function ($primaryNavbar) {
 
         $servicesItem = findChildByLabel($primaryNavbar, 'services');
 
+        // DIAGNOSTIC — confirmed broken on the live site: this lookup
+        // has never matched, every page load, since this hook was
+        // first deployed (see the Activity Log). The hook's own
+        // docblock already warns against guessing the fix blind a
+        // second time, so this logs every real top-level label this
+        // install actually has instead. Remove this block once the
+        // real label is known and findChildByLabel()'s 'services'
+        // argument below is corrected to match it.
+        if (!$servicesItem && function_exists('logActivity')) {
+            $seen = [];
+            foreach ($primaryNavbar->getChildren() as $topItem) {
+                $seen[] = method_exists($topItem, 'getLabel')
+                    ? var_export($topItem->getLabel(), true)
+                    : '(no getLabel())';
+            }
+            logActivity('services-menu-categories DIAGNOSTIC: no top-level item matched "services"; actual top-level labels found: ' . implode(', ', $seen));
+        }
+
         // Moves "My Services" (order=1) and "Order New Services" — given
         // its "Order/Add Services" rename right here rather than in
         // $navTweaks below, see moveChildToFront() — to the top, before
