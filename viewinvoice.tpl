@@ -13,7 +13,18 @@
     <link href="{$WEB_ROOT}/assets/fonts/css/fontawesome-light.min.css" rel="stylesheet">
     <link href="{$WEB_ROOT}/assets/fonts/css/fontawesome-brands.min.css" rel="stylesheet">
     <link href="{$WEB_ROOT}/assets/fonts/css/fontawesome-duotone.min.css" rel="stylesheet">
-    <link href="{assetPath file='invoice.css'}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Rosario:wght@400;600;700&display=swap" rel="stylesheet">
+    {*
+        This page is WHMCS's own standalone viewinvoice.tpl — it has its
+        own <head>/<body>, never wrapped by header.tpl/footer.tpl or
+        includes/head.tpl, so hoAssetVersion (normally assigned once,
+        there) is re-assigned here instead. Bump BOTH places together
+        whenever css/invoice.css changes.
+    *}
+    {assign var="hoAssetVersion" value="ho-67" scope="global"}
+    <link href="{assetPath file='invoice.css'}?v={$hoAssetVersion}" rel="stylesheet">
     <script>var whmcsBaseUrl = "{$WEB_ROOT}";</script>
     <script src="{assetPath file='scripts.min.js'}?v={$versionHash}"></script>
 
@@ -28,7 +39,7 @@
 
         {else}
 
-            <div class="row invoice-header">
+            <div class="row invoice-header ho-invoice-header">
                 <div class="invoice-col">
 
                     {if $logo}
@@ -39,7 +50,7 @@
                     <h3>{$pagetitle}</h3>
 
                 </div>
-                <div class="invoice-col text-center">
+                <div class="invoice-col text-center ho-invoice-header-meta">
 
                     <div class="invoice-status">
                         {if $status eq "Draft"}
@@ -59,12 +70,11 @@
                         {/if}
                     </div>
 
+                    <div class="ho-invoice-amount">{$invoiceamount}</div>
+
                     {if $status eq "Unpaid" || $status eq "Draft"}
                         <div class="small-text">
                             {$LANG.invoicesdatedue}: {$datedue}
-                        </div>
-                        <div class="payment-btn-container hidden-print" align="center">
-                            {$paymentbutton}
                         </div>
                     {/if}
 
@@ -90,15 +100,15 @@
                 {include file="$template/includes/panel.tpl" type="info" headerTitle=$LANG.success bodyContent=$LANG.invoiceofflinepaid bodyTextCenter=true}
             {/if}
 
-            <div class="row">
-                <div class="invoice-col right">
+            <div class="row ho-invoice-cards">
+                <div class="invoice-col right ho-invoice-card">
                     <strong>{$LANG.invoicespayto}</strong>
                     <address class="small-text">
                         {$payto}
                         {if $taxCode}<br />{$taxIdLabel}: {$taxCode}{/if}
                     </address>
                 </div>
-                <div class="invoice-col">
+                <div class="invoice-col ho-invoice-card">
                     <strong>{$LANG.invoicesinvoicedto}</strong>
                     <address class="small-text">
                         {if $clientsdetails.companyname}{$clientsdetails.companyname}<br />{/if}
@@ -119,26 +129,37 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="invoice-col right">
-                    <strong>{$LANG.paymentmethod}</strong><br>
-                    <span class="small-text" data-role="paymethod-info">
-                        {if $status eq "Unpaid" && $allowchangegateway}
-                            <form method="post" action="{$smarty.server.PHP_SELF}?id={$invoiceid}" class="form-inline">
-                                {$gatewaydropdown}
-                            </form>
-                        {else}
-                            {$paymentmethod}{if $paymethoddisplayname} ({$paymethoddisplayname}){/if}
-                        {/if}
-                    </span>
-                    <br /><br />
+            {* Payment method — highlighted, with the Pay Now button
+               (relocated here from the header above; same
+               {$paymentbutton} variable, just a more natural home
+               beside the gateway picker than beside the status word). *}
+            <div class="ho-invoice-pay-card">
+                <div class="row">
+                    <div class="invoice-col right">
+                        <strong>{$LANG.paymentmethod}</strong><br>
+                        <span class="small-text" data-role="paymethod-info">
+                            {if $status eq "Unpaid" && $allowchangegateway}
+                                <form method="post" action="{$smarty.server.PHP_SELF}?id={$invoiceid}" class="form-inline">
+                                    {$gatewaydropdown}
+                                </form>
+                            {else}
+                                {$paymentmethod}{if $paymethoddisplayname} ({$paymethoddisplayname}){/if}
+                            {/if}
+                        </span>
+                        <br /><br />
+                    </div>
+                    <div class="invoice-col">
+                        <strong>{$LANG.invoicesdatecreated}</strong><br>
+                        <span class="small-text">
+                            {$date}<br><br>
+                        </span>
+                    </div>
                 </div>
-                <div class="invoice-col">
-                    <strong>{$LANG.invoicesdatecreated}</strong><br>
-                    <span class="small-text">
-                        {$date}<br><br>
-                    </span>
-                </div>
+                {if $status eq "Unpaid" || $status eq "Draft"}
+                    <div class="payment-btn-container hidden-print" align="center">
+                        {$paymentbutton}
+                    </div>
+                {/if}
             </div>
 
             <br />
@@ -175,7 +196,7 @@
                 {include file="$template/includes/panel.tpl" type="info" headerTitle=$LANG.invoicesnotes bodyContent=$notes}
             {/if}
 
-            <div class="panel panel-default">
+            <div class="panel panel-default ho-invoice-items">
                 <div class="panel-heading">
                     <h3 class="panel-title"><strong>{$LANG.invoicelineitems}</strong></h3>
                 </div>
@@ -227,7 +248,7 @@
 
             <hr />
 
-            <div class="panel panel-info">
+            <div class="panel panel-info ho-invoice-ledger">
                 <div class="panel-heading">
                     <h3 class="panel-title"><strong>{$LANG.billing.ledger.title}</strong></h3>
                 </div>
@@ -289,7 +310,7 @@
                 </div>
             {/if}
 
-            <div class="pull-right btn-group btn-group-sm hidden-print">
+            <div class="pull-right btn-group btn-group-sm hidden-print ho-invoice-actions">
                 <a href="javascript:window.print()" class="btn btn-default"><i class="fas fa-print"></i> {$LANG.print}</a>
                 <a href="dl.php?type=i&amp;id={$invoiceid}" class="btn btn-default"><i class="fas fa-download"></i> {$LANG.invoicesdownload}</a>
             </div>

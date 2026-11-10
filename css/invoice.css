@@ -160,3 +160,168 @@ body {
     padding: 20px;
     max-width: 400px;
 }
+
+/* ===========================================================
+   HOSTORIO REDESIGN — viewinvoice.tpl
+
+   This page is WHMCS's own standalone viewinvoice.tpl: its own
+   <head>/<body>, never wrapped by this theme's header.tpl/footer.tpl,
+   so it never loads hostorio-layout.css or custom.css — brand colours
+   are plain hex here rather than var(--...) tokens for that reason,
+   matching the same standalone treatment login.tpl/clientregister.tpl
+   needed before this theme's shell could reach them.
+
+   Every rule below styles markup viewinvoice.tpl itself renders (the
+   {$gatewaydropdown}/{$paymentbutton} variables are WHMCS core HTML,
+   restyled generically here the same way the stock currency <select>
+   on domain-pricing.tpl was, never assumed to carry specific classes
+   this theme invented).
+   =========================================================== */
+
+.invoice-container {
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.06);
+    font-family: 'Roboto', system-ui, sans-serif;
+    color: #1F2937;
+}
+
+.invoice-container h2,
+.invoice-container h3,
+.invoice-container .panel-title {
+    font-family: 'Rosario', 'Roboto', system-ui, sans-serif;
+}
+
+.ho-invoice-header {
+    align-items: flex-start;
+}
+
+.ho-invoice-header h3 {
+    color: #6B7280;
+    font-size: 15px;
+    font-weight: 400;
+    margin-top: 4px;
+}
+
+/* Status — stock renders this as plain coloured text; redrawn as a
+   small pill instead, same colour family the status already used. */
+.invoice-container .invoice-status {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    margin-top: 0;
+}
+
+.invoice-status span {
+    display: inline-block;
+    padding: 5px 16px;
+    border-radius: 999px;
+    color: #ffffff !important;
+}
+
+.invoice-status .unpaid { background-color: #FF7800; }
+.invoice-status .paid,
+.invoice-status .collections { background-color: #28CA42; }
+.invoice-status .draft,
+.invoice-status .cancelled { background-color: #9CA3AF; }
+.invoice-status .refunded { background-color: #0170B9; }
+
+.ho-invoice-amount {
+    font-family: 'Roboto', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #01257D;
+    margin-top: 10px;
+}
+
+/* Invoiced To / Pay To — matching cards instead of bare two-column text. */
+.ho-invoice-cards {
+    margin: 0 -8px;
+}
+
+.ho-invoice-card {
+    margin: 8px;
+    padding: 18px 20px;
+    background-color: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+}
+
+@media (min-width: 500px) {
+    .ho-invoice-cards {
+        display: flex;
+    }
+    .ho-invoice-card {
+        float: none;
+        flex: 1 1 0;
+    }
+}
+
+/* Payment method — the one card meant to draw the eye, since it is
+   where a visitor actually acts. */
+.ho-invoice-pay-card {
+    margin-top: 16px;
+    padding: 18px 20px;
+    background-color: #FFF4EB;
+    border: 1px solid #FFDAB3;
+    border-radius: 10px;
+}
+
+.ho-invoice-pay-card .payment-btn-container {
+    margin-top: 10px;
+}
+
+/* Items / ledger panels */
+.ho-invoice-items,
+.ho-invoice-ledger {
+    border-radius: 10px;
+    overflow: hidden;
+    border-color: #E5E7EB;
+}
+
+.ho-invoice-items > .panel-heading,
+.ho-invoice-ledger > .panel-heading {
+    background-color: #01257D;
+    border-color: #01257D;
+}
+
+.ho-invoice-items > .panel-heading .panel-title,
+.ho-invoice-items > .panel-heading .panel-title strong,
+.ho-invoice-ledger > .panel-heading .panel-title,
+.ho-invoice-ledger > .panel-heading .panel-title strong {
+    color: #ffffff;
+}
+
+.ho-invoice-items td.total-row {
+    background-color: #F9FAFB;
+}
+
+.ho-invoice-items tbody tr:last-child td.total-row {
+    background-color: #FFF4EB;
+    color: #01257D;
+}
+
+.ho-invoice-ledger .panel-heading {
+    background-color: #F9FAFB !important;
+    border-color: #E5E7EB;
+}
+
+.ho-invoice-ledger > .panel-heading .panel-title,
+.ho-invoice-ledger > .panel-heading .panel-title strong {
+    color: #6B7280 !important;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.ho-invoice-ledger td.total-row {
+    background-color: #F9FAFB;
+}
+
+.ho-invoice-actions .btn-default {
+    border-color: #D1D5DB;
+    color: #374151;
+}
+
+.ho-invoice-actions .btn-default:hover {
+    border-color: #01257D;
+    color: #01257D;
+}
